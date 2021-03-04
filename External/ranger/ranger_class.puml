@@ -1,0 +1,495 @@
+@startuml
+class ArgumentHandler {
+	+ArgumentHandler(int argc, char** argv)
+	-DISALLOW_COPY_AND_ASSIGN(ArgumentHandler)
+	+~ArgumentHandler()
+	+impmeasure : ImportanceMode
+	+memmode : MemoryMode
+	+predictiontype : PredictionType
+	+splitrule : SplitRule
+	+treetype : TreeType
+	+holdout : bool
+	+predall : bool
+	+probability : bool
+	+replace : bool
+	+savemem : bool
+	+verbose : bool
+	+write : bool
+	-argv : char**
+	+alpha : double
+	+fraction : double
+	+minprop : double
+	-argc : int
+	+processArguments() : int
+	+caseweights : std::string
+	+depvarname : std::string
+	+file : std::string
+	+outprefix : std::string
+	+predict : std::string
+	+splitweights : std::string
+	+statusvarname : std::string
+	+alwayssplitvars : std::vector<std::string>
+	+catvars : std::vector<std::string>
+	+mtry : unsigned int
+	+nthreads : unsigned int
+	+ntree : unsigned int
+	+randomsplits : unsigned int
+	+seed : unsigned int
+	+targetpartitionsize : unsigned int
+	+checkArguments() : void
+	-displayHelp() : void
+	-displayVersion() : void
+}
+
+abstract class Data {
+	-DISALLOW_COPY_AND_ASSIGN(Data)
+	+Data()
+	+~Data()
+	#externalData : bool
+	+isOrderedVariable(size_t varID) : bool {query}
+	+loadFromFile(std::string filename) : bool
+	+loadFromFileOther(std::ifstream& input_file, std::string header_line, char seperator) : bool
+	+loadFromFileWhitespace(std::ifstream& input_file, std::string header_line) : bool
+	+{abstract} get(size_t row, size_t col) : double {query}
+	+getUniqueDataValue(size_t varID, size_t index) : double {query}
+	+getIndex(size_t row, size_t col) : size_t {query}
+	+getMaxNumUniqueValues() : size_t {query}
+	+getNumCols() : size_t {query}
+	+getNumRows() : size_t {query}
+	+getNumUniqueDataValues(size_t varID) : size_t {query}
+	+getPermutedSampleID(size_t sampleID) : size_t {query}
+	+getUnpermutedVarID(size_t varID) : size_t {query}
+	+getVariableID(std::string variable_name) : size_t
+	#max_num_unique_values : size_t
+	#num_cols : size_t
+	#num_cols_no_snp : size_t
+	#num_rows : size_t
+	#num_rows_rounded : size_t
+	#index_data : size_t*
+	#is_ordered_variable : std::vector<bool>
+	+getIsOrderedVariable() : std::vector<bool>&
+	#no_split_variables : std::vector<size_t>
+	#permuted_sampleIDs : std::vector<size_t>
+	+getNoSplitVariables() : std::vector<size_t>&
+	#variable_names : std::vector<std::string>
+	+getVariableNames() : std::vector<std::string>& {query}
+	#unique_data_values : std::vector<std::vector<double> >
+	#snp_data : unsigned char*
+	+addNoSplitVariable(size_t varID) : void
+	+addSnpData(unsigned char* snp_data, size_t num_cols_snp) : void
+	+getAllValues(std::vector<double>& all_values, std::vector<size_t>& sampleIDs, size_t varID) : void
+	+getMinMaxValues(double& min, double& max, std::vector<size_t>& sampleIDs, size_t varID) : void
+	+permuteSampleIDs(std::mt19937_64 random_number_generator) : void
+	+{abstract} reserveMemory() : void
+	+{abstract} set(size_t col, size_t row, double value, bool& error) : void
+	+setIsOrderedVariable(std::vector<std::string>& unordered_variable_names) : void
+	+setIsOrderedVariable(std::vector<bool>& is_ordered_variable) : void
+	+sort() : void
+}
+
+class DataChar {
+	-DISALLOW_COPY_AND_ASSIGN(DataChar)
+	+DataChar()
+	+DataChar(double* data_double, std::vector<std::string> variable_names, size_t num_rows, size_t num_cols, bool& error)
+	+~DataChar()
+	-data : char*
+	+get(size_t row, size_t col) : double {query}
+	+reserveMemory() : void
+	+set(size_t col, size_t row, double value, bool& error) : void
+}
+
+class DataDouble {
+	-DISALLOW_COPY_AND_ASSIGN(DataDouble)
+	+DataDouble()
+	+DataDouble(double* data, std::vector<std::string> variable_names, size_t num_rows, size_t num_cols)
+	+~DataDouble()
+	+get(size_t row, size_t col) : double {query}
+	-data : double*
+	+reserveMemory() : void
+	+set(size_t col, size_t row, double value, bool& error) : void
+}
+
+class DataFloat {
+	-DISALLOW_COPY_AND_ASSIGN(DataFloat)
+	+DataFloat()
+	+DataFloat(double* data_double, std::vector<std::string> variable_names, size_t num_rows, size_t num_cols)
+	+~DataFloat()
+	+get(size_t row, size_t col) : double {query}
+	-data : float*
+	+reserveMemory() : void
+	+set(size_t col, size_t row, double value, bool& error) : void
+}
+
+abstract class Forest {
+	-DISALLOW_COPY_AND_ASSIGN(Forest)
+	+Forest()
+	+~Forest()
+	#data : Data*
+	#importance_mode : ImportanceMode
+	#memory_mode : MemoryMode
+	#prediction_type : PredictionType
+	#splitrule : SplitRule
+	#aborted : bool
+	#holdout : bool
+	#keep_inbag : bool
+	#memory_saving_splitting : bool
+	#predict_all : bool
+	#prediction_mode : bool
+	#sample_with_replacement : bool
+	#alpha : double
+	+getOverallPredictionError() : double {query}
+	#minprop : double
+	#overall_prediction_error : double
+	#sample_fraction : double
+	#aborted_threads : size_t
+	#dependent_varID : size_t
+	+getDependentVarId() : size_t {query}
+	+getNumIndependentVariables() : size_t {query}
+	+getNumTrees() : size_t {query}
+	#num_independent_variables : size_t
+	#num_samples : size_t
+	#num_trees : size_t
+	#num_variables : size_t
+	#progress : size_t
+	#condition_variable : std::condition_variable
+	#random_number_generator : std::mt19937_64
+	#mutex : std::mutex
+	#verbose_out : std::ostream*
+	#output_prefix : std::string
+	#trees : std::vector<Tree*>
+	+getIsOrderedVariable() : std::vector<bool>& {query}
+	#case_weights : std::vector<double>
+	#variable_importance : std::vector<double>
+	+getVariableImportance() : std::vector<double>& {query}
+	#deterministic_varIDs : std::vector<size_t>
+	#split_select_varIDs : std::vector<size_t>
+	+getSplitValues() : std::vector<std::vector<double> >
+	#split_select_weights : std::vector<std::vector<double> >
+	+getInbagCounts() : std::vector<std::vector<size_t> > {query}
+	+getSplitVarIDs() : std::vector<std::vector<size_t> >
+	#predictions : std::vector<std::vector<std::vector<double> > >
+	+getPredictions() : std::vector<std::vector<std::vector<double> >>& {query}
+	+>getChildNodeIDs() : std::vector<std::vector<std::vector<size_t> >
+	#thread_ranges : std::vector<uint>
+	+getMinNodeSize() : unsigned int {query}
+	+getMtry() : unsigned int {query}
+	#min_node_size : unsigned int
+	#mtry : unsigned int
+	#num_random_splits : unsigned int
+	#num_threads : unsigned int
+	#seed : unsigned int
+	#computePermutationImportance() : void
+	#computePredictionError() : void
+	#{abstract} computePredictionErrorInternal() : void
+	#computeTreePermutationImportanceInThread(unsigned int thread_idx, std::vector<double>* importance, std::vector<double>* variance) : void
+	#grow() : void
+	#{abstract} growInternal() : void
+	#growTreesInThread(unsigned int thread_idx, std::vector<double>* variable_importance) : void
+	+init(std::string dependent_variable_name, MemoryMode memory_mode, Data* input_data, unsigned int mtry, std::string output_prefix, unsigned int num_trees, unsigned int seed, unsigned int num_threads, ImportanceMode importance_mode, unsigned int min_node_size, std::string status_variable_name, bool prediction_mode, bool sample_with_replacement, std::vector<std::string>& unordered_variable_names, bool memory_saving_splitting, SplitRule splitrule, bool predict_all, double sample_fraction, double alpha, double minprop, bool holdout, PredictionType prediction_type, unsigned int num_random_splits) : void
+	+initCpp(std::string dependent_variable_name, MemoryMode memory_mode, std::string input_file, unsigned int mtry, std::string output_prefix, unsigned int num_trees, std::ostream* verbose_out, unsigned int seed, unsigned int num_threads, std::string load_forest_filename, ImportanceMode importance_mode, unsigned int min_node_size, std::string split_select_weights_file, std::vector<std::string>& always_split_variable_names, std::string status_variable_name, bool sample_with_replacement, std::vector<std::string>& unordered_variable_names, bool memory_saving_splitting, SplitRule splitrule, std::string case_weights_file, bool predict_all, double sample_fraction, double alpha, double minprop, bool holdout, PredictionType prediction_type, unsigned int num_random_splits) : void
+	+{abstract} initInternal(std::string status_variable_name) : void
+	+initR(std::string dependent_variable_name, Data* input_data, unsigned int mtry, unsigned int num_trees, std::ostream* verbose_out, unsigned int seed, unsigned int num_threads, ImportanceMode importance_mode, unsigned int min_node_size, std::vector<std::vector<double> >& split_select_weights, std::vector<std::string>& always_split_variable_names, std::string status_variable_name, bool prediction_mode, bool sample_with_replacement, std::vector<std::string>& unordered_variable_names, bool memory_saving_splitting, SplitRule splitrule, std::vector<double>& case_weights, bool predict_all, bool keep_inbag, double sample_fraction, double alpha, double minprop, bool holdout, PredictionType prediction_type, unsigned int num_random_splits) : void
+	#loadFromFile(std::string filename) : void
+	#{abstract} loadFromFileInternal(std::ifstream& infile) : void
+	#predict() : void
+	#{abstract} predictInternal() : void
+	#predictTreesInThread(unsigned int thread_idx, const Data* prediction_data, bool oob_prediction) : void
+	+run(bool verbose) : void
+	+saveToFile() : void
+	+{abstract} saveToFileInternal(std::ofstream& outfile) : void
+	#setAlwaysSplitVariables(std::vector<std::string>& always_split_variable_names) : void
+	#setSplitWeightVector(std::vector<std::vector<double> >& split_select_weights) : void
+	#showProgress(std::string operation, clock_t start_time, clock_t& lap_time) : void
+	#showProgress(std::string operation) : void
+	+{abstract} writeConfusionFile() : void
+	+writeImportanceFile() : void
+	+writeOutput() : void
+	+{abstract} writeOutputInternal() : void
+	+{abstract} writePredictionFile() : void
+}
+
+class ForestClassification {
+	-DISALLOW_COPY_AND_ASSIGN(ForestClassification)
+	+ForestClassification()
+	+~ForestClassification()
+	#classification_table : std::map<std::pair<double, double>, size_t>
+	#class_values : std::vector<double>
+	+getClassValues() : std::vector<double>& {query}
+	#response_classIDs : std::vector<uint>
+	#computePredictionErrorInternal() : void
+	#growInternal() : void
+	#initInternal(std::string status_variable_name) : void
+	+loadForest(size_t dependent_varID, size_t num_trees, std::vector<std::vector<std::vector<size_t> > >& forest_child_nodeIDs, std::vector<std::vector<size_t> >& forest_split_varIDs, std::vector<std::vector<double> >& forest_split_values, std::vector<double>& class_values, std::vector<bool>& is_ordered_variable) : void
+	#loadFromFileInternal(std::ifstream& infile) : void
+	#predictInternal() : void
+	#saveToFileInternal(std::ofstream& outfile) : void
+	#writeConfusionFile() : void
+	#writeOutputInternal() : void
+	#writePredictionFile() : void
+}
+
+class ForestProbability {
+	-DISALLOW_COPY_AND_ASSIGN(ForestProbability)
+	+ForestProbability()
+	+~ForestProbability()
+	#classification_table : std::map<std::pair<double, double>, size_t>
+	#class_values : std::vector<double>
+	+getClassValues() : std::vector<double>& {query}
+	+getTerminalClassCounts() : std::vector<std::vector<std::vector<double> >>
+	#response_classIDs : std::vector<uint>
+	#computePredictionErrorInternal() : void
+	#growInternal() : void
+	#initInternal(std::string status_variable_name) : void
+	+loadForest(size_t dependent_varID, size_t num_trees, std::vector<std::vector<std::vector<size_t> > >& forest_child_nodeIDs, std::vector<std::vector<size_t> >& forest_split_varIDs, std::vector<std::vector<double> >& forest_split_values, std::vector<double>& class_values, std::vector<std::vector<std::vector<double> > >& forest_terminal_class_counts, std::vector<bool>& is_ordered_variable) : void
+	#loadFromFileInternal(std::ifstream& infile) : void
+	#predictInternal() : void
+	#saveToFileInternal(std::ofstream& outfile) : void
+	#writeConfusionFile() : void
+	#writeOutputInternal() : void
+	#writePredictionFile() : void
+}
+
+class ForestRegression {
+	-DISALLOW_COPY_AND_ASSIGN(ForestRegression)
+	+ForestRegression()
+	+~ForestRegression()
+	-computePredictionErrorInternal() : void
+	-growInternal() : void
+	-initInternal(std::string status_variable_name) : void
+	+loadForest(size_t dependent_varID, size_t num_trees, std::vector<std::vector<std::vector<size_t> > >& forest_child_nodeIDs, std::vector<std::vector<size_t> >& forest_split_varIDs, std::vector<std::vector<double> >& forest_split_values, std::vector<bool>& is_ordered_variable) : void
+	-loadFromFileInternal(std::ifstream& infile) : void
+	-predictInternal() : void
+	-saveToFileInternal(std::ofstream& outfile) : void
+	-writeConfusionFile() : void
+	-writeOutputInternal() : void
+	-writePredictionFile() : void
+}
+
+class ForestSurvival {
+	-DISALLOW_COPY_AND_ASSIGN(ForestSurvival)
+	+ForestSurvival()
+	+~ForestSurvival()
+	+getStatusVarId() : size_t {query}
+	-status_varID : size_t
+	-unique_timepoints : std::vector<double>
+	+getUniqueTimepoints() : std::vector<double>& {query}
+	-response_timepointIDs : std::vector<size_t>
+	+>getChf() : std::vector<std::vector<std::vector<double> >
+	-computePredictionErrorInternal() : void
+	-growInternal() : void
+	-initInternal(std::string status_variable_name) : void
+	+loadForest(size_t dependent_varID, size_t num_trees, std::vector<std::vector<std::vector<size_t> > >& forest_child_nodeIDs, std::vector<std::vector<size_t> >& forest_split_varIDs, std::vector<std::vector<double> >& forest_split_values, size_t status_varID, std::vector<std::vector<std::vector<double> > >& forest_chf, std::vector<double>& unique_timepoints, std::vector<bool>& is_ordered_variable) : void
+	-loadFromFileInternal(std::ifstream& infile) : void
+	-predictInternal() : void
+	-saveToFileInternal(std::ofstream& outfile) : void
+	-writeConfusionFile() : void
+	-writeOutputInternal() : void
+	-writePredictionFile() : void
+}
+
+abstract class Tree {
+	-DISALLOW_COPY_AND_ASSIGN(Tree)
+	+Tree()
+	+Tree(std::vector<std::vector<size_t> >& child_nodeIDs, std::vector<size_t>& split_varIDs, std::vector<double>& split_values)
+	+~Tree()
+	#data : Data*
+	#importance_mode : ImportanceMode
+	#splitrule : SplitRule
+	#holdout : bool
+	#keep_inbag : bool
+	#memory_saving_splitting : bool
+	#sample_with_replacement : bool
+	#splitNode(size_t nodeID) : bool
+	#{abstract} splitNodeInternal(size_t nodeID, std::vector<size_t>& possible_split_varIDs) : bool
+	#alpha : double
+	#{abstract} computePredictionAccuracyInternal() : double
+	#minprop : double
+	#sample_fraction : double
+	#dependent_varID : size_t
+	#dropDownSamplePermuted(size_t permuted_varID, size_t sampleID, size_t permuted_sampleID) : size_t
+	+getNumSamplesOob() : size_t {query}
+	#num_samples : size_t
+	#num_samples_oob : size_t
+	#random_number_generator : std::mt19937_64
+	#split_values : std::vector<double>
+	+getSplitValues() : std::vector<double>& {query}
+	#case_weights : std::vector<double>*
+	#split_select_weights : std::vector<double>*
+	#variable_importance : std::vector<double>*
+	#inbag_counts : std::vector<size_t>
+	#oob_sampleIDs : std::vector<size_t>
+	#prediction_terminal_nodeIDs : std::vector<size_t>
+	#split_varIDs : std::vector<size_t>
+	+getInbagCounts() : std::vector<size_t>& {query}
+	+getOobSampleIDs() : std::vector<size_t>& {query}
+	+getSplitVarIDs() : std::vector<size_t>& {query}
+	#deterministic_varIDs : std::vector<size_t>*
+	#split_select_varIDs : std::vector<size_t>*
+	#child_nodeIDs : std::vector<std::vector<size_t> >
+	#sampleIDs : std::vector<std::vector<size_t> >
+	+getChildNodeIDs() : std::vector<std::vector<size_t> >& {query}
+	#min_node_size : unsigned int
+	#mtry : unsigned int
+	#num_random_splits : unsigned int
+	+appendToFile(std::ofstream& file) : void
+	+{abstract} appendToFileInternal(std::ofstream& file) : void
+	#bootstrap() : void
+	#bootstrapWeighted() : void
+	#bootstrapWithoutReplacement() : void
+	#bootstrapWithoutReplacementWeighted() : void
+	#{abstract} cleanUpInternal() : void
+	+computePermutationImportance(std::vector<double>* forest_importance, std::vector<double>* forest_variance) : void
+	#createEmptyNode() : void
+	#{abstract} createEmptyNodeInternal() : void
+	#createPossibleSplitVarSubset(std::vector<size_t>& result) : void
+	+grow(std::vector<double>* variable_importance) : void
+	+init(Data* data, unsigned int mtry, size_t dependent_varID, size_t num_samples, unsigned int seed, std::vector<size_t>* deterministic_varIDs, std::vector<size_t>* split_select_varIDs, std::vector<double>* split_select_weights, ImportanceMode importance_mode, unsigned int min_node_size, bool sample_with_replacement, bool memory_saving_splitting, SplitRule splitrule, std::vector<double>* case_weights, bool keep_inbag, double sample_fraction, double alpha, double minprop, bool holdout, unsigned int num_random_splits) : void
+	+{abstract} initInternal() : void
+	#permuteAndPredictOobSamples(size_t permuted_varID, std::vector<size_t>& permutations) : void
+	+predict(const Data* prediction_data, bool oob_prediction) : void
+}
+
+class TreeClassification {
+	-DISALLOW_COPY_AND_ASSIGN(TreeClassification)
+	+TreeClassification(std::vector<double>* class_values, std::vector<uint>* response_classIDs)
+	+TreeClassification(std::vector<std::vector<size_t> >& child_nodeIDs, std::vector<size_t>& split_varIDs, std::vector<double>& split_values, std::vector<double>* class_values, std::vector<uint>* response_classIDs)
+	+~TreeClassification()
+	-findBestSplit(size_t nodeID, std::vector<size_t>& possible_split_varIDs) : bool
+	-findBestSplitExtraTrees(size_t nodeID, std::vector<size_t>& possible_split_varIDs) : bool
+	-splitNodeInternal(size_t nodeID, std::vector<size_t>& possible_split_varIDs) : bool
+	-computePredictionAccuracyInternal() : double
+	+estimate(size_t nodeID) : double
+	+getPrediction(size_t sampleID) : double {query}
+	+getPredictionTerminalNodeID(size_t sampleID) : size_t {query}
+	-counter : size_t*
+	-counter_per_class : size_t*
+	-class_values : std::vector<double>*
+	-response_classIDs : std::vector<uint>*
+	-addGiniImportance(size_t nodeID, size_t varID, double decrease) : void
+	+appendToFileInternal(std::ofstream& file) : void
+	-cleanUpInternal() : void
+	+computePermutationImportanceInternal(std::vector<std::vector<size_t> >* permutations) : void
+	-createEmptyNodeInternal() : void
+	-findBestSplitValueExtraTrees(size_t nodeID, size_t varID, size_t num_classes, size_t* class_counts, size_t num_samples_node, double& best_value, size_t& best_varID, double& best_decrease) : void
+	-findBestSplitValueExtraTreesUnordered(size_t nodeID, size_t varID, size_t num_classes, size_t* class_counts, size_t num_samples_node, double& best_value, size_t& best_varID, double& best_decrease) : void
+	-findBestSplitValueLargeQ(size_t nodeID, size_t varID, size_t num_classes, size_t* class_counts, size_t num_samples_node, double& best_value, size_t& best_varID, double& best_decrease) : void
+	-findBestSplitValueSmallQ(size_t nodeID, size_t varID, size_t num_classes, size_t* class_counts, size_t num_samples_node, double& best_value, size_t& best_varID, double& best_decrease) : void
+	-findBestSplitValueUnordered(size_t nodeID, size_t varID, size_t num_classes, size_t* class_counts, size_t num_samples_node, double& best_value, size_t& best_varID, double& best_decrease) : void
+	+initInternal() : void
+}
+
+class TreeProbability {
+	-DISALLOW_COPY_AND_ASSIGN(TreeProbability)
+	+TreeProbability(std::vector<double>* class_values, std::vector<uint>* response_classIDs)
+	+TreeProbability(std::vector<std::vector<size_t> >& child_nodeIDs, std::vector<size_t>& split_varIDs, std::vector<double>& split_values, std::vector<double>* class_values, std::vector<uint>* response_classIDs, std::vector<std::vector<double> >& terminal_class_counts)
+	+~TreeProbability()
+	-findBestSplit(size_t nodeID, std::vector<size_t>& possible_split_varIDs) : bool
+	-findBestSplitExtraTrees(size_t nodeID, std::vector<size_t>& possible_split_varIDs) : bool
+	-splitNodeInternal(size_t nodeID, std::vector<size_t>& possible_split_varIDs) : bool
+	-computePredictionAccuracyInternal() : double
+	+getPredictionTerminalNodeID(size_t sampleID) : size_t {query}
+	-counter : size_t*
+	-counter_per_class : size_t*
+	+getPrediction(size_t sampleID) : std::vector<double>& {query}
+	-class_values : std::vector<double>*
+	-terminal_class_counts : std::vector<std::vector<double> >
+	+getTerminalClassCounts() : std::vector<std::vector<double> >& {query}
+	-response_classIDs : std::vector<uint>*
+	-addImpurityImportance(size_t nodeID, size_t varID, double decrease) : void
+	+addToTerminalNodes(size_t nodeID) : void
+	+appendToFileInternal(std::ofstream& file) : void
+	-cleanUpInternal() : void
+	+computePermutationImportanceInternal(std::vector<std::vector<size_t> >* permutations) : void
+	-createEmptyNodeInternal() : void
+	-findBestSplitValueExtraTrees(size_t nodeID, size_t varID, size_t num_classes, size_t* class_counts, size_t num_samples_node, double& best_value, size_t& best_varID, double& best_decrease) : void
+	-findBestSplitValueExtraTreesUnordered(size_t nodeID, size_t varID, size_t num_classes, size_t* class_counts, size_t num_samples_node, double& best_value, size_t& best_varID, double& best_decrease) : void
+	-findBestSplitValueLargeQ(size_t nodeID, size_t varID, size_t num_classes, size_t* class_counts, size_t num_samples_node, double& best_value, size_t& best_varID, double& best_decrease) : void
+	-findBestSplitValueSmallQ(size_t nodeID, size_t varID, size_t num_classes, size_t* class_counts, size_t num_samples_node, double& best_value, size_t& best_varID, double& best_decrease) : void
+	-findBestSplitValueUnordered(size_t nodeID, size_t varID, size_t num_classes, size_t* class_counts, size_t num_samples_node, double& best_value, size_t& best_varID, double& best_decrease) : void
+	+initInternal() : void
+}
+
+class TreeRegression {
+	-DISALLOW_COPY_AND_ASSIGN(TreeRegression)
+	+TreeRegression()
+	+TreeRegression(std::vector<std::vector<size_t> >& child_nodeIDs, std::vector<size_t>& split_varIDs, std::vector<double>& split_values)
+	+~TreeRegression()
+	-findBestSplit(size_t nodeID, std::vector<size_t>& possible_split_varIDs) : bool
+	-findBestSplitExtraTrees(size_t nodeID, std::vector<size_t>& possible_split_varIDs) : bool
+	-findBestSplitMaxstat(size_t nodeID, std::vector<size_t>& possible_split_varIDs) : bool
+	-splitNodeInternal(size_t nodeID, std::vector<size_t>& possible_split_varIDs) : bool
+	-computePredictionAccuracyInternal() : double
+	-computePredictionMSE() : double
+	+estimate(size_t nodeID) : double
+	+getPrediction(size_t sampleID) : double {query}
+	-sums : double*
+	+getPredictionTerminalNodeID(size_t sampleID) : size_t {query}
+	-counter : size_t*
+	-addImpurityImportance(size_t nodeID, size_t varID, double decrease) : void
+	+appendToFileInternal(std::ofstream& file) : void
+	-cleanUpInternal() : void
+	+computePermutationImportanceInternal(std::vector<std::vector<size_t> >* permutations) : void
+	-createEmptyNodeInternal() : void
+	-findBestSplitValueExtraTrees(size_t nodeID, size_t varID, double sum_node, size_t num_samples_node, double& best_value, size_t& best_varID, double& best_decrease) : void
+	-findBestSplitValueExtraTreesUnordered(size_t nodeID, size_t varID, double sum_node, size_t num_samples_node, double& best_value, size_t& best_varID, double& best_decrease) : void
+	-findBestSplitValueLargeQ(size_t nodeID, size_t varID, double sum_node, size_t num_samples_node, double& best_value, size_t& best_varID, double& best_decrease) : void
+	-findBestSplitValueSmallQ(size_t nodeID, size_t varID, double sum_node, size_t num_samples_node, double& best_value, size_t& best_varID, double& best_decrease) : void
+	-findBestSplitValueUnordered(size_t nodeID, size_t varID, double sum_node, size_t num_samples_node, double& best_value, size_t& best_varID, double& best_decrease) : void
+	+initInternal() : void
+}
+
+class TreeSurvival {
+	-DISALLOW_COPY_AND_ASSIGN(TreeSurvival)
+	+TreeSurvival(std::vector<double>* unique_timepoints, size_t status_varID, std::vector<size_t>* response_timepointIDs)
+	+TreeSurvival(std::vector<std::vector<size_t> >& child_nodeIDs, std::vector<size_t>& split_varIDs, std::vector<double>& split_values, std::vector<std::vector<double> > chf, std::vector<double>* unique_timepoints, std::vector<size_t>* response_timepointIDs)
+	+~TreeSurvival()
+	-findBestSplit(size_t nodeID, std::vector<size_t>& possible_split_varIDs) : bool
+	-findBestSplitExtraTrees(size_t nodeID, std::vector<size_t>& possible_split_varIDs) : bool
+	-findBestSplitMaxstat(size_t nodeID, std::vector<size_t>& possible_split_varIDs) : bool
+	-splitNodeInternal(size_t nodeID, std::vector<size_t>& possible_split_varIDs) : bool
+	-computePredictionAccuracyInternal() : double
+	+getPredictionTerminalNodeID(size_t sampleID) : size_t {query}
+	-num_timepoints : size_t
+	-status_varID : size_t
+	-num_deaths : size_t*
+	-num_samples_at_risk : size_t*
+	+getPrediction(size_t sampleID) : std::vector<double>& {query}
+	-unique_timepoints : std::vector<double>*
+	-response_timepointIDs : std::vector<size_t>*
+	-chf : std::vector<std::vector<double> >
+	+getChf() : std::vector<std::vector<double> >& {query}
+	-addImpurityImportance(size_t nodeID, size_t varID, double decrease) : void
+	+appendToFileInternal(std::ofstream& file) : void
+	-cleanUpInternal() : void
+	-computeAucSplit(double time_k, double time_l, double status_k, double status_l, double value_k, double value_l, size_t num_splits, std::vector<double>& possible_split_values, double* num_count, double* num_total) : void
+	-computeChildDeathCounts(size_t nodeID, size_t varID, std::vector<double>& possible_split_values, size_t* num_samples_right_child, size_t* num_samples_at_risk_right_child, size_t* num_deaths_right_child, size_t num_splits) : void
+	-computeDeathCounts(size_t nodeID) : void
+	+computePermutationImportanceInternal(std::vector<std::vector<size_t> >* permutations) : void
+	-computeSurvival(size_t nodeID) : void
+	-createEmptyNodeInternal() : void
+	-findBestSplitValueAUC(size_t nodeID, size_t varID, double& best_value, size_t& best_varID, double& best_auc) : void
+	-findBestSplitValueExtraTrees(size_t nodeID, size_t varID, double& best_value, size_t& best_varID, double& best_logrank) : void
+	-findBestSplitValueExtraTreesUnordered(size_t nodeID, size_t varID, double& best_value, size_t& best_varID, double& best_logrank) : void
+	-findBestSplitValueLogRank(size_t nodeID, size_t varID, std::vector<double>& possible_split_values, double& best_value, size_t& best_varID, double& best_logrank) : void
+	-findBestSplitValueLogRank(size_t nodeID, size_t varID, double& best_value, size_t& best_varID, double& best_logrank) : void
+	-findBestSplitValueLogRankUnordered(size_t nodeID, size_t varID, std::vector<double>& factor_levels, double& best_value, size_t& best_varID, double& best_logrank) : void
+	-findBestSplitValueLogRankUnordered(size_t nodeID, size_t varID, double& best_value, size_t& best_varID, double& best_logrank) : void
+	+initInternal() : void
+}
+
+Data <|-- DataChar
+Data <|-- DataDouble
+Data <|-- DataFloat
+Forest <|-- ForestClassification
+Forest <|-- ForestProbability
+Forest <|-- ForestRegression
+Forest <|-- ForestSurvival
+Tree <|-- TreeClassification
+Tree <|-- TreeProbability
+Tree <|-- TreeRegression
+Tree <|-- TreeSurvival
+Forest o-- Data
+Forest o-- Tree
+Tree o-- Data
+
+@enduml

@@ -1,0 +1,12 @@
+External/Makefile
+psmvalidator/Makefile
+psmvalidator/independent/Makefile
+psmvalidator/psmvalidator_train_small_human_demo_model.conf
+*.cmake
+External/boost_1_65_1/
+.idea/
+cmake-build-release/
+cmake-build-debug/
+recycle/
+build/
+CMakeFiles/

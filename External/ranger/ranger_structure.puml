@@ -1,0 +1,45 @@
+@startuml
+
+abstract class AbstractList
+abstract AbstractCollection
+interface List
+interface Collection
+
+List <|-- AbstractList
+Collection <|-- AbstractCollection
+
+Collection <|- List
+AbstractCollection <|- AbstractList
+AbstractList <|-- ArrayList
+
+class ArrayList {
+Object[] elementData
+size()
+}
+
+enum TimeUnit {
+DAYS
+HOURS
+MINUTES
+}
+
+class Forest{
+initCpp()
+run()
+}
+
+class ForestProbability{
+
+}
+class ForestClassification{
+}
+
+Forest <|-- ForestProbability
+Forest <|-- ForestClassification
+
+main --> forest
+forest --> forest.initCpp
+forest.initCpp --> forest.run
+
+
+@enduml

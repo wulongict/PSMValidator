@@ -1,0 +1,666 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ARGUMENTHANDLER_H_	utility/ArgumentHandler.h	13;"	d
+AUC	globals.h	/^  AUC = 2,$/;"	e	enum:ranger::SplitRule
+AUC_IGNORE_TIES	globals.h	/^  AUC_IGNORE_TIES = 3,$/;"	e	enum:ranger::SplitRule
+ArgumentHandler	utility/ArgumentHandler.cpp	/^ArgumentHandler::ArgumentHandler(int argc, char **argv) :$/;"	f	class:ranger::ArgumentHandler
+ArgumentHandler	utility/ArgumentHandler.h	/^class ArgumentHandler {$/;"	c	namespace:ranger
+BETA	globals.h	/^  BETA = 6,$/;"	e	enum:ranger::SplitRule
+DATACHAR_H_	utility/DataChar.h	15;"	d
+DATADOUBLE_H_	utility/DataDouble.h	15;"	d
+DATAFLOAT_H_	utility/DataFloat.h	15;"	d
+DATA_H_	utility/Data.h	13;"	d
+DEFAULT_ALPHA	globals.h	/^const double DEFAULT_ALPHA = 0.5;$/;"	m	namespace:ranger
+DEFAULT_IMPORTANCE_MODE	globals.h	/^const ImportanceMode DEFAULT_IMPORTANCE_MODE = IMP_NONE;$/;"	m	namespace:ranger
+DEFAULT_MAXDEPTH	globals.h	/^const uint DEFAULT_MAXDEPTH = 0;$/;"	m	namespace:ranger
+DEFAULT_MINPROP	globals.h	/^const double DEFAULT_MINPROP = 0.1;$/;"	m	namespace:ranger
+DEFAULT_MIN_NODE_SIZE_CLASSIFICATION	globals.h	/^const uint DEFAULT_MIN_NODE_SIZE_CLASSIFICATION = 1;$/;"	m	namespace:ranger
+DEFAULT_MIN_NODE_SIZE_PROBABILITY	globals.h	/^const uint DEFAULT_MIN_NODE_SIZE_PROBABILITY = 10;$/;"	m	namespace:ranger
+DEFAULT_MIN_NODE_SIZE_REGRESSION	globals.h	/^const uint DEFAULT_MIN_NODE_SIZE_REGRESSION = 5;$/;"	m	namespace:ranger
+DEFAULT_MIN_NODE_SIZE_SURVIVAL	globals.h	/^const uint DEFAULT_MIN_NODE_SIZE_SURVIVAL = 3;$/;"	m	namespace:ranger
+DEFAULT_NUM_RANDOM_SPLITS	globals.h	/^const uint DEFAULT_NUM_RANDOM_SPLITS = 1;$/;"	m	namespace:ranger
+DEFAULT_NUM_THREADS	globals.h	/^const uint DEFAULT_NUM_THREADS = 0;$/;"	m	namespace:ranger
+DEFAULT_NUM_TREE	globals.h	/^const uint DEFAULT_NUM_TREE = 500;$/;"	m	namespace:ranger
+DEFAULT_PREDICTIONTYPE	globals.h	/^const PredictionType DEFAULT_PREDICTIONTYPE = RESPONSE;$/;"	m	namespace:ranger
+DEFAULT_SAMPLE_FRACTION_NOREPLACE	globals.h	/^const double DEFAULT_SAMPLE_FRACTION_NOREPLACE = 0.632;$/;"	m	namespace:ranger
+DEFAULT_SAMPLE_FRACTION_REPLACE	globals.h	/^const double DEFAULT_SAMPLE_FRACTION_REPLACE = 1;$/;"	m	namespace:ranger
+DEFAULT_SPLITRULE	globals.h	/^const SplitRule DEFAULT_SPLITRULE = LOGRANK;$/;"	m	namespace:ranger
+Data	utility/Data.cpp	/^Data::Data() :$/;"	f	class:ranger::Data
+Data	utility/Data.h	/^class Data {$/;"	c	namespace:ranger
+DataChar	utility/DataChar.h	/^class DataChar: public Data {$/;"	c	namespace:ranger
+DataDouble	utility/DataDouble.h	/^class DataDouble: public Data {$/;"	c	namespace:ranger
+DataFloat	utility/DataFloat.h	/^class DataFloat: public Data {$/;"	c	namespace:ranger
+DirectoryOfThisScript	.ycm_extra_conf.py	/^def DirectoryOfThisScript():$/;"	f
+EXTRATREES	globals.h	/^  EXTRATREES = 5,$/;"	e	enum:ranger::SplitRule
+FORESTCLASSIFICATION_H_	Forest/ForestClassification.h	13;"	d
+FORESTPROBABILITY_H_	Forest/ForestProbability.h	13;"	d
+FORESTREGRESSION_H_	Forest/ForestRegression.h	13;"	d
+FORESTSURVIVAL_H_	Forest/ForestSurvival.h	13;"	d
+FOREST_H_	Forest/Forest.h	13;"	d
+FlagsForFile	.ycm_extra_conf.py	/^def FlagsForFile( filename, **kwargs ):$/;"	f
+Forest	Forest/Forest.cpp	/^Forest::Forest() :$/;"	f	class:ranger::Forest
+Forest	Forest/Forest.h	/^class Forest {$/;"	c	namespace:ranger
+ForestClassification	Forest/ForestClassification.h	/^class ForestClassification: public Forest {$/;"	c	namespace:ranger
+ForestProbability	Forest/ForestProbability.h	/^class ForestProbability: public Forest {$/;"	c	namespace:ranger
+ForestRegression	Forest/ForestRegression.h	/^class ForestRegression: public Forest {$/;"	c	namespace:ranger
+ForestSurvival	Forest/ForestSurvival.h	/^class ForestSurvival: public Forest {$/;"	c	namespace:ranger
+GLOBALS_H_	globals.h	13;"	d
+GetCompilationInfoForFile	.ycm_extra_conf.py	/^def GetCompilationInfoForFile( filename ):$/;"	f
+HELLINGER	globals.h	/^  HELLINGER = 7$/;"	e	enum:ranger::SplitRule
+IMP_GINI	globals.h	/^  IMP_GINI = 1,$/;"	e	enum:ranger::ImportanceMode
+IMP_GINI_CORRECTED	globals.h	/^  IMP_GINI_CORRECTED = 5,$/;"	e	enum:ranger::ImportanceMode
+IMP_NONE	globals.h	/^  IMP_NONE = 0,$/;"	e	enum:ranger::ImportanceMode
+IMP_PERM_BREIMAN	globals.h	/^  IMP_PERM_BREIMAN = 2,$/;"	e	enum:ranger::ImportanceMode
+IMP_PERM_CASEWISE	globals.h	/^  IMP_PERM_CASEWISE = 6$/;"	e	enum:ranger::ImportanceMode
+IMP_PERM_LIAW	globals.h	/^  IMP_PERM_LIAW = 4,$/;"	e	enum:ranger::ImportanceMode
+IMP_PERM_RAW	globals.h	/^  IMP_PERM_RAW = 3,$/;"	e	enum:ranger::ImportanceMode
+ImportanceMode	globals.h	/^enum ImportanceMode {$/;"	g	namespace:ranger
+IsHeaderFile	.ycm_extra_conf.py	/^def IsHeaderFile( filename ):$/;"	f
+LOGRANK	globals.h	/^  LOGRANK = 1,$/;"	e	enum:ranger::SplitRule
+MAXSTAT	globals.h	/^  MAXSTAT = 4,$/;"	e	enum:ranger::SplitRule
+MAX_IMP_MODE	globals.h	/^const uint MAX_IMP_MODE = 6;$/;"	m	namespace:ranger
+MAX_MEM_MODE	globals.h	/^const uint MAX_MEM_MODE = 2;$/;"	m	namespace:ranger
+MEM_CHAR	globals.h	/^  MEM_CHAR = 2$/;"	e	enum:ranger::MemoryMode
+MEM_DOUBLE	globals.h	/^  MEM_DOUBLE = 0,$/;"	e	enum:ranger::MemoryMode
+MEM_FLOAT	globals.h	/^  MEM_FLOAT = 1,$/;"	e	enum:ranger::MemoryMode
+M_PI	globals.h	18;"	d
+MemoryMode	globals.h	/^enum MemoryMode {$/;"	g	namespace:ranger
+OLD_WIN_R_BUILD	globals.h	24;"	d
+PredictionType	globals.h	/^enum PredictionType {$/;"	g	namespace:ranger
+Q_THRESHOLD	globals.h	/^const double Q_THRESHOLD = 0.02;$/;"	m	namespace:ranger
+RANGER_VERSION	version.h	2;"	d
+RESPONSE	globals.h	/^  RESPONSE = 1,$/;"	e	enum:ranger::PredictionType
+SOURCE_EXTENSIONS	.ycm_extra_conf.py	/^SOURCE_EXTENSIONS = [ '.cpp', '.cxx', '.cc', '.c', '.m', '.mm' ]$/;"	v
+STATUS_INTERVAL	globals.h	/^const double STATUS_INTERVAL = 30.0;$/;"	m	namespace:ranger
+SplitRule	globals.h	/^enum SplitRule {$/;"	g	namespace:ranger
+TERMINALNODES	globals.h	/^  TERMINALNODES = 2$/;"	e	enum:ranger::PredictionType
+TREECLASSIFICATION_H_	Tree/TreeClassification.h	13;"	d
+TREEPROBABILITY_H_	Tree/TreeProbability.h	13;"	d
+TREEREGRESSION_H_	Tree/TreeRegression.h	13;"	d
+TREESURVIVAL_H_	Tree/TreeSurvival.h	13;"	d
+TREE_CLASSIFICATION	globals.h	/^  TREE_CLASSIFICATION = 1,$/;"	e	enum:ranger::TreeType
+TREE_H_	Tree/Tree.h	13;"	d
+TREE_PROBABILITY	globals.h	/^  TREE_PROBABILITY = 9$/;"	e	enum:ranger::TreeType
+TREE_REGRESSION	globals.h	/^  TREE_REGRESSION = 3,$/;"	e	enum:ranger::TreeType
+TREE_SURVIVAL	globals.h	/^  TREE_SURVIVAL = 5,$/;"	e	enum:ranger::TreeType
+Tree	Tree/Tree.cpp	/^Tree::Tree() :$/;"	f	class:ranger::Tree
+Tree	Tree/Tree.cpp	/^Tree::Tree(std::vector<std::vector<size_t>>& child_nodeIDs, std::vector<size_t>& split_varIDs,$/;"	f	class:ranger::Tree
+Tree	Tree/Tree.h	/^class Tree {$/;"	c	namespace:ranger
+TreeClassification	Tree/TreeClassification.cpp	/^TreeClassification::TreeClassification(std::vector<double>* class_values, std::vector<uint>* response_classIDs,$/;"	f	class:ranger::TreeClassification
+TreeClassification	Tree/TreeClassification.cpp	/^TreeClassification::TreeClassification(std::vector<std::vector<size_t>>& child_nodeIDs,$/;"	f	class:ranger::TreeClassification
+TreeClassification	Tree/TreeClassification.h	/^class TreeClassification: public Tree {$/;"	c	namespace:ranger
+TreeProbability	Tree/TreeProbability.cpp	/^TreeProbability::TreeProbability(std::vector<double>* class_values, std::vector<uint>* response_classIDs,$/;"	f	class:ranger::TreeProbability
+TreeProbability	Tree/TreeProbability.cpp	/^TreeProbability::TreeProbability(std::vector<std::vector<size_t>>& child_nodeIDs, std::vector<size_t>& split_varIDs,$/;"	f	class:ranger::TreeProbability
+TreeProbability	Tree/TreeProbability.h	/^class TreeProbability: public Tree {$/;"	c	namespace:ranger
+TreeRegression	Tree/TreeRegression.cpp	/^TreeRegression::TreeRegression(std::vector<std::vector<size_t>>& child_nodeIDs, std::vector<size_t>& split_varIDs,$/;"	f	class:ranger::TreeRegression
+TreeRegression	Tree/TreeRegression.h	/^class TreeRegression: public Tree {$/;"	c	namespace:ranger
+TreeSurvival	Tree/TreeSurvival.cpp	/^TreeSurvival::TreeSurvival(std::vector<double>* unique_timepoints, std::vector<size_t>* response_timepointIDs) :$/;"	f	class:ranger::TreeSurvival
+TreeSurvival	Tree/TreeSurvival.cpp	/^TreeSurvival::TreeSurvival(std::vector<std::vector<size_t>>& child_nodeIDs, std::vector<size_t>& split_varIDs,$/;"	f	class:ranger::TreeSurvival
+TreeSurvival	Tree/TreeSurvival.h	/^class TreeSurvival: public Tree {$/;"	c	namespace:ranger
+TreeType	globals.h	/^enum TreeType {$/;"	g	namespace:ranger
+UTILITY_H_	utility/utility.h	13;"	d
+_Known_bound	utility/utility.h	/^  typedef void _Known_bound;$/;"	t	struct:ranger::detail::_Unique_if
+_Single_object	utility/utility.h	/^  typedef std::unique_ptr<T> _Single_object;$/;"	t	struct:ranger::detail::_Unique_if
+_Unique_if	utility/utility.h	/^template<class T, size_t N> struct _Unique_if<T[N]> {$/;"	s	namespace:ranger::detail
+_Unique_if	utility/utility.h	/^template<class T> struct _Unique_if {$/;"	s	namespace:ranger::detail
+_Unique_if	utility/utility.h	/^template<class T> struct _Unique_if<T[]> {$/;"	s	namespace:ranger::detail
+_Unknown_bound	utility/utility.h	/^  typedef std::unique_ptr<T[]> _Unknown_bound;$/;"	t	struct:ranger::detail::_Unique_if
+aborted	Forest/Forest.h	/^  bool aborted;$/;"	m	class:ranger::Forest
+aborted_threads	Forest/Forest.h	/^  size_t aborted_threads;$/;"	m	class:ranger::Forest
+addGiniImportance	Tree/TreeClassification.cpp	/^void TreeClassification::addGiniImportance(size_t nodeID, size_t varID, double decrease) {$/;"	f	class:ranger::TreeClassification
+addImpurityImportance	Tree/TreeProbability.cpp	/^void TreeProbability::addImpurityImportance(size_t nodeID, size_t varID, double decrease) {$/;"	f	class:ranger::TreeProbability
+addImpurityImportance	Tree/TreeRegression.cpp	/^void TreeRegression::addImpurityImportance(size_t nodeID, size_t varID, double decrease) {$/;"	f	class:ranger::TreeRegression
+addImpurityImportance	Tree/TreeSurvival.cpp	/^void TreeSurvival::addImpurityImportance(size_t nodeID, size_t varID, double decrease) {$/;"	f	class:ranger::TreeSurvival
+addSnpData	utility/Data.cpp	/^void Data::addSnpData(unsigned char* snp_data, size_t num_cols_snp) {$/;"	f	class:ranger::Data
+addToTerminalNodes	Tree/TreeProbability.cpp	/^void TreeProbability::addToTerminalNodes(size_t nodeID) {$/;"	f	class:ranger::TreeProbability
+adjustPvalues	utility/utility.cpp	/^std::vector<double> adjustPvalues(std::vector<double>& unadjusted_pvalues) {$/;"	f	namespace:ranger
+allocateMemory	Tree/TreeClassification.cpp	/^void TreeClassification::allocateMemory() {$/;"	f	class:ranger::TreeClassification
+allocateMemory	Tree/TreeProbability.cpp	/^void TreeProbability::allocateMemory() {$/;"	f	class:ranger::TreeProbability
+allocateMemory	Tree/TreeRegression.cpp	/^void TreeRegression::allocateMemory() {$/;"	f	class:ranger::TreeRegression
+allocateMemory	Tree/TreeSurvival.cpp	/^void TreeSurvival::allocateMemory() {$/;"	f	class:ranger::TreeSurvival
+allocatePredictMemory	Forest/ForestClassification.cpp	/^void ForestClassification::allocatePredictMemory() {$/;"	f	class:ranger::ForestClassification
+allocatePredictMemory	Forest/ForestProbability.cpp	/^void ForestProbability::allocatePredictMemory() {$/;"	f	class:ranger::ForestProbability
+allocatePredictMemory	Forest/ForestRegression.cpp	/^void ForestRegression::allocatePredictMemory() {$/;"	f	class:ranger::ForestRegression
+allocatePredictMemory	Forest/ForestSurvival.cpp	/^void ForestSurvival::allocatePredictMemory() {$/;"	f	class:ranger::ForestSurvival
+alpha	Forest/Forest.h	/^  double alpha;$/;"	m	class:ranger::Forest
+alpha	Tree/Tree.h	/^  double alpha;$/;"	m	class:ranger::Tree
+alpha	utility/ArgumentHandler.h	/^  double alpha;$/;"	m	class:ranger::ArgumentHandler
+alwayssplitvars	utility/ArgumentHandler.h	/^  std::vector<std::string> alwayssplitvars;$/;"	m	class:ranger::ArgumentHandler
+appendToFile	Tree/Tree.cpp	/^void Tree::appendToFile(std::ofstream& file) {$/;"	f	class:ranger::Tree
+appendToFileInternal	Tree/TreeClassification.cpp	/^void TreeClassification::appendToFileInternal(std::ofstream& file) { \/\/ #nocov start$/;"	f	class:ranger::TreeClassification
+appendToFileInternal	Tree/TreeProbability.cpp	/^void TreeProbability::appendToFileInternal(std::ofstream& file) { \/\/ #nocov start$/;"	f	class:ranger::TreeProbability
+appendToFileInternal	Tree/TreeRegression.cpp	/^void TreeRegression::appendToFileInternal(std::ofstream& file) { \/\/ #nocov start$/;"	f	class:ranger::TreeRegression
+appendToFileInternal	Tree/TreeSurvival.cpp	/^void TreeSurvival::appendToFileInternal(std::ofstream& file) {  \/\/ #nocov start$/;"	f	class:ranger::TreeSurvival
+argc	utility/ArgumentHandler.h	/^  int argc;$/;"	m	class:ranger::ArgumentHandler
+argv	utility/ArgumentHandler.h	/^  char** argv;$/;"	m	class:ranger::ArgumentHandler
+beautifyTime	utility/utility.cpp	/^std::string beautifyTime(uint seconds) { \/\/ #nocov start$/;"	f	namespace:ranger
+betaLogLik	utility/utility.cpp	/^double betaLogLik(double y, double mean, double phi) {$/;"	f	namespace:ranger
+bootstrap	Tree/Tree.cpp	/^void Tree::bootstrap() {$/;"	f	class:ranger::Tree
+bootstrapClassWise	Tree/Tree.cpp	/^void Tree::bootstrapClassWise() {$/;"	f	class:ranger::Tree
+bootstrapClassWise	Tree/TreeClassification.cpp	/^void TreeClassification::bootstrapClassWise() {$/;"	f	class:ranger::TreeClassification
+bootstrapClassWise	Tree/TreeProbability.cpp	/^void TreeProbability::bootstrapClassWise() {$/;"	f	class:ranger::TreeProbability
+bootstrapWeighted	Tree/Tree.cpp	/^void Tree::bootstrapWeighted() {$/;"	f	class:ranger::Tree
+bootstrapWithoutReplacement	Tree/Tree.cpp	/^void Tree::bootstrapWithoutReplacement() {$/;"	f	class:ranger::Tree
+bootstrapWithoutReplacementClassWise	Tree/Tree.cpp	/^void Tree::bootstrapWithoutReplacementClassWise() {$/;"	f	class:ranger::Tree
+bootstrapWithoutReplacementClassWise	Tree/TreeClassification.cpp	/^void TreeClassification::bootstrapWithoutReplacementClassWise() {$/;"	f	class:ranger::TreeClassification
+bootstrapWithoutReplacementClassWise	Tree/TreeProbability.cpp	/^void TreeProbability::bootstrapWithoutReplacementClassWise() {$/;"	f	class:ranger::TreeProbability
+bootstrapWithoutReplacementWeighted	Tree/Tree.cpp	/^void Tree::bootstrapWithoutReplacementWeighted() {$/;"	f	class:ranger::Tree
+case_weights	Forest/Forest.h	/^  std::vector<double> case_weights;$/;"	m	class:ranger::Forest
+case_weights	Tree/Tree.h	/^  const std::vector<double>* case_weights;$/;"	m	class:ranger::Tree
+caseweights	utility/ArgumentHandler.h	/^  std::string caseweights;$/;"	m	class:ranger::ArgumentHandler
+catvars	utility/ArgumentHandler.h	/^  std::vector<std::string> catvars;$/;"	m	class:ranger::ArgumentHandler
+checkArguments	utility/ArgumentHandler.cpp	/^void ArgumentHandler::checkArguments() {$/;"	f	class:ranger::ArgumentHandler
+checkInterrupt	utility/utility.h	/^inline bool checkInterrupt() {$/;"	f	namespace:ranger
+checkPositiveIntegers	utility/utility.cpp	/^bool checkPositiveIntegers(const std::vector<double>& all_values) { \/\/ #nocov start$/;"	f	namespace:ranger
+checkUnorderedVariables	utility/utility.cpp	/^std::string checkUnorderedVariables(const Data& data, const std::vector<std::string>& unordered_variable_names) { \/\/ #nocov start$/;"	f	namespace:ranger
+chf	Tree/TreeSurvival.h	/^  std::vector<std::vector<double>> chf;$/;"	m	class:ranger::TreeSurvival
+child_nodeIDs	Tree/Tree.h	/^  std::vector<std::vector<size_t>> child_nodeIDs;$/;"	m	class:ranger::Tree
+chkIntFn	utility/utility.h	/^static void chkIntFn(void *dummy) {$/;"	f	namespace:ranger
+class_values	Forest/ForestClassification.h	/^  std::vector<double> class_values;$/;"	m	class:ranger::ForestClassification
+class_values	Forest/ForestProbability.h	/^  std::vector<double> class_values;$/;"	m	class:ranger::ForestProbability
+class_values	Tree/TreeClassification.h	/^  const std::vector<double>* class_values;$/;"	m	class:ranger::TreeClassification
+class_values	Tree/TreeProbability.h	/^  const std::vector<double>* class_values;$/;"	m	class:ranger::TreeProbability
+class_weights	Forest/ForestClassification.h	/^  std::vector<double> class_weights;$/;"	m	class:ranger::ForestClassification
+class_weights	Forest/ForestProbability.h	/^  std::vector<double> class_weights;$/;"	m	class:ranger::ForestProbability
+class_weights	Tree/TreeClassification.h	/^  const std::vector<double>* class_weights;$/;"	m	class:ranger::TreeClassification
+class_weights	Tree/TreeProbability.h	/^  const std::vector<double>* class_weights;$/;"	m	class:ranger::TreeProbability
+classification_table	Forest/ForestClassification.h	/^  std::map<std::pair<double, double>, size_t> classification_table;$/;"	m	class:ranger::ForestClassification
+compilation_database_folder	.ycm_extra_conf.py	/^compilation_database_folder = ''$/;"	v
+computeAucSplit	Tree/TreeSurvival.cpp	/^void TreeSurvival::computeAucSplit(double time_k, double time_l, double status_k, double status_l, double value_k,$/;"	f	class:ranger::TreeSurvival
+computeChildDeathCounts	Tree/TreeSurvival.cpp	/^void TreeSurvival::computeChildDeathCounts(size_t nodeID, size_t varID, std::vector<double>& possible_split_values,$/;"	f	class:ranger::TreeSurvival
+computeConcordanceIndex	utility/utility.cpp	/^double computeConcordanceIndex(const Data& data, const std::vector<double>& sum_chf,$/;"	f	namespace:ranger
+computeDeathCounts	Tree/TreeSurvival.cpp	/^void TreeSurvival::computeDeathCounts(size_t nodeID) {$/;"	f	class:ranger::TreeSurvival
+computePermutationImportance	Forest/Forest.cpp	/^void Forest::computePermutationImportance() {$/;"	f	class:ranger::Forest
+computePermutationImportance	Tree/Tree.cpp	/^void Tree::computePermutationImportance(std::vector<double>& forest_importance, std::vector<double>& forest_variance,$/;"	f	class:ranger::Tree
+computePredictionAccuracyInternal	Tree/TreeClassification.cpp	/^double TreeClassification::computePredictionAccuracyInternal(std::vector<double>* prediction_error_casewise) {$/;"	f	class:ranger::TreeClassification
+computePredictionAccuracyInternal	Tree/TreeProbability.cpp	/^double TreeProbability::computePredictionAccuracyInternal(std::vector<double>* prediction_error_casewise) {$/;"	f	class:ranger::TreeProbability
+computePredictionAccuracyInternal	Tree/TreeRegression.cpp	/^double TreeRegression::computePredictionAccuracyInternal(std::vector<double>* prediction_error_casewise) {$/;"	f	class:ranger::TreeRegression
+computePredictionAccuracyInternal	Tree/TreeSurvival.cpp	/^double TreeSurvival::computePredictionAccuracyInternal(std::vector<double>* prediction_error_casewise) {$/;"	f	class:ranger::TreeSurvival
+computePredictionError	Forest/Forest.cpp	/^void Forest::computePredictionError() {$/;"	f	class:ranger::Forest
+computePredictionErrorInternal	Forest/ForestClassification.cpp	/^void ForestClassification::computePredictionErrorInternal() {$/;"	f	class:ranger::ForestClassification
+computePredictionErrorInternal	Forest/ForestProbability.cpp	/^void ForestProbability::computePredictionErrorInternal() {$/;"	f	class:ranger::ForestProbability
+computePredictionErrorInternal	Forest/ForestRegression.cpp	/^void ForestRegression::computePredictionErrorInternal() {$/;"	f	class:ranger::ForestRegression
+computePredictionErrorInternal	Forest/ForestSurvival.cpp	/^void ForestSurvival::computePredictionErrorInternal() {$/;"	f	class:ranger::ForestSurvival
+computeSurvival	Tree/TreeSurvival.cpp	/^void TreeSurvival::computeSurvival(size_t nodeID) {$/;"	f	class:ranger::TreeSurvival
+computeTreePermutationImportanceInThread	Forest/Forest.cpp	/^void Forest::computeTreePermutationImportanceInThread(uint thread_idx, std::vector<double>& importance,$/;"	f	class:ranger::Forest
+condition_variable	Forest/Forest.h	/^  std::condition_variable condition_variable;$/;"	m	class:ranger::Forest
+counter	Tree/TreeClassification.h	/^  std::vector<size_t> counter;$/;"	m	class:ranger::TreeClassification
+counter	Tree/TreeProbability.h	/^  std::vector<size_t> counter;$/;"	m	class:ranger::TreeProbability
+counter	Tree/TreeRegression.h	/^  std::vector<size_t> counter;$/;"	m	class:ranger::TreeRegression
+counter_per_class	Tree/TreeClassification.h	/^  std::vector<size_t> counter_per_class;$/;"	m	class:ranger::TreeClassification
+counter_per_class	Tree/TreeProbability.h	/^  std::vector<size_t> counter_per_class;$/;"	m	class:ranger::TreeProbability
+createEmptyNode	Tree/Tree.cpp	/^void Tree::createEmptyNode() {$/;"	f	class:ranger::Tree
+createEmptyNodeInternal	Tree/TreeClassification.cpp	/^void TreeClassification::createEmptyNodeInternal() {$/;"	f	class:ranger::TreeClassification
+createEmptyNodeInternal	Tree/TreeProbability.cpp	/^void TreeProbability::createEmptyNodeInternal() {$/;"	f	class:ranger::TreeProbability
+createEmptyNodeInternal	Tree/TreeRegression.cpp	/^void TreeRegression::createEmptyNodeInternal() {$/;"	f	class:ranger::TreeRegression
+createEmptyNodeInternal	Tree/TreeSurvival.cpp	/^void TreeSurvival::createEmptyNodeInternal() {$/;"	f	class:ranger::TreeSurvival
+createPossibleSplitVarSubset	Tree/Tree.cpp	/^void Tree::createPossibleSplitVarSubset(std::vector<size_t>& result) {$/;"	f	class:ranger::Tree
+data	Forest/Forest.h	/^  std::unique_ptr<Data> data;$/;"	m	class:ranger::Forest
+data	Tree/Tree.h	/^  const Data* data;$/;"	m	class:ranger::Tree
+database	.ycm_extra_conf.py	/^  database = None$/;"	v
+database	.ycm_extra_conf.py	/^  database = ycm_core.CompilationDatabase( compilation_database_folder )$/;"	v
+dependent_variable_names	Forest/Forest.h	/^  std::vector<std::string> dependent_variable_names; \/\/ time,status for survival$/;"	m	class:ranger::Forest
+depth	Tree/Tree.h	/^  uint depth;$/;"	m	class:ranger::Tree
+depvarname	utility/ArgumentHandler.h	/^  std::string depvarname;$/;"	m	class:ranger::ArgumentHandler
+detail	utility/utility.h	/^namespace detail {$/;"	n	namespace:ranger
+deterministic_varIDs	Forest/Forest.h	/^  std::vector<size_t> deterministic_varIDs;$/;"	m	class:ranger::Forest
+deterministic_varIDs	Tree/Tree.h	/^  const std::vector<size_t>* deterministic_varIDs;$/;"	m	class:ranger::Tree
+displayHelp	utility/ArgumentHandler.cpp	/^void ArgumentHandler::displayHelp() {$/;"	f	class:ranger::ArgumentHandler
+displayVersion	utility/ArgumentHandler.cpp	/^void ArgumentHandler::displayVersion() {$/;"	f	class:ranger::ArgumentHandler
+drawWithoutReplacement	utility/utility.cpp	/^void drawWithoutReplacement(std::vector<size_t>& result, std::mt19937_64& random_number_generator, size_t max,$/;"	f	namespace:ranger
+drawWithoutReplacementFisherYates	utility/utility.cpp	/^void drawWithoutReplacementFisherYates(std::vector<size_t>& result, std::mt19937_64& random_number_generator,$/;"	f	namespace:ranger
+drawWithoutReplacementFromVector	utility/utility.h	/^void drawWithoutReplacementFromVector(std::vector<T>& result, const std::vector<T>& input,$/;"	f	namespace:ranger
+drawWithoutReplacementSimple	utility/utility.cpp	/^void drawWithoutReplacementSimple(std::vector<size_t>& result, std::mt19937_64& random_number_generator, size_t max,$/;"	f	namespace:ranger
+drawWithoutReplacementSkip	utility/utility.cpp	/^void drawWithoutReplacementSkip(std::vector<size_t>& result, std::mt19937_64& random_number_generator, size_t max,$/;"	f	namespace:ranger
+drawWithoutReplacementWeighted	utility/utility.cpp	/^void drawWithoutReplacementWeighted(std::vector<size_t>& result, std::mt19937_64& random_number_generator,$/;"	f	namespace:ranger
+dropDownSamplePermuted	Tree/Tree.cpp	/^size_t Tree::dropDownSamplePermuted(size_t permuted_varID, size_t sampleID, size_t permuted_sampleID) {$/;"	f	class:ranger::Tree
+dstdnorm	utility/utility.cpp	/^double dstdnorm(double x) {$/;"	f	namespace:ranger
+end_pos	Tree/Tree.h	/^  std::vector<size_t> end_pos;$/;"	m	class:ranger::Tree
+equalSplit	utility/utility.cpp	/^void equalSplit(std::vector<uint>& result, uint start, uint end, uint num_parts) {$/;"	f	namespace:ranger
+estimate	Tree/TreeClassification.cpp	/^double TreeClassification::estimate(size_t nodeID) {$/;"	f	class:ranger::TreeClassification
+estimate	Tree/TreeRegression.cpp	/^double TreeRegression::estimate(size_t nodeID) {$/;"	f	class:ranger::TreeRegression
+externalData	utility/Data.h	/^  bool externalData;$/;"	m	class:ranger::Data
+file	utility/ArgumentHandler.h	/^  std::string file;$/;"	m	class:ranger::ArgumentHandler
+findBestSplit	Tree/TreeClassification.cpp	/^bool TreeClassification::findBestSplit(size_t nodeID, std::vector<size_t>& possible_split_varIDs) {$/;"	f	class:ranger::TreeClassification
+findBestSplit	Tree/TreeProbability.cpp	/^bool TreeProbability::findBestSplit(size_t nodeID, std::vector<size_t>& possible_split_varIDs) {$/;"	f	class:ranger::TreeProbability
+findBestSplit	Tree/TreeRegression.cpp	/^bool TreeRegression::findBestSplit(size_t nodeID, std::vector<size_t>& possible_split_varIDs) {$/;"	f	class:ranger::TreeRegression
+findBestSplit	Tree/TreeSurvival.cpp	/^bool TreeSurvival::findBestSplit(size_t nodeID, std::vector<size_t>& possible_split_varIDs) {$/;"	f	class:ranger::TreeSurvival
+findBestSplitBeta	Tree/TreeRegression.cpp	/^bool TreeRegression::findBestSplitBeta(size_t nodeID, std::vector<size_t>& possible_split_varIDs) {$/;"	f	class:ranger::TreeRegression
+findBestSplitExtraTrees	Tree/TreeClassification.cpp	/^bool TreeClassification::findBestSplitExtraTrees(size_t nodeID, std::vector<size_t>& possible_split_varIDs) {$/;"	f	class:ranger::TreeClassification
+findBestSplitExtraTrees	Tree/TreeProbability.cpp	/^bool TreeProbability::findBestSplitExtraTrees(size_t nodeID, std::vector<size_t>& possible_split_varIDs) {$/;"	f	class:ranger::TreeProbability
+findBestSplitExtraTrees	Tree/TreeRegression.cpp	/^bool TreeRegression::findBestSplitExtraTrees(size_t nodeID, std::vector<size_t>& possible_split_varIDs) {$/;"	f	class:ranger::TreeRegression
+findBestSplitExtraTrees	Tree/TreeSurvival.cpp	/^bool TreeSurvival::findBestSplitExtraTrees(size_t nodeID, std::vector<size_t>& possible_split_varIDs) {$/;"	f	class:ranger::TreeSurvival
+findBestSplitMaxstat	Tree/TreeRegression.cpp	/^bool TreeRegression::findBestSplitMaxstat(size_t nodeID, std::vector<size_t>& possible_split_varIDs) {$/;"	f	class:ranger::TreeRegression
+findBestSplitMaxstat	Tree/TreeSurvival.cpp	/^bool TreeSurvival::findBestSplitMaxstat(size_t nodeID, std::vector<size_t>& possible_split_varIDs) {$/;"	f	class:ranger::TreeSurvival
+findBestSplitValueAUC	Tree/TreeSurvival.cpp	/^void TreeSurvival::findBestSplitValueAUC(size_t nodeID, size_t varID, double& best_value, size_t& best_varID,$/;"	f	class:ranger::TreeSurvival
+findBestSplitValueBeta	Tree/TreeRegression.cpp	/^void TreeRegression::findBestSplitValueBeta(size_t nodeID, size_t varID, double sum_node, size_t num_samples_node,$/;"	f	class:ranger::TreeRegression
+findBestSplitValueExtraTrees	Tree/TreeClassification.cpp	/^void TreeClassification::findBestSplitValueExtraTrees(size_t nodeID, size_t varID, size_t num_classes,$/;"	f	class:ranger::TreeClassification
+findBestSplitValueExtraTrees	Tree/TreeProbability.cpp	/^void TreeProbability::findBestSplitValueExtraTrees(size_t nodeID, size_t varID, size_t num_classes,$/;"	f	class:ranger::TreeProbability
+findBestSplitValueExtraTrees	Tree/TreeRegression.cpp	/^void TreeRegression::findBestSplitValueExtraTrees(size_t nodeID, size_t varID, double sum_node, size_t num_samples_node,$/;"	f	class:ranger::TreeRegression
+findBestSplitValueExtraTrees	Tree/TreeSurvival.cpp	/^void TreeSurvival::findBestSplitValueExtraTrees(size_t nodeID, size_t varID, double& best_value, size_t& best_varID,$/;"	f	class:ranger::TreeSurvival
+findBestSplitValueExtraTreesUnordered	Tree/TreeClassification.cpp	/^void TreeClassification::findBestSplitValueExtraTreesUnordered(size_t nodeID, size_t varID, size_t num_classes,$/;"	f	class:ranger::TreeClassification
+findBestSplitValueExtraTreesUnordered	Tree/TreeProbability.cpp	/^void TreeProbability::findBestSplitValueExtraTreesUnordered(size_t nodeID, size_t varID, size_t num_classes,$/;"	f	class:ranger::TreeProbability
+findBestSplitValueExtraTreesUnordered	Tree/TreeRegression.cpp	/^void TreeRegression::findBestSplitValueExtraTreesUnordered(size_t nodeID, size_t varID, double sum_node,$/;"	f	class:ranger::TreeRegression
+findBestSplitValueExtraTreesUnordered	Tree/TreeSurvival.cpp	/^void TreeSurvival::findBestSplitValueExtraTreesUnordered(size_t nodeID, size_t varID, double& best_value,$/;"	f	class:ranger::TreeSurvival
+findBestSplitValueLargeQ	Tree/TreeClassification.cpp	/^void TreeClassification::findBestSplitValueLargeQ(size_t nodeID, size_t varID, size_t num_classes,$/;"	f	class:ranger::TreeClassification
+findBestSplitValueLargeQ	Tree/TreeProbability.cpp	/^void TreeProbability::findBestSplitValueLargeQ(size_t nodeID, size_t varID, size_t num_classes,$/;"	f	class:ranger::TreeProbability
+findBestSplitValueLargeQ	Tree/TreeRegression.cpp	/^void TreeRegression::findBestSplitValueLargeQ(size_t nodeID, size_t varID, double sum_node, size_t num_samples_node,$/;"	f	class:ranger::TreeRegression
+findBestSplitValueLogRank	Tree/TreeSurvival.cpp	/^void TreeSurvival::findBestSplitValueLogRank(size_t nodeID, size_t varID, double& best_value, size_t& best_varID,$/;"	f	class:ranger::TreeSurvival
+findBestSplitValueLogRankUnordered	Tree/TreeSurvival.cpp	/^void TreeSurvival::findBestSplitValueLogRankUnordered(size_t nodeID, size_t varID, double& best_value,$/;"	f	class:ranger::TreeSurvival
+findBestSplitValueSmallQ	Tree/TreeClassification.cpp	/^void TreeClassification::findBestSplitValueSmallQ(size_t nodeID, size_t varID, size_t num_classes,$/;"	f	class:ranger::TreeClassification
+findBestSplitValueSmallQ	Tree/TreeProbability.cpp	/^void TreeProbability::findBestSplitValueSmallQ(size_t nodeID, size_t varID, size_t num_classes,$/;"	f	class:ranger::TreeProbability
+findBestSplitValueSmallQ	Tree/TreeRegression.cpp	/^void TreeRegression::findBestSplitValueSmallQ(size_t nodeID, size_t varID, double sum_node, size_t num_samples_node,$/;"	f	class:ranger::TreeRegression
+findBestSplitValueUnordered	Tree/TreeClassification.cpp	/^void TreeClassification::findBestSplitValueUnordered(size_t nodeID, size_t varID, size_t num_classes,$/;"	f	class:ranger::TreeClassification
+findBestSplitValueUnordered	Tree/TreeProbability.cpp	/^void TreeProbability::findBestSplitValueUnordered(size_t nodeID, size_t varID, size_t num_classes,$/;"	f	class:ranger::TreeProbability
+findBestSplitValueUnordered	Tree/TreeRegression.cpp	/^void TreeRegression::findBestSplitValueUnordered(size_t nodeID, size_t varID, double sum_node, size_t num_samples_node,$/;"	f	class:ranger::TreeRegression
+flags	.ycm_extra_conf.py	/^flags = [$/;"	v
+fraction	utility/ArgumentHandler.h	/^  double fraction;$/;"	m	class:ranger::ArgumentHandler
+getAllValues	utility/Data.cpp	/^void Data::getAllValues(std::vector<double>& all_values, std::vector<size_t>& sampleIDs, size_t varID, size_t start,$/;"	f	class:ranger::Data
+getChf	Forest/ForestSurvival.cpp	/^std::vector<std::vector<std::vector<double>>> ForestSurvival::getChf() const {$/;"	f	class:ranger::ForestSurvival
+getChf	Tree/TreeSurvival.h	/^  const std::vector<std::vector<double>>& getChf() const {$/;"	f	class:ranger::TreeSurvival
+getChildNodeIDs	Forest/Forest.h	/^  std::vector<std::vector<std::vector<size_t>>> getChildNodeIDs() {$/;"	f	class:ranger::Forest
+getChildNodeIDs	Tree/Tree.h	/^  const std::vector<std::vector<size_t>>& getChildNodeIDs() const {$/;"	f	class:ranger::Tree
+getClassValues	Forest/ForestClassification.h	/^  const std::vector<double>& getClassValues() const {$/;"	f	class:ranger::ForestClassification
+getClassValues	Forest/ForestProbability.h	/^  const std::vector<double>& getClassValues() const {$/;"	f	class:ranger::ForestProbability
+getInbagCounts	Forest/Forest.h	/^  std::vector<std::vector<size_t>> getInbagCounts() const {$/;"	f	class:ranger::Forest
+getInbagCounts	Tree/Tree.h	/^  const std::vector<size_t>& getInbagCounts() const {$/;"	f	class:ranger::Tree
+getIndex	utility/Data.h	/^  size_t getIndex(size_t row, size_t col) const {$/;"	f	class:ranger::Data
+getIsOrderedVariable	Forest/Forest.h	/^  const std::vector<bool>& getIsOrderedVariable() const {$/;"	f	class:ranger::Forest
+getMaxNumUniqueValues	utility/Data.h	/^  size_t getMaxNumUniqueValues() const {$/;"	f	class:ranger::Data
+getMinMaxValues	utility/Data.cpp	/^void Data::getMinMaxValues(double& min, double&max, std::vector<size_t>& sampleIDs, size_t varID, size_t start,$/;"	f	class:ranger::Data
+getMinNodeSize	Forest/Forest.h	/^  uint getMinNodeSize() const {$/;"	f	class:ranger::Forest
+getMtry	Forest/Forest.h	/^  uint getMtry() const {$/;"	f	class:ranger::Forest
+getNumCols	utility/Data.h	/^  size_t getNumCols() const {$/;"	f	class:ranger::Data
+getNumIndependentVariables	Forest/Forest.h	/^  size_t getNumIndependentVariables() const {$/;"	f	class:ranger::Forest
+getNumRows	utility/Data.h	/^  size_t getNumRows() const {$/;"	f	class:ranger::Data
+getNumSamplesOob	Tree/Tree.h	/^  size_t getNumSamplesOob() const {$/;"	f	class:ranger::Tree
+getNumTrees	Forest/Forest.h	/^  size_t getNumTrees() const {$/;"	f	class:ranger::Forest
+getNumUniqueDataValues	utility/Data.h	/^  size_t getNumUniqueDataValues(size_t varID) const {$/;"	f	class:ranger::Data
+getOobSampleIDs	Tree/Tree.h	/^  const std::vector<size_t>& getOobSampleIDs() const {$/;"	f	class:ranger::Tree
+getOverallPredictionError	Forest/Forest.h	/^  double getOverallPredictionError() const {$/;"	f	class:ranger::Forest
+getPermutedSampleID	utility/Data.h	/^  size_t getPermutedSampleID(size_t sampleID) const {$/;"	f	class:ranger::Data
+getPrediction	Tree/TreeClassification.h	/^  double getPrediction(size_t sampleID) const {$/;"	f	class:ranger::TreeClassification
+getPrediction	Tree/TreeProbability.h	/^  const std::vector<double>& getPrediction(size_t sampleID) const {$/;"	f	class:ranger::TreeProbability
+getPrediction	Tree/TreeRegression.h	/^  double getPrediction(size_t sampleID) const {$/;"	f	class:ranger::TreeRegression
+getPrediction	Tree/TreeSurvival.h	/^  const std::vector<double>& getPrediction(size_t sampleID) const {$/;"	f	class:ranger::TreeSurvival
+getPredictionTerminalNodeID	Tree/TreeClassification.h	/^  size_t getPredictionTerminalNodeID(size_t sampleID) const {$/;"	f	class:ranger::TreeClassification
+getPredictionTerminalNodeID	Tree/TreeProbability.h	/^  size_t getPredictionTerminalNodeID(size_t sampleID) const {$/;"	f	class:ranger::TreeProbability
+getPredictionTerminalNodeID	Tree/TreeRegression.h	/^  size_t getPredictionTerminalNodeID(size_t sampleID) const {$/;"	f	class:ranger::TreeRegression
+getPredictionTerminalNodeID	Tree/TreeSurvival.h	/^  size_t getPredictionTerminalNodeID(size_t sampleID) const {$/;"	f	class:ranger::TreeSurvival
+getPredictions	Forest/Forest.h	/^  const std::vector<std::vector<std::vector<double>>>& getPredictions() const {$/;"	f	class:ranger::Forest
+getSnp	utility/Data.h	/^  size_t getSnp(size_t row, size_t col, size_t col_permuted) const {$/;"	f	class:ranger::Data
+getSnpOrder	Forest/Forest.h	/^  const std::vector<std::vector<size_t>>& getSnpOrder() const {$/;"	f	class:ranger::Forest
+getSnpOrder	utility/Data.h	/^  const std::vector<std::vector<size_t>>& getSnpOrder() const {$/;"	f	class:ranger::Data
+getSplitValues	Forest/Forest.h	/^  std::vector<std::vector<double>> getSplitValues() {$/;"	f	class:ranger::Forest
+getSplitValues	Tree/Tree.h	/^  const std::vector<double>& getSplitValues() const {$/;"	f	class:ranger::Tree
+getSplitVarIDs	Forest/Forest.h	/^  std::vector<std::vector<size_t>> getSplitVarIDs() {$/;"	f	class:ranger::Forest
+getSplitVarIDs	Tree/Tree.h	/^  const std::vector<size_t>& getSplitVarIDs() const {$/;"	f	class:ranger::Tree
+getTerminalClassCounts	Forest/ForestProbability.cpp	/^std::vector<std::vector<std::vector<double>>> ForestProbability::getTerminalClassCounts() const {$/;"	f	class:ranger::ForestProbability
+getTerminalClassCounts	Tree/TreeProbability.h	/^  const std::vector<std::vector<double>>& getTerminalClassCounts() const {$/;"	f	class:ranger::TreeProbability
+getTreePrediction	Forest/ForestClassification.cpp	/^double ForestClassification::getTreePrediction(size_t tree_idx, size_t sample_idx) const {$/;"	f	class:ranger::ForestClassification
+getTreePrediction	Forest/ForestProbability.cpp	/^const std::vector<double>& ForestProbability::getTreePrediction(size_t tree_idx, size_t sample_idx) const {$/;"	f	class:ranger::ForestProbability
+getTreePrediction	Forest/ForestRegression.cpp	/^double ForestRegression::getTreePrediction(size_t tree_idx, size_t sample_idx) const {$/;"	f	class:ranger::ForestRegression
+getTreePrediction	Forest/ForestSurvival.cpp	/^const std::vector<double>& ForestSurvival::getTreePrediction(size_t tree_idx, size_t sample_idx) const {$/;"	f	class:ranger::ForestSurvival
+getTreePredictionTerminalNodeID	Forest/ForestClassification.cpp	/^size_t ForestClassification::getTreePredictionTerminalNodeID(size_t tree_idx, size_t sample_idx) const {$/;"	f	class:ranger::ForestClassification
+getTreePredictionTerminalNodeID	Forest/ForestProbability.cpp	/^size_t ForestProbability::getTreePredictionTerminalNodeID(size_t tree_idx, size_t sample_idx) const {$/;"	f	class:ranger::ForestProbability
+getTreePredictionTerminalNodeID	Forest/ForestRegression.cpp	/^size_t ForestRegression::getTreePredictionTerminalNodeID(size_t tree_idx, size_t sample_idx) const {$/;"	f	class:ranger::ForestRegression
+getTreePredictionTerminalNodeID	Forest/ForestSurvival.cpp	/^size_t ForestSurvival::getTreePredictionTerminalNodeID(size_t tree_idx, size_t sample_idx) const {$/;"	f	class:ranger::ForestSurvival
+getUniqueDataValue	utility/Data.h	/^  double getUniqueDataValue(size_t varID, size_t index) const {$/;"	f	class:ranger::Data
+getUniqueTimepoints	Forest/ForestSurvival.h	/^  const std::vector<double>& getUniqueTimepoints() const {$/;"	f	class:ranger::ForestSurvival
+getUnpermutedVarID	utility/Data.h	/^  size_t getUnpermutedVarID(size_t varID) const {$/;"	f	class:ranger::Data
+getVariableID	utility/Data.cpp	/^size_t Data::getVariableID(const std::string& variable_name) const {$/;"	f	class:ranger::Data
+getVariableImportance	Forest/Forest.h	/^  const std::vector<double>& getVariableImportance() const {$/;"	f	class:ranger::Forest
+getVariableImportanceCasewise	Forest/Forest.h	/^  const std::vector<double>& getVariableImportanceCasewise() const {$/;"	f	class:ranger::Forest
+getVariableNames	utility/Data.h	/^  const std::vector<std::string>& getVariableNames() const {$/;"	f	class:ranger::Data
+grow	Forest/Forest.cpp	/^void Forest::grow() {$/;"	f	class:ranger::Forest
+grow	Tree/Tree.cpp	/^void Tree::grow(std::vector<double>* variable_importance) {$/;"	f	class:ranger::Tree
+growInternal	Forest/ForestClassification.cpp	/^void ForestClassification::growInternal() {$/;"	f	class:ranger::ForestClassification
+growInternal	Forest/ForestProbability.cpp	/^void ForestProbability::growInternal() {$/;"	f	class:ranger::ForestProbability
+growInternal	Forest/ForestRegression.cpp	/^void ForestRegression::growInternal() {$/;"	f	class:ranger::ForestRegression
+growInternal	Forest/ForestSurvival.cpp	/^void ForestSurvival::growInternal() {$/;"	f	class:ranger::ForestSurvival
+growTreesInThread	Forest/Forest.cpp	/^void Forest::growTreesInThread(uint thread_idx, std::vector<double>* variable_importance) {$/;"	f	class:ranger::Forest
+holdout	Forest/Forest.h	/^  bool holdout;$/;"	m	class:ranger::Forest
+holdout	Tree/Tree.h	/^  bool holdout;$/;"	m	class:ranger::Tree
+holdout	utility/ArgumentHandler.h	/^  bool holdout;$/;"	m	class:ranger::ArgumentHandler
+impmeasure	utility/ArgumentHandler.h	/^  ImportanceMode impmeasure;$/;"	m	class:ranger::ArgumentHandler
+importance_mode	Forest/Forest.h	/^  ImportanceMode importance_mode;$/;"	m	class:ranger::Forest
+importance_mode	Tree/Tree.h	/^  ImportanceMode importance_mode;$/;"	m	class:ranger::Tree
+inbag_counts	Tree/Tree.h	/^  std::vector<size_t> inbag_counts;$/;"	m	class:ranger::Tree
+index_data	utility/Data.h	/^  std::vector<size_t> index_data;$/;"	m	class:ranger::Data
+init	Forest/Forest.cpp	/^void Forest::init(MemoryMode memory_mode, std::unique_ptr<Data> input_data, uint mtry, std::string output_prefix,$/;"	f	class:ranger::Forest
+init	Tree/Tree.cpp	/^void Tree::init(const Data* data, uint mtry, size_t num_samples, uint seed, std::vector<size_t>* deterministic_varIDs,$/;"	f	class:ranger::Tree
+initCpp	Forest/Forest.cpp	/^void Forest::initCpp(std::string dependent_variable_name, MemoryMode memory_mode, std::string input_file, uint mtry,$/;"	f	class:ranger::Forest
+initInternal	Forest/ForestClassification.cpp	/^void ForestClassification::initInternal() {$/;"	f	class:ranger::ForestClassification
+initInternal	Forest/ForestProbability.cpp	/^void ForestProbability::initInternal() {$/;"	f	class:ranger::ForestProbability
+initInternal	Forest/ForestRegression.cpp	/^void ForestRegression::initInternal() {$/;"	f	class:ranger::ForestRegression
+initInternal	Forest/ForestSurvival.cpp	/^void ForestSurvival::initInternal() {$/;"	f	class:ranger::ForestSurvival
+initR	Forest/Forest.cpp	/^void Forest::initR(std::unique_ptr<Data> input_data, uint mtry, uint num_trees, std::ostream* verbose_out, uint seed,$/;"	f	class:ranger::Forest
+isOrderedVariable	utility/Data.h	/^  bool isOrderedVariable(size_t varID) const {$/;"	f	class:ranger::Data
+is_ordered_variable	utility/Data.h	/^  std::vector<bool> is_ordered_variable;$/;"	m	class:ranger::Data
+keep_inbag	Forest/Forest.h	/^  bool keep_inbag;$/;"	m	class:ranger::Forest
+keep_inbag	Tree/Tree.h	/^  bool keep_inbag;$/;"	m	class:ranger::Tree
+last_left_nodeID	Tree/Tree.h	/^  size_t last_left_nodeID;$/;"	m	class:ranger::Tree
+loadDataFromFile	Forest/Forest.cpp	/^std::unique_ptr<Data> Forest::loadDataFromFile(const std::string& data_path) {$/;"	f	class:ranger::Forest
+loadDependentVariableNamesFromFile	Forest/Forest.cpp	/^void Forest::loadDependentVariableNamesFromFile(std::string filename) {$/;"	f	class:ranger::Forest
+loadDoubleVectorFromFile	utility/utility.cpp	/^void loadDoubleVectorFromFile(std::vector<double>& result, std::string filename) { \/\/ #nocov start$/;"	f	namespace:ranger
+loadForest	Forest/ForestClassification.cpp	/^void ForestClassification::loadForest(size_t num_trees,$/;"	f	class:ranger::ForestClassification
+loadForest	Forest/ForestProbability.cpp	/^void ForestProbability::loadForest(size_t num_trees,$/;"	f	class:ranger::ForestProbability
+loadForest	Forest/ForestRegression.cpp	/^void ForestRegression::loadForest(size_t num_trees,$/;"	f	class:ranger::ForestRegression
+loadForest	Forest/ForestSurvival.cpp	/^void ForestSurvival::loadForest(size_t num_trees, std::vector<std::vector<std::vector<size_t>> >& forest_child_nodeIDs,$/;"	f	class:ranger::ForestSurvival
+loadFromFile	Forest/Forest.cpp	/^void Forest::loadFromFile(std::string filename) {$/;"	f	class:ranger::Forest
+loadFromFile	utility/Data.cpp	/^bool Data::loadFromFile(std::string filename, std::vector<std::string>& dependent_variable_names) {$/;"	f	class:ranger::Data
+loadFromFileInternal	Forest/ForestClassification.cpp	/^void ForestClassification::loadFromFileInternal(std::ifstream& infile) {$/;"	f	class:ranger::ForestClassification
+loadFromFileInternal	Forest/ForestProbability.cpp	/^void ForestProbability::loadFromFileInternal(std::ifstream& infile) {$/;"	f	class:ranger::ForestProbability
+loadFromFileInternal	Forest/ForestRegression.cpp	/^void ForestRegression::loadFromFileInternal(std::ifstream& infile) {$/;"	f	class:ranger::ForestRegression
+loadFromFileInternal	Forest/ForestSurvival.cpp	/^void ForestSurvival::loadFromFileInternal(std::ifstream& infile) {$/;"	f	class:ranger::ForestSurvival
+loadFromFileOther	utility/Data.cpp	/^bool Data::loadFromFileOther(std::ifstream& input_file, std::string header_line,$/;"	f	class:ranger::Data
+loadFromFileWhitespace	utility/Data.cpp	/^bool Data::loadFromFileWhitespace(std::ifstream& input_file, std::string header_line,$/;"	f	class:ranger::Data
+logrankScores	utility/utility.cpp	/^std::vector<double> logrankScores(const std::vector<double>& time, const std::vector<double>& status) {$/;"	f	namespace:ranger
+main	main.cpp	/^int main(int argc, char **argv) {$/;"	f
+make_unique	utility/utility.h	/^typename detail::_Unique_if<T>::_Single_object make_unique(Args&&... args) {$/;"	f	namespace:ranger
+make_unique	utility/utility.h	/^typename detail::_Unique_if<T>::_Unknown_bound make_unique(size_t n) {$/;"	f	namespace:ranger
+manual_inbag	Forest/Forest.h	/^  std::vector<std::vector<size_t>> manual_inbag;$/;"	m	class:ranger::Forest
+manual_inbag	Tree/Tree.h	/^  const std::vector<size_t>* manual_inbag;$/;"	m	class:ranger::Tree
+mask	globals.h	/^static const int mask[4] = {192,48,12,3};$/;"	m	namespace:ranger
+max_depth	Forest/Forest.h	/^  uint max_depth;$/;"	m	class:ranger::Forest
+max_depth	Tree/Tree.h	/^  uint max_depth;$/;"	m	class:ranger::Tree
+max_num_unique_values	utility/Data.h	/^  size_t max_num_unique_values;$/;"	m	class:ranger::Data
+maxdepth	utility/ArgumentHandler.h	/^  uint maxdepth;$/;"	m	class:ranger::ArgumentHandler
+maxstat	utility/utility.cpp	/^void maxstat(const std::vector<double>& scores, const std::vector<double>& x, const std::vector<size_t>& indices,$/;"	f	namespace:ranger
+maxstatPValueLau92	utility/utility.cpp	/^double maxstatPValueLau92(double b, double minprop, double maxprop) {$/;"	f	namespace:ranger
+maxstatPValueLau94	utility/utility.cpp	/^double maxstatPValueLau94(double b, double minprop, double maxprop, size_t N, const std::vector<size_t>& m) {$/;"	f	namespace:ranger
+maxstatPValueUnadjusted	utility/utility.cpp	/^double maxstatPValueUnadjusted(double b) {$/;"	f	namespace:ranger
+memmode	utility/ArgumentHandler.h	/^  MemoryMode memmode;$/;"	m	class:ranger::ArgumentHandler
+memory_mode	Forest/Forest.h	/^  MemoryMode memory_mode;$/;"	m	class:ranger::Forest
+memory_saving_splitting	Forest/Forest.h	/^  bool memory_saving_splitting;$/;"	m	class:ranger::Forest
+memory_saving_splitting	Tree/Tree.h	/^  bool memory_saving_splitting;$/;"	m	class:ranger::Tree
+min_node_size	Forest/Forest.h	/^  uint min_node_size;$/;"	m	class:ranger::Forest
+min_node_size	Tree/Tree.h	/^  uint min_node_size;$/;"	m	class:ranger::Tree
+minprop	Forest/Forest.h	/^  double minprop;$/;"	m	class:ranger::Forest
+minprop	Tree/Tree.h	/^  double minprop;$/;"	m	class:ranger::Tree
+minprop	utility/ArgumentHandler.h	/^  double minprop;$/;"	m	class:ranger::ArgumentHandler
+mostFrequentClass	utility/utility.h	/^size_t mostFrequentClass(const std::vector<T>& class_count, std::mt19937_64 random_number_generator) {$/;"	f	namespace:ranger
+mostFrequentValue	utility/utility.cpp	/^double mostFrequentValue(const std::unordered_map<double, size_t>& class_count,$/;"	f	namespace:ranger
+mtry	Forest/Forest.h	/^  uint mtry;$/;"	m	class:ranger::Forest
+mtry	Tree/Tree.h	/^  uint mtry;$/;"	m	class:ranger::Tree
+mtry	utility/ArgumentHandler.h	/^  uint mtry;$/;"	m	class:ranger::ArgumentHandler
+mutex	Forest/Forest.h	/^  std::mutex mutex;$/;"	m	class:ranger::Forest
+nthreads	utility/ArgumentHandler.h	/^  uint nthreads;$/;"	m	class:ranger::ArgumentHandler
+ntree	utility/ArgumentHandler.h	/^  uint ntree;$/;"	m	class:ranger::ArgumentHandler
+numSamplesLeftOfCutpoint	utility/utility.cpp	/^std::vector<size_t> numSamplesLeftOfCutpoint(std::vector<double>& x, const std::vector<size_t>& indices) {$/;"	f	namespace:ranger
+num_cols	utility/Data.h	/^  size_t num_cols;$/;"	m	class:ranger::Data
+num_cols_no_snp	utility/Data.h	/^  size_t num_cols_no_snp;$/;"	m	class:ranger::Data
+num_deaths	Tree/TreeSurvival.h	/^  std::vector<size_t> num_deaths;$/;"	m	class:ranger::TreeSurvival
+num_independent_variables	Forest/Forest.h	/^  size_t num_independent_variables;$/;"	m	class:ranger::Forest
+num_random_splits	Forest/Forest.h	/^  uint num_random_splits;$/;"	m	class:ranger::Forest
+num_random_splits	Tree/Tree.h	/^  uint num_random_splits;$/;"	m	class:ranger::Tree
+num_rows	utility/Data.h	/^  size_t num_rows;$/;"	m	class:ranger::Data
+num_rows_rounded	utility/Data.h	/^  size_t num_rows_rounded;$/;"	m	class:ranger::Data
+num_samples	Forest/Forest.h	/^  size_t num_samples;$/;"	m	class:ranger::Forest
+num_samples	Tree/Tree.h	/^  size_t num_samples;$/;"	m	class:ranger::Tree
+num_samples_at_risk	Tree/TreeSurvival.h	/^  std::vector<size_t> num_samples_at_risk;$/;"	m	class:ranger::TreeSurvival
+num_samples_oob	Tree/Tree.h	/^  size_t num_samples_oob;$/;"	m	class:ranger::Tree
+num_threads	Forest/Forest.h	/^  uint num_threads;$/;"	m	class:ranger::Forest
+num_timepoints	Tree/TreeSurvival.h	/^  size_t num_timepoints;$/;"	m	class:ranger::TreeSurvival
+num_trees	Forest/Forest.h	/^  size_t num_trees;$/;"	m	class:ranger::Forest
+offset	globals.h	/^static const int offset[4] = {6,4,2,0};$/;"	m	namespace:ranger
+oob_sampleIDs	Tree/Tree.h	/^  std::vector<size_t> oob_sampleIDs;$/;"	m	class:ranger::Tree
+order	utility/utility.h	/^std::vector<size_t> order(const std::vector<T>& values, bool decreasing) {$/;"	f	namespace:ranger
+orderSnpLevels	utility/Data.cpp	/^void Data::orderSnpLevels(bool corrected_importance) {$/;"	f	class:ranger::Data
+order_snps	utility/Data.h	/^  bool order_snps;$/;"	m	class:ranger::Data
+outprefix	utility/ArgumentHandler.h	/^  std::string outprefix;$/;"	m	class:ranger::ArgumentHandler
+output_prefix	Forest/Forest.h	/^  std::string output_prefix;$/;"	m	class:ranger::Forest
+overall_prediction_error	Forest/Forest.h	/^  double overall_prediction_error;$/;"	m	class:ranger::Forest
+override	Forest/ForestClassification.h	/^  virtual ~ForestClassification() override = default;$/;"	m	class:ranger::ForestClassification
+override	Forest/ForestClassification.h	/^  void allocatePredictMemory() override;$/;"	m	class:ranger::ForestClassification
+override	Forest/ForestClassification.h	/^  void computePredictionErrorInternal() override;$/;"	m	class:ranger::ForestClassification
+override	Forest/ForestClassification.h	/^  void growInternal() override;$/;"	m	class:ranger::ForestClassification
+override	Forest/ForestClassification.h	/^  void initInternal() override;$/;"	m	class:ranger::ForestClassification
+override	Forest/ForestClassification.h	/^  void loadFromFileInternal(std::ifstream& infile) override;$/;"	m	class:ranger::ForestClassification
+override	Forest/ForestClassification.h	/^  void predictInternal(size_t sample_idx) override;$/;"	m	class:ranger::ForestClassification
+override	Forest/ForestClassification.h	/^  void saveToFileInternal(std::ofstream& outfile) override;$/;"	m	class:ranger::ForestClassification
+override	Forest/ForestClassification.h	/^  void writeConfusionFile() override;$/;"	m	class:ranger::ForestClassification
+override	Forest/ForestClassification.h	/^  void writeOutputInternal() override;$/;"	m	class:ranger::ForestClassification
+override	Forest/ForestClassification.h	/^  void writePredictionFile() override;$/;"	m	class:ranger::ForestClassification
+override	Forest/ForestProbability.h	/^  virtual ~ForestProbability() override = default;$/;"	m	class:ranger::ForestProbability
+override	Forest/ForestProbability.h	/^  void allocatePredictMemory() override;$/;"	m	class:ranger::ForestProbability
+override	Forest/ForestProbability.h	/^  void computePredictionErrorInternal() override;$/;"	m	class:ranger::ForestProbability
+override	Forest/ForestProbability.h	/^  void growInternal() override;$/;"	m	class:ranger::ForestProbability
+override	Forest/ForestProbability.h	/^  void initInternal() override;$/;"	m	class:ranger::ForestProbability
+override	Forest/ForestProbability.h	/^  void loadFromFileInternal(std::ifstream& infile) override;$/;"	m	class:ranger::ForestProbability
+override	Forest/ForestProbability.h	/^  void predictInternal(size_t sample_idx) override;$/;"	m	class:ranger::ForestProbability
+override	Forest/ForestProbability.h	/^  void saveToFileInternal(std::ofstream& outfile) override;$/;"	m	class:ranger::ForestProbability
+override	Forest/ForestProbability.h	/^  void writeConfusionFile() override;$/;"	m	class:ranger::ForestProbability
+override	Forest/ForestProbability.h	/^  void writeOutputInternal() override;$/;"	m	class:ranger::ForestProbability
+override	Forest/ForestProbability.h	/^  void writePredictionFile() override;$/;"	m	class:ranger::ForestProbability
+override	Forest/ForestRegression.h	/^  virtual ~ForestRegression() override = default;$/;"	m	class:ranger::ForestRegression
+override	Forest/ForestRegression.h	/^  void allocatePredictMemory() override;$/;"	m	class:ranger::ForestRegression
+override	Forest/ForestRegression.h	/^  void computePredictionErrorInternal() override;$/;"	m	class:ranger::ForestRegression
+override	Forest/ForestRegression.h	/^  void growInternal() override;$/;"	m	class:ranger::ForestRegression
+override	Forest/ForestRegression.h	/^  void initInternal() override;$/;"	m	class:ranger::ForestRegression
+override	Forest/ForestRegression.h	/^  void loadFromFileInternal(std::ifstream& infile) override;$/;"	m	class:ranger::ForestRegression
+override	Forest/ForestRegression.h	/^  void predictInternal(size_t sample_idx) override;$/;"	m	class:ranger::ForestRegression
+override	Forest/ForestRegression.h	/^  void saveToFileInternal(std::ofstream& outfile) override;$/;"	m	class:ranger::ForestRegression
+override	Forest/ForestRegression.h	/^  void writeConfusionFile() override;$/;"	m	class:ranger::ForestRegression
+override	Forest/ForestRegression.h	/^  void writeOutputInternal() override;$/;"	m	class:ranger::ForestRegression
+override	Forest/ForestRegression.h	/^  void writePredictionFile() override;$/;"	m	class:ranger::ForestRegression
+override	Forest/ForestSurvival.h	/^  virtual ~ForestSurvival() override = default;$/;"	m	class:ranger::ForestSurvival
+override	Forest/ForestSurvival.h	/^  void allocatePredictMemory() override;$/;"	m	class:ranger::ForestSurvival
+override	Forest/ForestSurvival.h	/^  void computePredictionErrorInternal() override;$/;"	m	class:ranger::ForestSurvival
+override	Forest/ForestSurvival.h	/^  void growInternal() override;$/;"	m	class:ranger::ForestSurvival
+override	Forest/ForestSurvival.h	/^  void initInternal() override;$/;"	m	class:ranger::ForestSurvival
+override	Forest/ForestSurvival.h	/^  void loadFromFileInternal(std::ifstream& infile) override;$/;"	m	class:ranger::ForestSurvival
+override	Forest/ForestSurvival.h	/^  void predictInternal(size_t sample_idx) override;$/;"	m	class:ranger::ForestSurvival
+override	Forest/ForestSurvival.h	/^  void saveToFileInternal(std::ofstream& outfile) override;$/;"	m	class:ranger::ForestSurvival
+override	Forest/ForestSurvival.h	/^  void writeConfusionFile() override;$/;"	m	class:ranger::ForestSurvival
+override	Forest/ForestSurvival.h	/^  void writeOutputInternal() override;$/;"	m	class:ranger::ForestSurvival
+override	Forest/ForestSurvival.h	/^  void writePredictionFile() override;$/;"	m	class:ranger::ForestSurvival
+override	Tree/TreeClassification.h	/^  bool splitNodeInternal(size_t nodeID, std::vector<size_t>& possible_split_varIDs) override;$/;"	m	class:ranger::TreeClassification
+override	Tree/TreeClassification.h	/^  double computePredictionAccuracyInternal(std::vector<double>* prediction_error_casewise) override;$/;"	m	class:ranger::TreeClassification
+override	Tree/TreeClassification.h	/^  virtual ~TreeClassification() override = default;$/;"	m	class:ranger::TreeClassification
+override	Tree/TreeClassification.h	/^  void allocateMemory() override;$/;"	m	class:ranger::TreeClassification
+override	Tree/TreeClassification.h	/^  void appendToFileInternal(std::ofstream& file) override;$/;"	m	class:ranger::TreeClassification
+override	Tree/TreeClassification.h	/^  void bootstrapClassWise() override;$/;"	m	class:ranger::TreeClassification
+override	Tree/TreeClassification.h	/^  void bootstrapWithoutReplacementClassWise() override;$/;"	m	class:ranger::TreeClassification
+override	Tree/TreeClassification.h	/^  void createEmptyNodeInternal() override;$/;"	m	class:ranger::TreeClassification
+override	Tree/TreeProbability.h	/^  bool splitNodeInternal(size_t nodeID, std::vector<size_t>& possible_split_varIDs) override;$/;"	m	class:ranger::TreeProbability
+override	Tree/TreeProbability.h	/^  double computePredictionAccuracyInternal(std::vector<double>* prediction_error_casewise) override;$/;"	m	class:ranger::TreeProbability
+override	Tree/TreeProbability.h	/^  virtual ~TreeProbability() override = default;$/;"	m	class:ranger::TreeProbability
+override	Tree/TreeProbability.h	/^  void allocateMemory() override;$/;"	m	class:ranger::TreeProbability
+override	Tree/TreeProbability.h	/^  void appendToFileInternal(std::ofstream& file) override;$/;"	m	class:ranger::TreeProbability
+override	Tree/TreeProbability.h	/^  void bootstrapClassWise() override;$/;"	m	class:ranger::TreeProbability
+override	Tree/TreeProbability.h	/^  void bootstrapWithoutReplacementClassWise() override;$/;"	m	class:ranger::TreeProbability
+override	Tree/TreeProbability.h	/^  void createEmptyNodeInternal() override;$/;"	m	class:ranger::TreeProbability
+override	Tree/TreeRegression.h	/^  bool splitNodeInternal(size_t nodeID, std::vector<size_t>& possible_split_varIDs) override;$/;"	m	class:ranger::TreeRegression
+override	Tree/TreeRegression.h	/^  double computePredictionAccuracyInternal(std::vector<double>* prediction_error_casewise) override;$/;"	m	class:ranger::TreeRegression
+override	Tree/TreeRegression.h	/^  virtual ~TreeRegression() override = default;$/;"	m	class:ranger::TreeRegression
+override	Tree/TreeRegression.h	/^  void allocateMemory() override;$/;"	m	class:ranger::TreeRegression
+override	Tree/TreeRegression.h	/^  void appendToFileInternal(std::ofstream& file) override;$/;"	m	class:ranger::TreeRegression
+override	Tree/TreeRegression.h	/^  void createEmptyNodeInternal() override;$/;"	m	class:ranger::TreeRegression
+override	Tree/TreeSurvival.h	/^  bool splitNodeInternal(size_t nodeID, std::vector<size_t>& possible_split_varIDs) override;$/;"	m	class:ranger::TreeSurvival
+override	Tree/TreeSurvival.h	/^  double computePredictionAccuracyInternal(std::vector<double>* prediction_error_casewise) override;$/;"	m	class:ranger::TreeSurvival
+override	Tree/TreeSurvival.h	/^  virtual ~TreeSurvival() override = default;$/;"	m	class:ranger::TreeSurvival
+override	Tree/TreeSurvival.h	/^  void allocateMemory() override;$/;"	m	class:ranger::TreeSurvival
+override	Tree/TreeSurvival.h	/^  void appendToFileInternal(std::ofstream& file) override;$/;"	m	class:ranger::TreeSurvival
+override	Tree/TreeSurvival.h	/^  void createEmptyNodeInternal() override;$/;"	m	class:ranger::TreeSurvival
+override	utility/DataChar.h	/^  virtual ~DataChar() override = default;$/;"	m	class:ranger::DataChar
+override	utility/DataDouble.h	/^  virtual ~DataDouble() override = default;$/;"	m	class:ranger::DataDouble
+override	utility/DataFloat.h	/^  virtual ~DataFloat() override = default;$/;"	m	class:ranger::DataFloat
+permuteAndPredictOobSamples	Tree/Tree.cpp	/^void Tree::permuteAndPredictOobSamples(size_t permuted_varID, std::vector<size_t>& permutations) {$/;"	f	class:ranger::Tree
+permuteSampleIDs	utility/Data.h	/^  void permuteSampleIDs(std::mt19937_64 random_number_generator) {$/;"	f	class:ranger::Data
+permuted_sampleIDs	utility/Data.h	/^  std::vector<size_t> permuted_sampleIDs;$/;"	m	class:ranger::Data
+predall	utility/ArgumentHandler.h	/^  bool predall;$/;"	m	class:ranger::ArgumentHandler
+predict	Forest/Forest.cpp	/^void Forest::predict() {$/;"	f	class:ranger::Forest
+predict	Tree/Tree.cpp	/^void Tree::predict(const Data* prediction_data, bool oob_prediction) {$/;"	f	class:ranger::Tree
+predict	utility/ArgumentHandler.h	/^  std::string predict;$/;"	m	class:ranger::ArgumentHandler
+predictInternal	Forest/ForestClassification.cpp	/^void ForestClassification::predictInternal(size_t sample_idx) {$/;"	f	class:ranger::ForestClassification
+predictInternal	Forest/ForestProbability.cpp	/^void ForestProbability::predictInternal(size_t sample_idx) {$/;"	f	class:ranger::ForestProbability
+predictInternal	Forest/ForestRegression.cpp	/^void ForestRegression::predictInternal(size_t sample_idx) {$/;"	f	class:ranger::ForestRegression
+predictInternal	Forest/ForestSurvival.cpp	/^void ForestSurvival::predictInternal(size_t sample_idx) {$/;"	f	class:ranger::ForestSurvival
+predictInternalInThread	Forest/Forest.cpp	/^void Forest::predictInternalInThread(uint thread_idx) {$/;"	f	class:ranger::Forest
+predictTreesInThread	Forest/Forest.cpp	/^void Forest::predictTreesInThread(uint thread_idx, const Data* prediction_data, bool oob_prediction) {$/;"	f	class:ranger::Forest
+predict_all	Forest/Forest.h	/^  bool predict_all;$/;"	m	class:ranger::Forest
+prediction_mode	Forest/Forest.h	/^  bool prediction_mode;$/;"	m	class:ranger::Forest
+prediction_terminal_nodeIDs	Tree/Tree.h	/^  std::vector<size_t> prediction_terminal_nodeIDs;$/;"	m	class:ranger::Tree
+prediction_type	Forest/Forest.h	/^  PredictionType prediction_type;$/;"	m	class:ranger::Forest
+predictions	Forest/Forest.h	/^  std::vector<std::vector<std::vector<double>>> predictions;$/;"	m	class:ranger::Forest
+predictiontype	utility/ArgumentHandler.h	/^  PredictionType predictiontype;$/;"	m	class:ranger::ArgumentHandler
+probability	utility/ArgumentHandler.h	/^  bool probability;$/;"	m	class:ranger::ArgumentHandler
+processArguments	utility/ArgumentHandler.cpp	/^int ArgumentHandler::processArguments() {$/;"	f	class:ranger::ArgumentHandler
+progress	Forest/Forest.h	/^  size_t progress;$/;"	m	class:ranger::Forest
+pstdnorm	utility/utility.cpp	/^double pstdnorm(double x) {$/;"	f	namespace:ranger
+random_number_generator	Forest/Forest.h	/^  std::mt19937_64 random_number_generator;$/;"	m	class:ranger::Forest
+random_number_generator	Tree/Tree.h	/^  std::mt19937_64 random_number_generator;$/;"	m	class:ranger::Tree
+randomsplits	utility/ArgumentHandler.h	/^  uint randomsplits;$/;"	m	class:ranger::ArgumentHandler
+ranger	Forest/Forest.cpp	/^namespace ranger {$/;"	n	file:
+ranger	Forest/Forest.h	/^namespace ranger {$/;"	n
+ranger	Forest/ForestClassification.cpp	/^namespace ranger {$/;"	n	file:
+ranger	Forest/ForestClassification.h	/^namespace ranger {$/;"	n
+ranger	Forest/ForestProbability.cpp	/^namespace ranger {$/;"	n	file:
+ranger	Forest/ForestProbability.h	/^namespace ranger {$/;"	n
+ranger	Forest/ForestRegression.cpp	/^namespace ranger {$/;"	n	file:
+ranger	Forest/ForestRegression.h	/^namespace ranger {$/;"	n
+ranger	Forest/ForestSurvival.cpp	/^namespace ranger {$/;"	n	file:
+ranger	Forest/ForestSurvival.h	/^namespace ranger {$/;"	n
+ranger	Tree/Tree.cpp	/^namespace ranger {$/;"	n	file:
+ranger	Tree/Tree.h	/^namespace ranger {$/;"	n
+ranger	Tree/TreeClassification.cpp	/^namespace ranger {$/;"	n	file:
+ranger	Tree/TreeClassification.h	/^namespace ranger {$/;"	n
+ranger	Tree/TreeProbability.cpp	/^namespace ranger {$/;"	n	file:
+ranger	Tree/TreeProbability.h	/^namespace ranger {$/;"	n
+ranger	Tree/TreeRegression.cpp	/^namespace ranger {$/;"	n	file:
+ranger	Tree/TreeRegression.h	/^namespace ranger {$/;"	n
+ranger	Tree/TreeSurvival.cpp	/^namespace ranger {$/;"	n	file:
+ranger	Tree/TreeSurvival.h	/^namespace ranger {$/;"	n
+ranger	globals.h	/^namespace ranger {$/;"	n
+ranger	utility/ArgumentHandler.cpp	/^namespace ranger {$/;"	n	file:
+ranger	utility/ArgumentHandler.h	/^namespace ranger {$/;"	n
+ranger	utility/Data.cpp	/^namespace ranger {$/;"	n	file:
+ranger	utility/Data.h	/^namespace ranger {$/;"	n
+ranger	utility/DataChar.h	/^namespace ranger {$/;"	n
+ranger	utility/DataDouble.h	/^namespace ranger {$/;"	n
+ranger	utility/DataFloat.h	/^namespace ranger {$/;"	n
+ranger	utility/utility.cpp	/^namespace ranger {$/;"	n	file:
+ranger	utility/utility.h	/^namespace ranger {$/;"	n
+rank	utility/utility.h	/^std::vector<double> rank(const std::vector<T>& values) {$/;"	f	namespace:ranger
+readFromStream	utility/utility.cpp	/^std::stringstream& readFromStream(std::stringstream& in, double& token) {$/;"	f	namespace:ranger
+readVector1D	utility/utility.h	/^inline void readVector1D(std::vector<T>& result, std::ifstream& file) {$/;"	f	namespace:ranger
+readVector1D	utility/utility.h	/^inline void readVector1D(std::vector<bool>& result, std::ifstream& file) {$/;"	f	namespace:ranger
+readVector2D	utility/utility.h	/^inline void readVector2D(std::vector<std::vector<T>>& result, std::ifstream& file) {$/;"	f	namespace:ranger
+regcoef	utility/ArgumentHandler.h	/^  std::vector<double> regcoef;$/;"	m	class:ranger::ArgumentHandler
+regularization	Tree/Tree.h	/^  bool regularization;$/;"	m	class:ranger::Tree
+regularization_factor	Forest/Forest.h	/^  std::vector<double> regularization_factor;$/;"	m	class:ranger::Forest
+regularization_factor	Tree/Tree.h	/^  std::vector<double>* regularization_factor;$/;"	m	class:ranger::Tree
+regularization_usedepth	Forest/Forest.h	/^  bool regularization_usedepth;$/;"	m	class:ranger::Forest
+regularization_usedepth	Tree/Tree.h	/^  bool regularization_usedepth;$/;"	m	class:ranger::Tree
+regularize	Tree/Tree.h	/^  void regularize(double& decrease, size_t varID) {$/;"	f	class:ranger::Tree
+regularizeNegative	Tree/Tree.h	/^  void regularizeNegative(double& decrease, size_t varID) {$/;"	f	class:ranger::Tree
+replace	utility/ArgumentHandler.h	/^  bool replace;$/;"	m	class:ranger::ArgumentHandler
+response_classIDs	Forest/ForestClassification.h	/^  std::vector<uint> response_classIDs;$/;"	m	class:ranger::ForestClassification
+response_classIDs	Forest/ForestProbability.h	/^  std::vector<uint> response_classIDs;$/;"	m	class:ranger::ForestProbability
+response_classIDs	Tree/TreeClassification.h	/^  const std::vector<uint>* response_classIDs;$/;"	m	class:ranger::TreeClassification
+response_classIDs	Tree/TreeProbability.h	/^  const std::vector<uint>* response_classIDs;$/;"	m	class:ranger::TreeProbability
+response_timepointIDs	Forest/ForestSurvival.h	/^  std::vector<size_t> response_timepointIDs;$/;"	m	class:ranger::ForestSurvival
+response_timepointIDs	Tree/TreeSurvival.h	/^  const std::vector<size_t>* response_timepointIDs;$/;"	m	class:ranger::TreeSurvival
+roundToNextMultiple	utility/utility.cpp	/^size_t roundToNextMultiple(size_t value, uint multiple) {$/;"	f	namespace:ranger
+run	Forest/Forest.cpp	/^void Forest::run(bool verbose, bool compute_oob_error) {$/;"	f	class:ranger::Forest
+run_ranger	main.cpp	/^void run_ranger(const ArgumentHandler& arg_handler, std::ostream& verbose_out) {$/;"	f
+sampleIDs	Tree/Tree.h	/^  std::vector<size_t> sampleIDs;$/;"	m	class:ranger::Tree
+sampleIDs_per_class	Forest/ForestClassification.h	/^  std::vector<std::vector<size_t>> sampleIDs_per_class;$/;"	m	class:ranger::ForestClassification
+sampleIDs_per_class	Forest/ForestProbability.h	/^  std::vector<std::vector<size_t>> sampleIDs_per_class;$/;"	m	class:ranger::ForestProbability
+sampleIDs_per_class	Tree/TreeClassification.h	/^  const std::vector<std::vector<size_t>>* sampleIDs_per_class;$/;"	m	class:ranger::TreeClassification
+sampleIDs_per_class	Tree/TreeProbability.h	/^  const std::vector<std::vector<size_t>>* sampleIDs_per_class;$/;"	m	class:ranger::TreeProbability
+sample_fraction	Forest/Forest.h	/^  std::vector<double> sample_fraction;$/;"	m	class:ranger::Forest
+sample_fraction	Tree/Tree.h	/^  const std::vector<double>* sample_fraction;$/;"	m	class:ranger::Tree
+sample_with_replacement	Forest/Forest.h	/^  bool sample_with_replacement;$/;"	m	class:ranger::Forest
+sample_with_replacement	Tree/Tree.h	/^  bool sample_with_replacement;$/;"	m	class:ranger::Tree
+saveSplitVarID	Tree/Tree.h	/^  void saveSplitVarID(size_t varID) {$/;"	f	class:ranger::Tree
+saveToFile	Forest/Forest.cpp	/^void Forest::saveToFile() {$/;"	f	class:ranger::Forest
+saveToFileInternal	Forest/ForestClassification.cpp	/^void ForestClassification::saveToFileInternal(std::ofstream& outfile) {$/;"	f	class:ranger::ForestClassification
+saveToFileInternal	Forest/ForestProbability.cpp	/^void ForestProbability::saveToFileInternal(std::ofstream& outfile) {$/;"	f	class:ranger::ForestProbability
+saveToFileInternal	Forest/ForestRegression.cpp	/^void ForestRegression::saveToFileInternal(std::ofstream& outfile) {$/;"	f	class:ranger::ForestRegression
+saveToFileInternal	Forest/ForestSurvival.cpp	/^void ForestSurvival::saveToFileInternal(std::ofstream& outfile) {$/;"	f	class:ranger::ForestSurvival
+saveVector1D	utility/utility.h	/^inline void saveVector1D(const std::vector<T>& vector, std::ofstream& file) {$/;"	f	namespace:ranger
+saveVector1D	utility/utility.h	/^inline void saveVector1D(const std::vector<bool>& vector, std::ofstream& file) {$/;"	f	namespace:ranger
+saveVector2D	utility/utility.h	/^inline void saveVector2D(const std::vector<std::vector<T>>& vector, std::ofstream& file) {$/;"	f	namespace:ranger
+savemem	utility/ArgumentHandler.h	/^  bool savemem;$/;"	m	class:ranger::ArgumentHandler
+seed	Forest/Forest.h	/^  uint seed;$/;"	m	class:ranger::Forest
+seed	utility/ArgumentHandler.h	/^  uint seed;$/;"	m	class:ranger::ArgumentHandler
+setAlwaysSplitVariables	Forest/Forest.cpp	/^void Forest::setAlwaysSplitVariables(const std::vector<std::string>& always_split_variable_names) {$/;"	f	class:ranger::Forest
+setClassWeights	Forest/ForestClassification.h	/^  void setClassWeights(std::vector<double>& class_weights) {$/;"	f	class:ranger::ForestClassification
+setClassWeights	Forest/ForestProbability.h	/^  void setClassWeights(std::vector<double>& class_weights) {$/;"	f	class:ranger::ForestProbability
+setIsOrderedVariable	utility/Data.h	/^  void setIsOrderedVariable(const std::vector<std::string>& unordered_variable_names) {$/;"	f	class:ranger::Data
+setIsOrderedVariable	utility/Data.h	/^  void setIsOrderedVariable(std::vector<bool>& is_ordered_variable) {$/;"	f	class:ranger::Data
+setManualInbag	Tree/Tree.cpp	/^void Tree::setManualInbag() {$/;"	f	class:ranger::Tree
+setSnpOrder	utility/Data.h	/^  void setSnpOrder(std::vector<std::vector<size_t>>& snp_order) {$/;"	f	class:ranger::Data
+setSplitWeightVector	Forest/Forest.cpp	/^void Forest::setSplitWeightVector(std::vector<std::vector<double>>& split_select_weights) {$/;"	f	class:ranger::Forest
+showProgress	Forest/Forest.cpp	/^void Forest::showProgress(std::string operation, clock_t start_time, clock_t& lap_time) {$/;"	f	class:ranger::Forest
+showProgress	Forest/Forest.cpp	/^void Forest::showProgress(std::string operation, size_t max_progress) {$/;"	f	class:ranger::Forest
+shuffleAndSplit	utility/utility.cpp	/^void shuffleAndSplit(std::vector<size_t>& first_part, std::vector<size_t>& second_part, size_t n_all, size_t n_first,$/;"	f	namespace:ranger
+shuffleAndSplitAppend	utility/utility.cpp	/^void shuffleAndSplitAppend(std::vector<size_t>& first_part, std::vector<size_t>& second_part, size_t n_all,$/;"	f	namespace:ranger
+skipoob	utility/ArgumentHandler.h	/^  bool skipoob;$/;"	m	class:ranger::ArgumentHandler
+snp_data	utility/Data.h	/^  unsigned char* snp_data;$/;"	m	class:ranger::Data
+snp_order	utility/Data.h	/^  std::vector<std::vector<size_t>> snp_order;$/;"	m	class:ranger::Data
+sort	utility/Data.cpp	/^void Data::sort() {$/;"	f	class:ranger::Data
+splitNode	Tree/Tree.cpp	/^bool Tree::splitNode(size_t nodeID) {$/;"	f	class:ranger::Tree
+splitNodeInternal	Tree/TreeClassification.cpp	/^bool TreeClassification::splitNodeInternal(size_t nodeID, std::vector<size_t>& possible_split_varIDs) {$/;"	f	class:ranger::TreeClassification
+splitNodeInternal	Tree/TreeProbability.cpp	/^bool TreeProbability::splitNodeInternal(size_t nodeID, std::vector<size_t>& possible_split_varIDs) {$/;"	f	class:ranger::TreeProbability
+splitNodeInternal	Tree/TreeRegression.cpp	/^bool TreeRegression::splitNodeInternal(size_t nodeID, std::vector<size_t>& possible_split_varIDs) {$/;"	f	class:ranger::TreeRegression
+splitNodeInternal	Tree/TreeSurvival.cpp	/^bool TreeSurvival::splitNodeInternal(size_t nodeID, std::vector<size_t>& possible_split_varIDs) {$/;"	f	class:ranger::TreeSurvival
+splitString	utility/utility.cpp	/^void splitString(std::vector<double>& result, const std::string& input, char split_char) { \/\/ #nocov start$/;"	f	namespace:ranger
+splitString	utility/utility.cpp	/^void splitString(std::vector<std::string>& result, const std::string& input, char split_char) { \/\/ #nocov start$/;"	f	namespace:ranger
+split_select_weights	Forest/Forest.h	/^  std::vector<std::vector<double>> split_select_weights;$/;"	m	class:ranger::Forest
+split_select_weights	Tree/Tree.h	/^  const std::vector<double>* split_select_weights;$/;"	m	class:ranger::Tree
+split_values	Tree/Tree.h	/^  std::vector<double> split_values;$/;"	m	class:ranger::Tree
+split_varIDs	Tree/Tree.h	/^  std::vector<size_t> split_varIDs;$/;"	m	class:ranger::Tree
+split_varIDs_used	Forest/Forest.h	/^  std::vector<bool> split_varIDs_used;$/;"	m	class:ranger::Forest
+split_varIDs_used	Tree/Tree.h	/^  std::vector<bool>* split_varIDs_used;$/;"	m	class:ranger::Tree
+splitrule	Forest/Forest.h	/^  SplitRule splitrule;$/;"	m	class:ranger::Forest
+splitrule	Tree/Tree.h	/^  SplitRule splitrule;$/;"	m	class:ranger::Tree
+splitrule	utility/ArgumentHandler.h	/^  SplitRule splitrule;$/;"	m	class:ranger::ArgumentHandler
+splitweights	utility/ArgumentHandler.h	/^  std::string splitweights;$/;"	m	class:ranger::ArgumentHandler
+start_pos	Tree/Tree.h	/^  std::vector<size_t> start_pos;$/;"	m	class:ranger::Tree
+statusvarname	utility/ArgumentHandler.h	/^  std::string statusvarname;$/;"	m	class:ranger::ArgumentHandler
+sums	Tree/TreeRegression.h	/^  std::vector<double> sums;$/;"	m	class:ranger::TreeRegression
+targetpartitionsize	utility/ArgumentHandler.h	/^  uint targetpartitionsize;$/;"	m	class:ranger::ArgumentHandler
+terminal_class_counts	Tree/TreeProbability.h	/^  std::vector<std::vector<double>> terminal_class_counts;$/;"	m	class:ranger::TreeProbability
+thread_ranges	Forest/Forest.h	/^  std::vector<uint> thread_ranges;$/;"	m	class:ranger::Forest
+trees	Forest/Forest.h	/^  std::vector<std::unique_ptr<Tree>> trees;$/;"	m	class:ranger::Forest
+treetype	utility/ArgumentHandler.h	/^  TreeType treetype;$/;"	m	class:ranger::ArgumentHandler
+uint	globals.h	/^typedef unsigned int uint;$/;"	t	namespace:ranger
+uintToString	utility/utility.cpp	/^std::string uintToString(uint number) {$/;"	f	namespace:ranger
+unique_data_values	utility/Data.h	/^  std::vector<std::vector<double>> unique_data_values;$/;"	m	class:ranger::Data
+unique_timepoints	Forest/ForestSurvival.h	/^  std::vector<double> unique_timepoints;$/;"	m	class:ranger::ForestSurvival
+unique_timepoints	Tree/TreeSurvival.h	/^  const std::vector<double>* unique_timepoints;$/;"	m	class:ranger::TreeSurvival
+usedepth	utility/ArgumentHandler.h	/^  bool usedepth;$/;"	m	class:ranger::ArgumentHandler
+variable_importance	Forest/Forest.h	/^  std::vector<double> variable_importance;$/;"	m	class:ranger::Forest
+variable_importance	Tree/Tree.h	/^  std::vector<double>* variable_importance;$/;"	m	class:ranger::Tree
+variable_importance_casewise	Forest/Forest.h	/^  std::vector<double> variable_importance_casewise;$/;"	m	class:ranger::Forest
+variable_names	utility/Data.h	/^  std::vector<std::string> variable_names;$/;"	m	class:ranger::Data
+verbose	utility/ArgumentHandler.h	/^  bool verbose;$/;"	m	class:ranger::ArgumentHandler
+verbose_out	Forest/Forest.h	/^  std::ostream* verbose_out;$/;"	m	class:ranger::Forest
+write	utility/ArgumentHandler.h	/^  bool write;$/;"	m	class:ranger::ArgumentHandler
+writeConfusionFile	Forest/ForestClassification.cpp	/^void ForestClassification::writeConfusionFile() {$/;"	f	class:ranger::ForestClassification
+writeConfusionFile	Forest/ForestProbability.cpp	/^void ForestProbability::writeConfusionFile() {$/;"	f	class:ranger::ForestProbability
+writeConfusionFile	Forest/ForestRegression.cpp	/^void ForestRegression::writeConfusionFile() {$/;"	f	class:ranger::ForestRegression
+writeConfusionFile	Forest/ForestSurvival.cpp	/^void ForestSurvival::writeConfusionFile() {$/;"	f	class:ranger::ForestSurvival
+writeImportanceFile	Forest/Forest.cpp	/^void Forest::writeImportanceFile() {$/;"	f	class:ranger::Forest
+writeOutput	Forest/Forest.cpp	/^void Forest::writeOutput() {$/;"	f	class:ranger::Forest
+writeOutputInternal	Forest/ForestClassification.cpp	/^void ForestClassification::writeOutputInternal() {$/;"	f	class:ranger::ForestClassification
+writeOutputInternal	Forest/ForestProbability.cpp	/^void ForestProbability::writeOutputInternal() {$/;"	f	class:ranger::ForestProbability
+writeOutputInternal	Forest/ForestRegression.cpp	/^void ForestRegression::writeOutputInternal() {$/;"	f	class:ranger::ForestRegression
+writeOutputInternal	Forest/ForestSurvival.cpp	/^void ForestSurvival::writeOutputInternal() {$/;"	f	class:ranger::ForestSurvival
+writePredictionFile	Forest/ForestClassification.cpp	/^void ForestClassification::writePredictionFile() {$/;"	f	class:ranger::ForestClassification
+writePredictionFile	Forest/ForestProbability.cpp	/^void ForestProbability::writePredictionFile() {$/;"	f	class:ranger::ForestProbability
+writePredictionFile	Forest/ForestRegression.cpp	/^void ForestRegression::writePredictionFile() {$/;"	f	class:ranger::ForestRegression
+writePredictionFile	Forest/ForestSurvival.cpp	/^void ForestSurvival::writePredictionFile() {$/;"	f	class:ranger::ForestSurvival
+x	utility/DataChar.h	/^  std::vector<char> x;$/;"	m	class:ranger::DataChar
+x	utility/DataDouble.h	/^  std::vector<double> x;$/;"	m	class:ranger::DataDouble
+x	utility/DataFloat.h	/^  std::vector<float> x;$/;"	m	class:ranger::DataFloat
+y	utility/DataChar.h	/^  std::vector<char> y;$/;"	m	class:ranger::DataChar
+y	utility/DataDouble.h	/^  std::vector<double> y;$/;"	m	class:ranger::DataDouble
+y	utility/DataFloat.h	/^  std::vector<float> y;$/;"	m	class:ranger::DataFloat

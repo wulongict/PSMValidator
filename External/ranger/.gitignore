@@ -1,0 +1,6 @@
+# ignore html and latex
+#
+
+html/
+latex/
+
