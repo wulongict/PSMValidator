@@ -98,7 +98,7 @@ class PSMInfo{
 public:
     long getMemSize(){
         return sizeof(PSMInfo)
-             +spectrum.length()
+             +spectrum.length()+m_basename.length()
                +accumulate(searchhits.begin(),searchhits.end(),0L,
                            [](long b, const shared_ptr<SearchHit>& a){
                                return b + a->getMemSize();
@@ -112,6 +112,7 @@ public:
     int index;
     int charge;
     string spectrum;
+    string m_basename;
 //    vector<SearchHit> searchhits;
     vector<shared_ptr<SearchHit> > searchhits;
 public:
@@ -119,6 +120,12 @@ public:
     explicit PSMInfo(xml_node<>* spectrum_query_node);
     PSMInfo(const PSMInfo & other);
     PSMInfo();
+    PSMInfo(string basenameStr, int scan, int chg=-1):PSMInfo(){
+        start_scan = scan;
+        end_scan = scan;
+        charge = chg;
+        m_basename = basenameStr;
+    }
     bool isDecoy(bool useAlternativeProt=true);
     void printSearchHit(int k);
     string getProtein_UseAlterProteinIfItsNotDecoy(bool useAlternativeProt=true);
@@ -198,43 +205,41 @@ public:
     explicit PeptideProphetParser(string &filename);
     void initialize();
     bool isPSMSignificant(int i);
-
     bool isPSMSignificant(PSMInfo &psminfo );
-
     PeptideProphetParser(const PeptideProphetParser & other);
     ~PeptideProphetParser() override;
-
     string getInputfile() const;
+public:
+    int getPSMNum();
+    // get PSM
+    // The API: user should put charge, scan, and other information into the psminfo object.
+    // If found, return true, and the object psminfo will be refreshed;
+    // If not found, return false, and psminfo is untouched.
+    // input: index, charge, scan, filename, basename
+    // methd:
+    bool getPsmInfo(PSMInfo & psminfo) override;
 
     void getPSMInfobyindex(int i , PSMInfo &psminfo);
-    int getPSMNum();
-
     // to be deleted
     bool getPSMInfobyScan(int scan, PSMInfo & psminfo);
 
-    bool getPSMInfobySpectrumName(string spectrumName, PSMInfo &psminfo);
-    // todo: this can be wrong when there are more than one charge state.
-    // todo: urgent...
     bool getPSMInfobyScanFileName(string filename, int scan, PSMInfo &psminfo);
-
     bool getAllPSMsWithScanFileName(string filename, int scan, vector<PSMInfo> &psms);
-
-
-    bool getPSMInfobyScanChgFilename(string filename, int scan, int chg, PSMInfo &psminfo);
-
-    bool getPsmInfo(PSMInfo & psminfo)override;
-
+    // CALL different charge states
+    bool getPSMInfo(int scan, PSMInfo &psminfo, string &basename);
 
     bool updateGtInfo(SPsmAnnotation &gtinfo) override;
-
-    bool updateGtInfo(string name, int scan, int chg, SPsmAnnotation &gtinfo);
-
-
-    bool updateGtInfoOnSpectrumName(string spectrumName, SPsmAnnotation &gtinfo );
-
     void filter_with_FDR(double fdr_threshold, vector<PSMInfo> &newpsm);
-    void filterWithThreshold(double min_probability_score, vector<PSMInfo> &newpsm);
     double getThresholdForFDR(double fdr_threshold, bool use_iProb);
+private:
+
+    bool getPSMInfobySpectrumName(string spectrumName, PSMInfo &psminfo);
+    // CALL using spectrumName
+    bool getPSMInfo(int scan, int chg, PSMInfo &psminfo, string basename);
+    bool updateGtInfo(string name, int scan, int chg, SPsmAnnotation &gtinfo);
+    bool updateGtInfoOnSpectrumName(string spectrumName, SPsmAnnotation &gtinfo );
+    void filterWithThreshold(double min_probability_score, vector<PSMInfo> &newpsm);
+    string generateSpectrumName(int scan, int chg, const string &basename) const;
 
 };
 

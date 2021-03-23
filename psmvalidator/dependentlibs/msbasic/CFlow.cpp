@@ -1359,6 +1359,7 @@ workOnOneBatch(PeptideProphetParser *ppp, string mzMLsourcefile, DataFile *df, v
                int i, vector<Feature *> *features, vector<vector<double>> *featuretable, shared_ptr<Progress> ps,
                bool fixMz, bool highMassAcc) {
     spdlog::get("A")->trace("Running batch {} from {} to {}", i, batches->at(i - 1), batches->at(i));
+    string name = File::CFile(df->getSourceFileName()).basename;
     for (int j = batches->at(i - 1); j < batches->at(i); j++) {
         ps->increase();
         int idx = index->at(j);
@@ -1367,8 +1368,8 @@ workOnOneBatch(PeptideProphetParser *ppp, string mzMLsourcefile, DataFile *df, v
             spdlog::get("A")->info("Error: spec is null idx = {}", idx);
             return;
         }
-        PSMInfo psmInfo;
-        bool isfound = ppp->getPSMInfobyScanFileName(df->getSourceFileName(),spec->getScanNum(),psmInfo);
+        PSMInfo psmInfo(name,spec->getScanNum());
+        bool isfound = ppp->getPsmInfo(psmInfo);
         get_feature_from_spec(&psmInfo, spec, &(*featuretable)[j], features, idx, mzMLsourcefile, fixMz, highMassAcc);
     }
 }
@@ -1908,6 +1909,14 @@ ExtractFeatures::ExtractFeatures(string pepxmlfile, string validatorModel, strin
 
     m_threadNum = threadNum <= 0 or threadNum > getProperThreads()? getProperThreads(): threadNum;
 }
+void ExtractFeatures::getIndexPairs(DataFile *df, PeptideProphetParser &ppp, vector<pair<int, int>> &indexPair) {
+
+//    for(int i = 0; i < ppp.getPSMNum(); i ++){
+//        PSMInfo psminfo;
+//        ppp.getPSMInfobyindex(i,psminfo);
+//        psminfo.start_scan
+//    }
+}
 
 void ExtractFeatures::getProcessed_i(DataFile *df, PeptideProphetParser &ppp,  vector<int> &index) {
     string debug_peptide;
@@ -2044,14 +2053,24 @@ void ExtractFeatures::run() {
 
 void
 ExtractFeatures::updatePsmTable(PeptideProphetParser &ppp, DataFile *df, const vector<int> &index, CTable &psmtable) const {
+    int mixtureSpectraNum = 0;
     int decoy2targetNum = 0, decoynum=0, targetnum=0;
     unordered_set<string> decoy2target_peptides;
-    bool verbose=false;
+    bool verbose=true;
     for (int j = 0; j < index.size(); j++) {
         int idx = index[j];
         CSpectrum *spec = df->getSpectrum(idx);
         PSMInfo psmInfo;
+        vector<PSMInfo> allPsmInfo;
         bool isfound = ppp.getPSMInfobyScanFileName(df->getSourceFileName(),spec->getScanNum(),psmInfo);
+        bool isfoundAll = ppp.getAllPSMsWithScanFileName(df->getSourceFileName(),spec->getScanNum(),allPsmInfo);
+        if(isfoundAll and allPsmInfo.size()>1){
+            cout << "Warning: more than one PSM found for this scan (Mixture spectra)" << endl;
+            for(auto & eachpsm: allPsmInfo){
+                eachpsm.print();
+            }
+            mixtureSpectraNum ++;
+        }
         string proteinACNum = psmInfo.searchhits.at(0)->m_protein;
         SearchHit &sh0 = *psmInfo.searchhits[0];
 
@@ -2059,7 +2078,6 @@ ExtractFeatures::updatePsmTable(PeptideProphetParser &ppp, DataFile *df, const v
         {
             proteinACNum = psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(m_useAlternativeProtein);
             if(verbose){
-
                 cout << "Protein changed from: "<< sh0.m_protein
                      << " to " << proteinACNum
                      <<" for peptide " << sh0.m_peptide<< endl;
@@ -2089,6 +2107,7 @@ ExtractFeatures::updatePsmTable(PeptideProphetParser &ppp, DataFile *df, const v
          << " Peptides) changed from DECOY to TARGET; Decoy: " << decoynum
          << " Target: " << targetnum << " Total:  "<< index.size()
          << endl;
+    cout << "[Info] " << mixtureSpectraNum << " mixture spectra detected" << endl;
 }
 
 void ExtractFeatures::exportTestingFeature(const vector<Feature *> &features, const string &feature_outfile,
@@ -2108,3 +2127,5 @@ void ExtractFeatures::exportTestingFeature(const vector<Feature *> &features, co
     fout.close();
     cout << "Feature exported to file " << feature_outfile << endl;
 }
+
+

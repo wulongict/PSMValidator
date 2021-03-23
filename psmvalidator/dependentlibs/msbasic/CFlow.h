@@ -183,6 +183,7 @@ class ExtractFeatures : public CFlow {
     string m_output_feature_file;
     char m_delimiter_psm_file;
 private:
+    void getIndexPairs(DataFile *df, PeptideProphetParser &ppp, vector<pair<int, int>> &indexPair);
     void getProcessed_i(DataFile *df, PeptideProphetParser &ppp,  vector<int> &index);
     void updatePsmTable(PeptideProphetParser &ppp, DataFile *df, const vector<int> &index, CTable &psmtable) const;
     void exportTestingFeature(const vector<Feature *> &features, const string &feature_outfile,

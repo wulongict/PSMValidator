@@ -309,6 +309,7 @@ PSMInfo::PSMInfo(xml_node<> *spectrum_query_node):PSMInfo(){
     first_attribute(spectrum_query_node, "spectrum", spectrum);
 
     spectrum = spectrum_query_node->first_attribute("spectrum")->value();
+    m_basename = spectrum; // make the basename the same as spectrum.
     first_attribute(spectrum_query_node,"start_scan", start_scan);
     start_scan = stoi(spectrum_query_node->first_attribute("start_scan")->value(),nullptr);
     first_attribute(spectrum_query_node,"end_scan", end_scan);
@@ -326,7 +327,6 @@ PSMInfo::PSMInfo(xml_node<> *spectrum_query_node):PSMInfo(){
     if(attr){
         retention_time = strtod(attr->value(),nullptr);
     }
-
 
     xml_node<> *first_hit = breadth_first_search("search_hit", spectrum_query_node, false);
     if(first_hit!= nullptr)   {
@@ -346,6 +346,7 @@ PSMInfo::PSMInfo(const PSMInfo &other) {
     charge = other.charge;
     spectrum = other.spectrum;
     searchhits = other.searchhits;
+    m_basename = other.m_basename;
 }
 
 PSMInfo::PSMInfo() {
@@ -356,6 +357,7 @@ PSMInfo::PSMInfo() {
     retention_time = -1;
     charge = -1;
     spectrum = "";
+    m_basename="";
 }
 
 
@@ -868,12 +870,19 @@ int PeptideProphetParser::getPSMNum() {
 }
 
 // todo: is it possible that one scan corresponds to multiple PSM...
+// Warning: DO NOT USE THIS FUNCTION, ONE SPECTRA MIGHT CORRESPODING TO TWO PEPTIDES/PSMs.
 bool PeptideProphetParser::getPSMInfobyScan(int scan, PSMInfo &psminfo) {
     const int cnt = m_scan2psminfoidx.count(scan);
     if (cnt == 0) {
         return false;
     } else if(cnt > 1){
-        cout << "[Warning] One scan corresponds to " << cnt << " PSMs, first one will be used " << endl;
+        cout << "[Warning] One scan corresponds to " << cnt << " PSMs, first one will be used: scan " << scan << endl;
+//        auto v = m_scan2psminfoidx.equal_range(scan);
+//        for(auto x=v.first; x!=v.second; x++){
+//            int k = x->second;
+//            cout << "print -------------PSM " << endl;
+//            m_psm[k].print();
+//        }
     }
     psminfo = m_psm[m_scan2psminfoidx.find(scan)->second];
     return true;
@@ -885,46 +894,63 @@ bool PeptideProphetParser::getPSMInfobySpectrumName(string spectrumName, PSMInfo
 }
 
 bool PeptideProphetParser::getPSMInfobyScanFileName(string filename, int scan, PSMInfo &psminfo) {
-    for(int chg = 1; chg < 7; chg ++)    {
-        bool found = getPSMInfobyScanChgFilename(filename, scan, chg, psminfo);
-        if(found) return true;
-
-    }
-    return false;
+    string name = File::CFile(filename).basename;
+    return getPSMInfo(scan, psminfo, name);
 }
 
-bool PeptideProphetParser::getAllPSMsWithScanFileName(string filename, int scan, vector<PSMInfo> &psms) {
-    bool found =false;
-    int charge_start = 1, charge_end = 7;
-    for(int chg = charge_start; chg <= charge_end; chg ++)    {
-        PSMInfo psminfo;
-        if(getPSMInfobyScanChgFilename(filename, scan, chg, psminfo)) {
-            psms.push_back(psminfo);
-            found = true;
-        }
+// go through charge states 1+ to 7+, once found a valid PSM, stop and return true
+// otherwise, return false
+bool PeptideProphetParser::getPSMInfo(int scan, PSMInfo &psminfo, string &basename) {
+    bool found = false;
+    for(int chg = 1; chg < 7; chg ++)    {
+        found = getPSMInfo(scan, chg, psminfo, basename);
+        if(found) break;
     }
     return found;
 }
 
 bool PeptideProphetParser::getPsmInfo(PSMInfo &psminfo) {
     int scan = psminfo.start_scan, chg = psminfo.charge;
-    string filename = psminfo.spectrum;
-    bool found = getPSMInfobyScanChgFilename(filename, scan, chg, psminfo);
+    string name = psminfo.m_basename;
+    bool found = false;
+    if(chg == -1){
+        found = getPSMInfo(scan, psminfo, name);
+    }else{
+        found = getPSMInfo(scan, chg, psminfo, name);
+    }
     return found;
 }
 
-bool PeptideProphetParser::getPSMInfobyScanChgFilename(string filename, int scan, int chg, PSMInfo &psminfo) {
+bool PeptideProphetParser::getPSMInfo(int scan, int chg, PSMInfo &psminfo, string basename) {
+    string spectrumName = generateSpectrumName(scan, chg, basename);
+    return getPSMInfobySpectrumName(spectrumName,psminfo);
+}
+
+bool PeptideProphetParser::getAllPSMsWithScanFileName(string filename, int scan, vector<PSMInfo> &psms) {
+    bool found =false;
+    int charge_start = 1, charge_end = 7;
     string name = File::CFile(filename).basename;
+    for(int chg = charge_start; chg <= charge_end; chg ++)    {
+        PSMInfo psminfo;
+        if(getPSMInfo(scan, chg, psminfo, name)) {
+            psms.push_back(psminfo);
+            found = true;
+        }
+    }
+    if(psms.size()>1) {
+        cout << "Error: Unexpected number of PSMs "<< psms.size() << "  matched to one scan: " << scan << " of filename: " << filename << endl;
+    }
+    return found;
+}
+
+string PeptideProphetParser::generateSpectrumName(int scan, int chg, const string &basename) const {
     string scanstr = to_string(scan);
-    int digit_len = 5;
+    int digit_len = 5; // this is a magic number.
     if (digit_len > scanstr.length()) {
         scanstr = string(digit_len - scanstr.length(), '0') + scanstr;
     }
-    string spectrumName = name + "." + scanstr + "." + scanstr + "." + to_string(chg); // how about the zeros
-//    if (scan == 6390){
-//        cout << spectrumName << " scan not found" << endl;
-//    }
-    return getPSMInfobySpectrumName(spectrumName,psminfo);
+    string spectrumName = basename + "." + scanstr + "." + scanstr + "." + to_string(chg); // how about the zeros
+    return spectrumName;
 }
 
 bool PeptideProphetParser::updateGtInfo(SPsmAnnotation &gtinfo) {
