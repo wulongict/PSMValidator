@@ -127,7 +127,6 @@ CometPepXMLParser::CometPepXMLParser(string filename) {
     char *  m_buf = new char[len + 1];
     if (nullptr == m_buf ) {
         cout << "Fail to get memory of size " << len << endl;
-
         throw invalid_argument("can not get enought memory");
     }
     long long nsize = fread(m_buf, sizeof(char), len, pfile);
@@ -151,7 +150,7 @@ CometPepXMLParser::CometPepXMLParser(string filename) {
     cout << "[PSM]  Total size of memory taken " << memSize/1024/1024 << " MB" << endl;
 }
 
-CometPepXMLParser::~CometPepXMLParser() {}
+CometPepXMLParser::~CometPepXMLParser() = default;
 
 bool CometPepXMLParser::getPsmInfo(PSMInfo &psminfo) {
     int charge = psminfo.charge;
@@ -166,7 +165,7 @@ bool CometPepXMLParser::getPSMInfobyScanCharge(int scan, int charge, PSMInfo &ps
             cout << "Error: scan=" << scan << " out of range" << endl;
         } else{
             // looking for proper charge state.
-            vector<int> idxlist=m_scan2idxvec[scan];
+            vector<int> idxlist = m_scan2idxvec[scan];
             for(auto i : idxlist){
                 if(psm[i]->charge == charge){
                     psminfo=*psm[i];
@@ -741,11 +740,11 @@ void PeptideProphetParser::export_psm_info(vector<PSMInfo> &psm) {
 }
 
 void PeptideProphetParser::filterWithThreshold(double min_probability_score, vector<PSMInfo> &newpsm) {
-    Progress ps(psm.size());
-    for (int i = 0; i < psm.size(); i++) {
+    Progress ps(m_psm.size());
+    for (int i = 0; i < m_psm.size(); i++) {
         ps.increase();
         if(isPSMSignificant(i))       {
-            newpsm.push_back(psm[i]);
+            newpsm.push_back(m_psm[i]);
         }
     }
 
@@ -822,20 +821,20 @@ void PeptideProphetParser::initialize() {
     fclose(pfile);
     doc.parse<0>(m_buf);    // 0 means default parse flags
     cout << "[Info] start to export: " << endl;
-    export_psm_info(psm);
+    export_psm_info(m_psm);
     cout << "[Info] Finish export" << endl;
-    for(int i = 0 ; i < psm.size(); i ++)   {
+    for(int i = 0 ; i < m_psm.size(); i ++)   {
         // what if one scan exist twice?
 //        if(m_scan2psminfoidx.count(psm[i].start_scan)==1){
 //            int pre_idx = m_scan2psminfoidx.find(psm[i].start_scan)->second;
 //            cout << "duplicate scan found (old): " << pre_idx << "\t" << psm[pre_idx].start_scan << "\t" << psm[pre_idx].charge << endl;
 //            cout << "duplicate scan found (new): " << i << "\t" << psm[i].start_scan << "\t" << psm[i].charge << endl;
 //        }
-        m_scan2psminfoidx.insert(make_pair(psm[i].start_scan, i));
+        m_scan2psminfoidx.insert(make_pair(m_psm[i].start_scan, i));
 //        if(m_scan2psminfoidx.count(psm[i].start_scan)==2){
 //            cout << "which is used?: idx used: " << m_scan2psminfoidx.find(psm[i].start_scan)->second   << endl;
 //        }
-        m_spectrumName2psminfoidx.insert(make_pair(psm[i].spectrum,i));
+        m_spectrumName2psminfoidx.insert(make_pair(m_psm[i].spectrum, i));
     }
 
     m_use_iProb = false;
@@ -847,7 +846,7 @@ void PeptideProphetParser::initialize() {
 }
 
 bool PeptideProphetParser::isPSMSignificant(int i) {
-    PSMInfo &psminfo = psm[i];
+    PSMInfo &psminfo = m_psm[i];
     return isPSMSignificant(psminfo);
 }
 
@@ -861,11 +860,11 @@ string PeptideProphetParser::getInputfile() const {
 }
 
 void PeptideProphetParser::getPSMInfobyindex(int i, PSMInfo &psminfo) {
-    psminfo = psm[i];
+    psminfo = m_psm[i];
 }
 
 int PeptideProphetParser::getPSMNum() {
-    return psm.size();
+    return m_psm.size();
 }
 
 // todo: is it possible that one scan corresponds to multiple PSM...
@@ -876,13 +875,13 @@ bool PeptideProphetParser::getPSMInfobyScan(int scan, PSMInfo &psminfo) {
     } else if(cnt > 1){
         cout << "[Warning] One scan corresponds to " << cnt << " PSMs, first one will be used " << endl;
     }
-    psminfo = psm[m_scan2psminfoidx.find(scan)->second];
+    psminfo = m_psm[m_scan2psminfoidx.find(scan)->second];
     return true;
 }
 
 bool PeptideProphetParser::getPSMInfobySpectrumName(string spectrumName, PSMInfo &psminfo) {
     if (m_spectrumName2psminfoidx.count(spectrumName) == 0) return false;
-    psminfo = psm[m_spectrumName2psminfoidx[spectrumName]];return true;
+    psminfo = m_psm[m_spectrumName2psminfoidx[spectrumName]];return true;
 }
 
 bool PeptideProphetParser::getPSMInfobyScanFileName(string filename, int scan, PSMInfo &psminfo) {
@@ -904,6 +903,13 @@ bool PeptideProphetParser::getAllPSMsWithScanFileName(string filename, int scan,
             found = true;
         }
     }
+    return found;
+}
+
+bool PeptideProphetParser::getPsmInfo(PSMInfo &psminfo) {
+    int scan = psminfo.start_scan, chg = psminfo.charge;
+    string filename = psminfo.spectrum;
+    bool found = getPSMInfobyScanChgFilename(filename, scan, chg, psminfo);
     return found;
 }
 
@@ -989,6 +995,8 @@ bool PeptideProphetParser::updateGtInfoOnSpectrumName(string spectrumName, SPsmA
     }
     return ret;
 }
+
+
 
 mzMLReader::mzMLReader(string filename){
     m_filename = filename; // keep an eye on m_filename in other parsers.

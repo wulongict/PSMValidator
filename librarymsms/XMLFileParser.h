@@ -153,10 +153,8 @@ public:
     virtual ~ICPepXMLParser() = default;
     // get PSM information.
     virtual bool getPsmInfo(PSMInfo &psminfo)=0;
-
 };
 
-// todo: this reader only works for comet result
 class CometPepXMLParser: public ICGtInfoUpdate, public ICPepXMLParser
 {
     string m_filename;
@@ -179,17 +177,16 @@ public:
     void getscoreandpep_mod( int scan, string &peptide, double &searchscore,
                             modification & modinfo, double &parentMZ, int  & charge);
     bool getPsmInfo(PSMInfo &psminfo ) override;
-
 };
 
 // only for comet result
-class PeptideProphetParser:  public ICGtInfoUpdate
+class PeptideProphetParser:  public ICGtInfoUpdate, public ICPepXMLParser
 {
     string m_filename;
     char * m_buf;
     xml_node<> * m_currentNode;
     xml_document<> doc;
-    vector<PSMInfo> psm;
+    vector<PSMInfo> m_psm;
     multimap<int, int> m_scan2psminfoidx;
     map<string, int> m_spectrumName2psminfoidx;
     double m_threshold;
@@ -224,6 +221,8 @@ public:
 
 
     bool getPSMInfobyScanChgFilename(string filename, int scan, int chg, PSMInfo &psminfo);
+
+    bool getPsmInfo(PSMInfo & psminfo)override;
 
 
     bool updateGtInfo(SPsmAnnotation &gtinfo) override;
