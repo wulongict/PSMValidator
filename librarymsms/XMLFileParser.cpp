@@ -12,6 +12,7 @@
 
 #include "XMLFileParser.h"
 #include "Util.h"
+#include "SPsmAnnotation.h"
 #include "PeakList.h"
 #include "../utilities/readpepxml/base64github.h"
 #include "../External/rapidxml-1.13/rapidxml.hpp"

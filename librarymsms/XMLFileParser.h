@@ -11,6 +11,7 @@
 
 #include <zlib.h>
 #include <map>
+#include <numeric>
 #include <memory>
 #include "ICGtInfoUpdate.h"
 
@@ -35,7 +36,6 @@ namespace XMLParser{
     vector<xml_node<>*> find_all_siblings(string node_name, xml_node<> * first_node);
     template<typename T> void first_attribute(xml_node<> * node, string attr_name, T & attr_val);
 };
-#include <numeric>
 class SearchHit{
 public:
     long getMemSize(){

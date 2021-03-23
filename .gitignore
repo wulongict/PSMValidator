@@ -1,3 +1,5 @@
+Makefile
+*.cbp
 External/Makefile
 psmvalidator/Makefile
 psmvalidator/independent/Makefile

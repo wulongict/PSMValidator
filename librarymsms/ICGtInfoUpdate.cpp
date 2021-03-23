@@ -5,6 +5,7 @@
 #include "ICGtInfoUpdate.h"
 #include "ProteomicsDataTypes.h"
 #include "Util.h"
+#include "SPsmAnnotation.h"
 #include <cassert>
 
 
