@@ -1884,3 +1884,227 @@ void resultAnalysis::run() {
     // true FDR vs estimated FDR
     psmtable.saveAs(m_psmfile + ".all", true, ',');
 }
+
+//----------extract features ---
+ExtractFeatures::ExtractFeatures(string pepxmlfile, string validatorModel, string fragmodelscoretype, double minInt,
+                                 bool ghost, int threadNum, string featurelistfile, bool useAlternativeProt,
+                                 string binaryPath):m_delimiter_psm_file(',') {
+
+    m_binaryPath = binaryPath;
+    m_useAlternativeProtein = useAlternativeProt;
+    m_name = "Feature extraction";
+    fixMz = false;
+    m_highMassAcc=true;
+    m_featurelistfile = featurelistfile;
+    m_validatorModelFile = validatorModel;
+    m_pepxmlfile = pepxmlfile;
+    m_fragmodelfile = getfragmodelfile(validatorModel, minInt);;
+    m_fragmodelscoretype = fragmodelscoretype;
+    m_minIntFC = minInt;
+    m_ghost = ghost;
+    m_basename = File::CFile(validatorModel).basename;
+
+    m_output_feature_file = m_pepxmlfile + m_basename + ".feat";
+
+    m_threadNum = threadNum <= 0 or threadNum > getProperThreads()? getProperThreads(): threadNum;
+}
+
+void ExtractFeatures::getProcessed_i(DataFile *df, PeptideProphetParser &ppp,  vector<int> &index) {
+    string debug_peptide;
+    int debug_scan =-1;
+    if (CDebugMode::callDebug()->getMdebug()) {
+        cout << "Please type in debug peptide : " << endl;
+        cin >> debug_peptide;
+        cout << "Debug peptide is : " << debug_peptide << endl;
+        cout << "Please type in debug scan: " << endl;
+        cin >> debug_scan;
+        cout << "Debug scan num is : " << debug_scan << endl;
+        spdlog::get("A")->set_level(spdlog::level::trace);
+    }
+    int skipped_scan_num = 0;
+    for (int i = 0; i < df->getSpectrumNum(); i++) {
+        CSpectrum *spec = df->getSpectrum(i);
+        if (spec->getMSLevel() != 2) {
+            continue;
+        }
+        // MS2
+        int scannum = spec->getScanNum();
+        PSMInfo psmInfo;
+        bool isfound = ppp.getPSMInfobyScanFileName(df->getSourceFileName(),scannum,psmInfo);
+        if (not isfound) {
+            skipped_scan_num++;
+            //cout << scannum << " not found" << endl;
+            continue;
+        }
+
+        string peptide = psmInfo.searchhits[0]->m_modified_peptide;
+        if (CDebugMode::callDebug()->getMdebug()) {
+            if (peptide != debug_peptide) {
+                continue;
+            }
+            if(debug_scan != -1 and scannum!=debug_scan)  {
+                continue;
+            }
+        }
+        index.push_back(i);
+    }
+    cout << skipped_scan_num <<  " MS2 spectra skipped by search engine "<< endl;
+    cout << "Remaining MS2: " << index.size() << endl;
+}
+
+void ExtractFeatures::run() {
+    int found=m_output_feature_file.find_last_of('.');
+    string filebasename ="";
+    if(found == string::npos){
+        // not find
+        filebasename = m_output_feature_file;
+    }else{
+        filebasename = m_output_feature_file.substr(0, found);
+    }
+    cout << "filebasename: " << filebasename << endl;
+    string corresponding_psm = filebasename+".psm";
+    string corresponding_psmtsv = filebasename+".psm.tsv";
+    cout << "Export to two files; " << corresponding_psm << "\t" << corresponding_psmtsv << endl;
+
+    bool alwaysReCreateFeature = true;
+    if (not File::isExist(m_output_feature_file) or alwaysReCreateFeature) {
+        // todo: you do not know whether it is Xinteract exported ... PepXML or not...
+
+
+        vector<Feature *> features = createFeatureVector(m_fragmodelfile,
+                                                         m_ghost, m_minIntFC, m_fragmodelscoretype,
+                                                         m_featurelistfile, m_binaryPath);
+        vector<vector<double>> featuretable;
+        CTable psmtable;
+        vector<string> header = {"filename", "id", "scan", "modpep", "charge", "protein", "ppprob", "iprob"};
+        psmtable.setHeader(header);
+        PeptideProphetParser ppp(m_pepxmlfile);
+        for (auto eachfile : ppp.m_allSourceFiles) {
+            DataFile *df = new DataFile(eachfile, 0, -1);
+
+            vector<int> index;
+            getProcessed_i(df, ppp, index);
+            vector<vector<double>> onefeaturetable(index.size(), vector<double>(features.size(), 0.0));
+            vector<vector<string>> onepsmtable;
+
+            int MinSize = index.size() / m_threadNum + 1;
+            vector<int> batches;
+            for (int i = 0; i < index.size(); i += MinSize) {
+                batches.push_back(i);
+            }
+            batches.push_back(index.size());
+            vector<std::thread *> tasks;
+            shared_ptr<Progress> ps(new Progress(index.size(), "Exporting feature"));
+
+            for (int i = 1; i < batches.size(); i++) {  // there might be multiple source! in ppp
+                spdlog::get("A")->trace("Start batch {}", i);
+                std::thread *t = new std::thread(
+                        std::bind(workOnOneBatch, &ppp, eachfile, df, &index, &batches, i, &features, &onefeaturetable,
+                                  ps, fixMz, m_highMassAcc));
+                if (!t) {
+                    cout << "Wrong!----------------" << endl;
+                }
+                tasks.push_back(t);
+            }
+            for (int i = 0; i < tasks.size(); i++) {
+                if (tasks[i])
+                    tasks[i]->join();
+            }
+            if (CDebugMode::callDebug()->getMdebug()) {
+                for (int i = 0; i < onefeaturetable.size(); i++) {
+                    cout << "Starting row " << i + 1 << endl;
+                    for (int j = 0; j < features.size(); j++) {
+                        cout << features[j]->m_feature_name << ": " << onefeaturetable[i][j] << endl;
+                    }
+                    cout << "Ending row " << i + 1 << endl;
+                }
+            }
+            updatePsmTable(ppp, df, index, psmtable);
+
+            featuretable.insert(featuretable.end(), onefeaturetable.begin(), onefeaturetable.end());
+        }
+
+        exportTestingFeature(features, m_output_feature_file, featuretable);
+
+
+
+        psmtable.saveAs(corresponding_psm, true, ',');
+        psmtable.saveAs(corresponding_psmtsv, true, '\t');
+
+        for (auto x: features) {
+            delete x;
+        }
+    }
+
+//    for (auto x: m_other_steps) {
+//        spdlog::get("A")->info("Running {}", x->getname());
+//        x->run();
+//    }
+}
+
+void
+ExtractFeatures::updatePsmTable(PeptideProphetParser &ppp, DataFile *df, const vector<int> &index, CTable &psmtable) const {
+    int decoy2targetNum = 0, decoynum=0, targetnum=0;
+    unordered_set<string> decoy2target_peptides;
+    bool verbose=false;
+    for (int j = 0; j < index.size(); j++) {
+        int idx = index[j];
+        CSpectrum *spec = df->getSpectrum(idx);
+        PSMInfo psmInfo;
+        bool isfound = ppp.getPSMInfobyScanFileName(df->getSourceFileName(),spec->getScanNum(),psmInfo);
+        string proteinACNum = psmInfo.searchhits.at(0)->m_protein;
+        SearchHit &sh0 = *psmInfo.searchhits[0];
+
+        if(m_useAlternativeProtein and sh0.m_protein!=psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(m_useAlternativeProtein))
+        {
+            proteinACNum = psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(m_useAlternativeProtein);
+            if(verbose){
+
+                cout << "Protein changed from: "<< sh0.m_protein
+                     << " to " << proteinACNum
+                     <<" for peptide " << sh0.m_peptide<< endl;
+            }
+            decoy2targetNum ++;
+            decoy2target_peptides.insert(sh0.m_peptide);
+        }
+        if(psmInfo.isDecoy(m_useAlternativeProtein)){
+            decoynum++;
+        }else{
+            targetnum++;
+        }
+//        psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(), // use proteinnACNum now
+        vector<string> tmp={
+                df->getSourceFileName(),
+                to_string(idx),
+                to_string(spec->m_scanNum),
+                sh0.m_modified_peptide,
+                to_string(psmInfo.charge),
+                proteinACNum,
+                to_string(sh0.m_peptideprophet_prob),
+                to_string(sh0.m_iprophet_prob)
+        };
+        psmtable.addRow(tmp);
+    }
+    cout << "[Info] " << decoy2targetNum <<" PSMs ("<< decoy2target_peptides.size()
+         << " Peptides) changed from DECOY to TARGET; Decoy: " << decoynum
+         << " Target: " << targetnum << " Total:  "<< index.size()
+         << endl;
+}
+
+void ExtractFeatures::exportTestingFeature(const vector<Feature *> &features, const string &feature_outfile,
+                                       const vector<vector<double>> &featuretable) const {
+    ofstream fout(feature_outfile.c_str(), ios_base::out);
+    for (auto x: features) {
+        fout << x->m_feature_name << ",";
+    }
+    fout << "class" << endl;
+
+    for (int i = 0; i < featuretable.size(); i++) {
+        for (int j = 0; j < featuretable[i].size(); j++) {
+            fout << featuretable[i][j] << ",";
+        }
+        fout << "-1" << endl;
+    }
+    fout.close();
+    cout << "Feature exported to file " << feature_outfile << endl;
+}

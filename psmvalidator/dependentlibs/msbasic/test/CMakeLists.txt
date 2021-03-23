@@ -43,6 +43,7 @@ add_executable(testCFlow ../testCFlow.cpp ../CFlow.cpp
 
         ${majorPath}/../librarymsms/DatabaseManager.cpp # Util requires
         ${majorPath}/../librarymsms/Util.cpp
+        ${majorPath}/../librarymsms/SPsmAnnotation.cpp
         )
 message(${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(testCFlow
@@ -54,16 +55,13 @@ target_link_libraries(testCFlow
         z
         dl
         gsl gslcblas
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Release/Release/libgtest.a
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Release/Release/libgtest_main.a
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Release/Release/libspdlog.a
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Release/External/boost1.65.1/build/lib/libboost_system.a
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Release/External/boost1.65.1/build/lib/libboost_filesystem.a
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Release/External/boost1.65.1/build/lib/libboost_iostreams.a
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Release/External/boost1.65.1/build/lib/libboost_program_options.a
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Release/External/boost1.65.1/build/lib/libboost_timer.a
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Release/External/boost1.65.1/build/lib/libboost_chrono.a
-
+        gtest gtest_main spdlog
+        boost_system
+        boost_filesystem
+        boost_iostreams
+        boost_program_options
+        boost_timer
+        boost_chrono
         )
 target_include_directories(testCFlow PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Release/Release)
 target_link_directories(testCFlow PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Release/Release)

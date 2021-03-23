@@ -165,6 +165,37 @@ public:
     void updatePsmTable(PeptideProphetParser &ppp, DataFile *df, const vector<int> &index, CTable &psmtable) const;
 };
 
+class ExtractFeatures : public CFlow {
+    string m_binaryPath;
+    string m_pepxmlfile;
+    string m_fragmodelfile;
+    string m_fragmodelscoretype;
+    double m_minIntFC;
+    int m_threadNum;
+    bool m_ghost;
+    string m_basename;
+    string m_validatorModelFile;
+//    vector<CFlow *> m_other_steps;
+    string m_featurelistfile;
+    bool fixMz;
+    bool m_highMassAcc;
+    bool m_useAlternativeProtein;
+    string m_output_feature_file;
+    char m_delimiter_psm_file;
+private:
+    void getProcessed_i(DataFile *df, PeptideProphetParser &ppp,  vector<int> &index);
+    void updatePsmTable(PeptideProphetParser &ppp, DataFile *df, const vector<int> &index, CTable &psmtable) const;
+    void exportTestingFeature(const vector<Feature *> &features, const string &feature_outfile,
+                              const vector<vector<double>> &featuretable) const;
+public:
+
+    ExtractFeatures(string pepxmlfile, string validatorModel, string fragmodelscoretype, double minInt,
+                    bool ghost, int threadNum, string featurelistfile, bool useAlternativeProt,
+                    string binaryPath);
+
+    void run();
+};
+
 void plot_FDR_curve(string outputfilename, string title, vector<tuple<double, double>> &fdr_counts);
 void plot_ROC_with_score(CTable &psmtable, int column, string scoreName, string outprefix, bool onlytarget, HTMLReporter *reporter);
 

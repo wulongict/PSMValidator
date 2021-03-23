@@ -36,7 +36,8 @@ set(SOURCE_FILES
             ../librarymsms/XMLFileParser.cpp # CFlow requires
 
         ../librarymsms/DatabaseManager.cpp # Util requires
-            ../librarymsms/Util.cpp 
+            ../librarymsms/Util.cpp
+                ../librarymsms/SPsmAnnotation.cpp
         )
 
 set(Boost_USE_STATIC_LIBS ON)
@@ -58,6 +59,8 @@ target_link_libraries(psmvalidator
 target_link_directories(psmvalidator PRIVATE ${CMAKE_BINARY_DIR}/Release)
 
 add_dependencies(psmvalidator ranger comet   linear_static  spdlog boost)
+
+add_subdirectory(dependentlibs/msbasic/test)
 
 install(TARGETS psmvalidator ranger comet  DESTINATION bin)
 install(FILES psmvalidator.conf DESTINATION param)

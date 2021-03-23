@@ -21,11 +21,32 @@ TEST(ROC_,AUC_){
     negativeScores.push_back(0.2);
     positiveScores.push_back(0.2);
     negativeScores.push_back(0.3);
-    cout << "Hi" << endl;
+    //
+    //  pos     0.1     0.2
+    //  neg             0.2     0.3
+    //  --------------------------------
+    //  tpr    0.5      1.0     1.0
+    //  fpr    0        0.5     1.0
+    //  -------------------------------
+    //
+    /* AUC 0.875
+     * ROC curve
+     *                0.5______1.0
+     *      1.0 |   /   |      |
+     *          |_/     |      |
+     *      0.5 |       |      |
+     *          |       |      |
+     *        0  -----------------
+     *          0     0.5     1.0
+     * */
+    //
+    //
+
+
     CROCPlot roc( negativeScores,positiveScores),rocSwitch( positiveScores,negativeScores);
-    cout << "hello" << endl;
-    cout << rocSwitch.getAUC() << endl;
-    cout << roc.getAUC() << endl;
-    cout << "Hello" << endl;
+
+    ASSERT_EQ(roc.getAUC(),7/8.0);
+    ASSERT_EQ(rocSwitch.getAUC(),1/8.0);
+
 
 }
