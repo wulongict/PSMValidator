@@ -12,7 +12,7 @@
 
 #include "XMLFileParser.h"
 #include "Util.h"
-#include "SPsmAnnotation.h"
+#include "CPSMAnnotation.h"
 #include "PeakList.h"
 #include "../utilities/readpepxml/base64github.h"
 #include "../External/rapidxml-1.13/rapidxml.hpp"
@@ -153,6 +153,12 @@ CometPepXMLParser::CometPepXMLParser(string filename) {
 
 CometPepXMLParser::~CometPepXMLParser() {}
 
+bool CometPepXMLParser::getPsmInfo(PSMInfo &psminfo) {
+    int charge = psminfo.charge;
+    int scan = psminfo.start_scan;
+    bool found = getPSMInfobyScanCharge(scan, charge, psminfo);
+    return found;
+}
 bool CometPepXMLParser::getPSMInfobyScanCharge(int scan, int charge, PSMInfo &psminfo) {
     bool ret = false;
     if(m_use_scan2idxvec){
@@ -180,6 +186,8 @@ bool CometPepXMLParser::getPSMInfobyScanCharge(int scan, int charge, PSMInfo &ps
 // Attention: this function assumes that scan numbers are sorted ascendingly
 //
 bool CometPepXMLParser::getPSMInfobyScan(int scan, PSMInfo &psminfo) {
+    // WARNING: DO NOT USE THIS FUNCTION
+    cout << "[Warning] DO NOT USE THIS FUNCTION: DEPRECATED" << endl;
     bool found = false;
     int low = 0, high = psm.size();
     while(low < high){

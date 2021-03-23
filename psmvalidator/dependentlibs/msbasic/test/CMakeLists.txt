@@ -43,7 +43,7 @@ add_executable(testCFlow ../testCFlow.cpp ../CFlow.cpp
 
         ${majorPath}/../librarymsms/DatabaseManager.cpp # Util requires
         ${majorPath}/../librarymsms/Util.cpp
-        ${majorPath}/../librarymsms/SPsmAnnotation.cpp
+        ${majorPath}/../librarymsms/CPSMAnnotation.cpp
         )
 message(${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(testCFlow

@@ -1,33 +1,16 @@
 //
-// Created by wulong on 3/15/21.
+// Created by wulong on 3/10/21.
 //
 
-#ifndef PSMVALIDATOR_SABCDEFGH_H
-#define PSMVALIDATOR_SABCDEFGH_H
+#ifndef MYTOOL_CPSMANNOTATION_H
+#define MYTOOL_CPSMANNOTATION_H
 
-
-#include <iostream>
-#include <thread>
-#include <algorithm>
-#include <chrono>
-#include <cfloat>
-#include <cstring>
-#include <fstream>
-#include <iomanip>
-#include <sstream>
-#include <cmath>
-#include <map>
-#include <numeric>
+#include "Util.h"
+#include <string>
 #include <vector>
-#include <iterator>
-
 using namespace std;
 
-
 class CDBEntry;
-
-
-
 struct SPsmAnnotation {
     // new members
     long idx;
@@ -99,8 +82,23 @@ struct SPsmAnnotation {
     };
 
 
-    IdxDistPair  neighborStrToIdxDistPair( char delimitor_1 = ';', char delimitor_2='@') const;
+    IdxDistPair  neighborStrToIdxDistPair( char delimitor_1 = ';', char delimitor_2='@') const{
+        IdxDistPair idxDistPairs;
+        if(m_neighbors!="NULL"){
+            vector<string> distId;
+            split_string(m_neighbors, distId, delimitor_1);
+            for(const auto& eachDistId: distId) {
+                vector<string> tmp;
+                split_string(eachDistId, tmp, delimitor_2);
+                long newId = strtol(tmp[1].c_str(),nullptr, 10);
+                double newDist = strtod(tmp[0].c_str(),nullptr);
+                idxDistPairs.m_data.push_back(IdxDistPair::idxDist{newDist, newId});
+            }
+        }
+        return idxDistPairs;
+    }
 };
+string getmodificationfrompeptidestring(string peptidestr, modification &mod);
 void getmodificationfrompeptidestring(string peptidestr, SPsmAnnotation &gtinfo);
 
-#endif //PSMVALIDATOR_SABCDEFGH_H
+#endif //MYTOOL_CPSMANNOTATION_H

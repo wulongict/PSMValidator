@@ -1,26 +1,12 @@
 //
-// Created by wulong on 3/15/21.
+// Created by wulong on 3/10/21.
 //
 
-#include "SPsmAnnotation.h"
-#include <spdlog/spdlog.h>
-#include <algorithm>
-#include <utility>
-#include <vector>
-#include <cmath>
-#include <iomanip>
-#include <iostream>
-#include <iterator>
-#include <ctime>
+#include "CPSMAnnotation.h"
 #include "DatabaseManager.h"
-#include "Util.h"
-#include "PeakList.h"
-using namespace std;
-
 
 SPsmAnnotation::SPsmAnnotation() {
     initMembers();
-
 }
 
 void SPsmAnnotation::initMembers() {
@@ -69,7 +55,6 @@ void SPsmAnnotation::initWithRow(CDBEntry &results) {
     cterm_mass = results.getFloat("CTERM",0);
     nterm_mass = results.getFloat("NTERM",0);
 
-
     modificationstr = results.get("MODIFICATION",0);
     // gtrow.toString(CSqlGtTableRow::MODIFICATION);
     precursormass = results.getFloat("PRECURSOR",0);
@@ -100,15 +85,12 @@ string SPsmAnnotation::getModifiedPeptide(bool verbose) const{
     if(fabs(nterm_mass) < EPSILON ) // nterm_mass == 0
     {
         // no nterm modification
-    }
-    else
-    {
+    } else {
         // there is nterm modification
         oss << "n["<< std::fixed << std::setprecision(0) << nterm_mass << "]";
     }
     map<int,double> pos_mass;
-    if(modificationstr != "UNMODIFIED")
-    {
+    if(modificationstr != "UNMODIFIED")    {
         vector<string> mod;
         split_string(modificationstr,mod,'|');
 
@@ -128,12 +110,9 @@ string SPsmAnnotation::getModifiedPeptide(bool verbose) const{
     {
         if(verbose)cout << "dictionary has key: " << pos_mass.count(j+1) << endl;
         oss << peptideseq[j];
-        if(pos_mass.count(j+1)==0)
-        {
+        if(pos_mass.count(j+1)==0)        {
             // not modified, do nothing
-        }
-        else
-        {
+        }        else        {
             oss << "[" << std::fixed << std::setprecision(0) << pos_mass[j+1] << "]";
         }
     }
@@ -243,22 +222,6 @@ ostream &operator<<(ostream &out, const SPsmAnnotation &gt) {
 
 void SPsmAnnotation::setCollisionEnergy(string collisionEnergy) {
     m_collision_energy = collisionEnergy;
-}
-
-SPsmAnnotation::IdxDistPair SPsmAnnotation::neighborStrToIdxDistPair(char delimitor_1, char delimitor_2) const {
-    IdxDistPair idxDistPairs;
-    if(m_neighbors!="NULL"){
-        vector<string> distId;
-        split_string(m_neighbors, distId, delimitor_1);
-        for(const auto& eachDistId: distId) {
-            vector<string> tmp;
-            split_string(eachDistId, tmp, delimitor_2);
-            long newId = strtol(tmp[1].c_str(),nullptr, 10);
-            double newDist = strtod(tmp[0].c_str(),nullptr);
-            idxDistPairs.m_data.push_back(IdxDistPair::idxDist{newDist, newId});
-        }
-    }
-    return idxDistPairs;
 }
 
 

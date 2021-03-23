@@ -147,9 +147,17 @@ public:
     void parse_precursorinfo( xml_node<> *spec_node);
 };
 
+class ICPepXMLParser{
+public:
+    ICPepXMLParser() =default;
+    virtual ~ICPepXMLParser() = default;
+    // get PSM information.
+    virtual bool getPsmInfo(PSMInfo &psminfo)=0;
+
+};
 
 // todo: this reader only works for comet result
-class CometPepXMLParser: public ICGtInfoUpdate
+class CometPepXMLParser: public ICGtInfoUpdate, public ICPepXMLParser
 {
     string m_filename;
 //    char * m_buf;
@@ -170,6 +178,7 @@ public:
     bool updateGtInfo(SPsmAnnotation &gtinfo) override;
     void getscoreandpep_mod( int scan, string &peptide, double &searchscore,
                             modification & modinfo, double &parentMZ, int  & charge);
+    bool getPsmInfo(PSMInfo &psminfo ) override;
 
 };
 

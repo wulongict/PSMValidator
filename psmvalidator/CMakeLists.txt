@@ -37,7 +37,7 @@ set(SOURCE_FILES
 
         ../librarymsms/DatabaseManager.cpp # Util requires
             ../librarymsms/Util.cpp
-                ../librarymsms/SPsmAnnotation.cpp
+        ../librarymsms/CPSMAnnotation.cpp
         )
 
 set(Boost_USE_STATIC_LIBS ON)
