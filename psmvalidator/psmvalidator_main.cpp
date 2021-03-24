@@ -87,6 +87,8 @@ boost::program_options::variables_map getParam(int argc, char *argv[]) {
              "the feature list file .")
             ("writeValidatorModel", po::value<string>()->default_value("psmvalidatorRFmodel.forest"),
              "the file name of validator model; used when trainValidator parameter is set as true; the file extension must be .forest")
+            ("featureXtractionHitRank", po::value<int>()->default_value(0),
+             "the hit ranking: 0,1,2,3,4 used for feature extraction. default: 0, the top ranking peptide is used.")
 
             // The Ranger: Random Forest for PSM score ============================================
             ("rangerbinary", po::value<string>()->default_value("/data/wulong/bitbucket/codejam/tools/cmake-build-release/Release/ranger"),
@@ -217,6 +219,7 @@ CFlow *CreateFlow(int argc, char *argv[]) {
     int mtry = vm.at("mtry").as<int>();
     int ntree = vm.at("ntree").as<int>();
     int maxDepth = vm.at("maxDepthAllowed").as<int>();
+    int hitrank = vm.at("featureXtractionHitRank").as<int>();
     bool useAternativeProt = vm.at("useAlternativeProt").as<bool>();
 
     if (fragPatternFileName.empty()) {
@@ -297,8 +300,11 @@ CFlow *CreateFlow(int argc, char *argv[]) {
 
         string pepxmlfilename = inputfile;
         //
-        ptr = new ExtractFeatures(pepxmlfilename, rfModelRead, scoretype, minIntensityFC, use_ghost_peak, threadNum,
-                                  featurelistfile, useAternativeProt, binaryPath);
+//        ptr = new ExtractFeatures(pepxmlfilename, rfModelRead, scoretype, minIntensityFC, use_ghost_peak, threadNum,
+//                                  featurelistfile, useAternativeProt, binaryPath);
+        ptr = new ExtractFeaturesFromPepXML(pepxmlfilename, rfModelRead, scoretype, minIntensityFC, use_ghost_peak,
+                                            threadNum,
+                                            featurelistfile, useAternativeProt, binaryPath, hitrank);
     }else if (taskname == "plot") {
         // in this case, the inputfile is pepxml file
         shared_ptr<CTruth> truth = CreateTruth(truthFile, truthmethod);

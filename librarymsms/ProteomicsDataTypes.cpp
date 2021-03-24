@@ -334,6 +334,7 @@ shared_ptr<ICFileParser> FileParserFactory(string extension) {
     }
 }
 
+// Warning: using start, end could break the indexing system. ms2idx, idx
 DataFile::DataFile(const string& filename, int start, int end) {
     if(end < start)    {
         //cout << "Warning: invalid range [" << start << ", " << end << "] changed to [0, " <<INT_MAX << "]" << endl;
@@ -354,6 +355,11 @@ DataFile::DataFile(const string& filename, int start, int end) {
         cout << "[Error] File format error! ext = " << ext << endl;
     }
     printSummary();
+    for(int i = 0; i < getSpectrumNum(); i ++){
+
+        int scan = getSpectrum(i)->getScanNum();
+        m_Scan_to_idx[scan]=i;
+    }
 }
 
 DataFile::~DataFile() {
@@ -1219,6 +1225,18 @@ int DataFile::getIdx(int ms2idx) {
         }
     }
     return m_ms2idx_to_idx[ms2idx];
+}
+
+CSpectrum *DataFile::getSpectrumByScan(int scan) {
+
+    return getSpectrum(getIdxByScan(scan));
+}
+
+int DataFile::getIdxByScan(int scan) {
+    if(m_Scan_to_idx.count(scan)==0){
+        cout << "Error: Scan " << scan << " not found in current data file" << endl;
+    }
+    return m_Scan_to_idx[scan];
 }
 
 

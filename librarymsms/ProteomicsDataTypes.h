@@ -274,11 +274,14 @@ class DataFile {
     vector<CSpectrum *> m_Spectra;
     string m_sourcefile;
     map<int, int> m_ms2idx_to_idx;
+    map<int, int> m_Scan_to_idx;
 public:
     DataFile(const string& filename, int start, int end);
     ~DataFile();
     string getSourceFileName();
     CSpectrum *getSpectrum(long i);
+    CSpectrum * getSpectrumByScan(int scan);
+    int getIdxByScan(int scan);
     void print(int specnum);
     vector<PeakList *> toPeakList(double localMaxHalfWidth, int msLevel, bool remove_precursor, long start_spec_id=0, long end_spec_id=-1);
 

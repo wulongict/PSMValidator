@@ -109,11 +109,10 @@ public:
     double precursorNeutMass;
     int start_scan;
     int end_scan;
-    int index;
+    int index; // index in pepxml
     int charge;
     string spectrum;
     string m_basename;
-//    vector<SearchHit> searchhits;
     vector<shared_ptr<SearchHit> > searchhits;
 public:
     void print();
@@ -158,8 +157,14 @@ class ICPepXMLParser{
 public:
     ICPepXMLParser() =default;
     virtual ~ICPepXMLParser() = default;
+
     // get PSM information.
     virtual bool getPsmInfo(PSMInfo &psminfo)=0;
+    virtual int getPsmNum() = 0;
+    virtual void getPSMInfobyindex(int i , PSMInfo &psminfo) = 0;
+    virtual pair<int, int> getIndexRange(string filename) = 0;
+    virtual vector<string> getAllSoruceFiles()= 0 ;
+
 };
 
 class CometPepXMLParser: public ICGtInfoUpdate, public ICPepXMLParser
@@ -170,23 +175,33 @@ class CometPepXMLParser: public ICGtInfoUpdate, public ICPepXMLParser
 //    xml_document<> doc;
     vector<shared_ptr<PSMInfo>> psm;
     //vector<PSMInfo> psm;
+    map<int,vector<int>> m_scan2idxvec;
+    multimap<int, int> m_scan2psminfoidx;
+    map<string, int> m_spectrumName2psminfoidx;
+    bool m_use_scan2idxvec;
 
     void export_psm_info(vector<shared_ptr<PSMInfo>> & psm,xml_document<> &doc);
-    map<int,vector<int>> m_scan2idxvec;
-    bool m_use_scan2idxvec;
 public:
+    map<string, pair<int, int>> m_filename2indeRange;
+    vector<string> m_allSourceFiles;
+    bool getPsmInfo(PSMInfo &psminfo ) override;
+    int getPsmNum()override;
+    pair<int, int> getIndexRange(string filename) override;
+    vector<string> getAllSoruceFiles() override;
     bool getPSMInfobyScan(int scan, PSMInfo &psminfo);
     bool getPSMInfobyScanCharge(int scan, int charge, PSMInfo &psminfo);
+    void getPSMInfobyindex(int i , PSMInfo &psminfo);
+
     explicit CometPepXMLParser(string filename);
+    ~CometPepXMLParser() ;
+
     void exportToTXT(string filename);
-    ~CometPepXMLParser() override;
     bool updateGtInfo(SPsmAnnotation &gtinfo) override;
     void getscoreandpep_mod( int scan, string &peptide, double &searchscore,
                             modification & modinfo, double &parentMZ, int  & charge);
-    bool getPsmInfo(PSMInfo &psminfo ) override;
 };
 
-// only for comet result
+// Support PeptideProphet or iProphet results
 class PeptideProphetParser:  public ICGtInfoUpdate, public ICPepXMLParser
 {
     string m_filename;
@@ -197,42 +212,36 @@ class PeptideProphetParser:  public ICGtInfoUpdate, public ICPepXMLParser
     multimap<int, int> m_scan2psminfoidx;
     map<string, int> m_spectrumName2psminfoidx;
     double m_threshold;
-    double m_use_iProb;
+    bool m_use_iProb;
     void export_psm_info(vector<PSMInfo> & psm);
+    map<string, pair<int, int>> m_filename2indeRange;
+
 public:
-    string m_sourcefile;
     vector<string> m_allSourceFiles;
     explicit PeptideProphetParser(string &filename);
     void initialize();
     bool isPSMSignificant(int i);
     bool isPSMSignificant(PSMInfo &psminfo );
     PeptideProphetParser(const PeptideProphetParser & other);
-    ~PeptideProphetParser() override;
+    ~PeptideProphetParser() ;
     string getInputfile() const;
 public:
-    int getPSMNum();
-    // get PSM
-    // The API: user should put charge, scan, and other information into the psminfo object.
-    // If found, return true, and the object psminfo will be refreshed;
-    // If not found, return false, and psminfo is untouched.
-    // input: index, charge, scan, filename, basename
-    // methd:
+    int getPsmNum();
+    vector<string> getAllSoruceFiles() override;
+    pair<int, int> getIndexRange(string filename) override;
     bool getPsmInfo(PSMInfo & psminfo) override;
 
     void getPSMInfobyindex(int i , PSMInfo &psminfo);
-    // to be deleted
-    bool getPSMInfobyScan(int scan, PSMInfo & psminfo);
-
+    bool getPSMInfobyScan(int scan, PSMInfo & psminfo);  // TO BE DELETED
     bool getPSMInfobyScanFileName(string filename, int scan, PSMInfo &psminfo);
     bool getAllPSMsWithScanFileName(string filename, int scan, vector<PSMInfo> &psms);
-    // CALL different charge states
-    bool getPSMInfo(int scan, PSMInfo &psminfo, string &basename);
 
     bool updateGtInfo(SPsmAnnotation &gtinfo) override;
     void filter_with_FDR(double fdr_threshold, vector<PSMInfo> &newpsm);
     double getThresholdForFDR(double fdr_threshold, bool use_iProb);
 private:
-
+    // CALL different charge states
+    bool getPSMInfo(int scan, PSMInfo &psminfo, string &basename);
     bool getPSMInfobySpectrumName(string spectrumName, PSMInfo &psminfo);
     // CALL using spectrumName
     bool getPSMInfo(int scan, int chg, PSMInfo &psminfo, string basename);
@@ -242,6 +251,8 @@ private:
     string generateSpectrumName(int scan, int chg, const string &basename) const;
 
 };
+
+ICPepXMLParser *createPepXML(string filename);
 
 // todo write a mzML reader here
 class mzMLReader

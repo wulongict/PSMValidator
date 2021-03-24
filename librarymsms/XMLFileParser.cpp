@@ -92,14 +92,28 @@ void XMLParser::first_attribute(xml_node<> *node, string attr_name, T &attr_val)
 }
 
 void CometPepXMLParser::export_psm_info(vector<shared_ptr<PSMInfo>> &psm,xml_document<> &doc) {
-    string keywords = "spectrum_query";
-    m_currentNode = breadth_first_search(keywords, &doc, false);
-    vector<xml_node<> *> psm_nodes = find_all_siblings("spectrum_query", m_currentNode);
-    cout << "[Info] PSMs found:" << psm_nodes.size() << endl;
-    Progress ps(psm_nodes.size(), "Parsing spectrum in CometPepXML file");
-    for (auto spectrum_query_node: psm_nodes) {
-        ps.increase();
-        psm.push_back(make_shared<PSMInfo>(spectrum_query_node));
+    // get the source files.
+    m_currentNode = breadth_first_search("msms_run_summary", &doc, false);
+    vector<xml_node<> *> sourcefileNodes = find_all_siblings("msms_run_summary", m_currentNode);
+
+
+    for (auto &x: sourcefileNodes) {
+        string newfile = x->first_attribute("base_name")->value();
+        newfile += x->first_attribute("raw_data")->value();
+        m_allSourceFiles.push_back(newfile);
+        spdlog::get("A")->info("Get source fileanme: {}", newfile);
+
+        string keywords = "spectrum_query";
+        m_currentNode = breadth_first_search(keywords, &doc, false);
+        vector<xml_node<> *> psm_nodes = find_all_siblings("spectrum_query", m_currentNode);
+//        cout << "[Info] PSMs found:" << psm_nodes.size() << endl;
+        Progress ps(psm_nodes.size(), "Parsing spectrum in CometPepXML file");
+        for (auto spectrum_query_node: psm_nodes) {
+            ps.increase();
+            psm.push_back(make_shared<PSMInfo>(spectrum_query_node));
+        }
+
+        m_filename2indeRange[newfile]=make_pair(psm.size()-psm_nodes.size(), psm.size());
     }
     for(int i = 0; i < psm.size(); i ++)
     {
@@ -142,6 +156,20 @@ CometPepXMLParser::CometPepXMLParser(string filename) {
         doc.clear();
         cout << "[Info] buffer released====released" << endl;
 
+        for(int i = 0 ; i < psm.size(); i ++)   {
+            // what if one scan exist twice?
+//        if(m_scan2psminfoidx.count(psm[i].start_scan)==1){
+//            int pre_idx = m_scan2psminfoidx.find(psm[i].start_scan)->second;
+//            cout << "duplicate scan found (old): " << pre_idx << "\t" << psm[pre_idx].start_scan << "\t" << psm[pre_idx].charge << endl;
+//            cout << "duplicate scan found (new): " << i << "\t" << psm[i].start_scan << "\t" << psm[i].charge << endl;
+//        }
+            m_scan2psminfoidx.insert(make_pair(psm[i]->start_scan, i));
+//        if(m_scan2psminfoidx.count(psm[i].start_scan)==2){
+//            cout << "which is used?: idx used: " << m_scan2psminfoidx.find(psm[i].start_scan)->second   << endl;
+//        }
+            m_spectrumName2psminfoidx.insert(make_pair(psm[i]->spectrum, i));
+        }
+
     }
 
     delete[] m_buf;
@@ -150,13 +178,15 @@ CometPepXMLParser::CometPepXMLParser(string filename) {
     cout << "[PSM]  Total size of memory taken " << memSize/1024/1024 << " MB" << endl;
 }
 
-CometPepXMLParser::~CometPepXMLParser() = default;
+CometPepXMLParser::~CometPepXMLParser() {
+    cout << "[Info] calling " << __FUNCTION__  << endl;
+};
 
 bool CometPepXMLParser::getPsmInfo(PSMInfo &psminfo) {
     int charge = psminfo.charge;
     int scan = psminfo.start_scan;
-    bool found = getPSMInfobyScanCharge(scan, charge, psminfo);
-    return found;
+    return getPSMInfobyScanCharge(scan, charge, psminfo);
+
 }
 bool CometPepXMLParser::getPSMInfobyScanCharge(int scan, int charge, PSMInfo &psminfo) {
     bool ret = false;
@@ -276,6 +306,19 @@ void CometPepXMLParser::getscoreandpep_mod(int scan, string &peptide, double &se
     }
 }
 
+int CometPepXMLParser::getPsmNum() {return psm.size();}
+
+void CometPepXMLParser::getPSMInfobyindex(int i, PSMInfo &psminfo) {
+    psminfo= *psm[i];
+}
+
+pair<int, int> CometPepXMLParser::getIndexRange(string filename) {
+    return m_filename2indeRange[filename];
+}
+
+vector<string> CometPepXMLParser::getAllSoruceFiles() {
+    return m_allSourceFiles;
+}
 
 
 void PSMInfo::print() {
@@ -707,6 +750,7 @@ PeptideProphetParser::PeptideProphetParser(string &filename) {
 }
 
 PeptideProphetParser::~PeptideProphetParser() {
+    cout << "[Info] calling " << __FUNCTION__  << endl;
     delete[] m_buf;
 }
 
@@ -715,8 +759,7 @@ PeptideProphetParser::~PeptideProphetParser() {
 void PeptideProphetParser::export_psm_info(vector<PSMInfo> &psm) {
     m_currentNode = breadth_first_search("msms_run_summary", &doc, false);
     vector<xml_node<> *> sourcefileNodes = find_all_siblings("msms_run_summary", m_currentNode);
-    m_sourcefile = m_currentNode->first_attribute("base_name")->value();
-    m_sourcefile += m_currentNode->first_attribute("raw_data")->value();
+
 
     for (auto &x: sourcefileNodes) {
         string newfile = x->first_attribute("base_name")->value();
@@ -736,7 +779,7 @@ void PeptideProphetParser::export_psm_info(vector<PSMInfo> &psm) {
             ps.increase();
             psm.emplace_back(y);
         }
-
+        m_filename2indeRange[newfile]=make_pair(psm.size()-spectrum_queries.size(), psm.size());
     }
     cout << "[Info] " << psm.size() << " PSMs extracted from input file" << endl;
 }
@@ -865,10 +908,6 @@ void PeptideProphetParser::getPSMInfobyindex(int i, PSMInfo &psminfo) {
     psminfo = m_psm[i];
 }
 
-int PeptideProphetParser::getPSMNum() {
-    return m_psm.size();
-}
-
 // todo: is it possible that one scan corresponds to multiple PSM...
 // Warning: DO NOT USE THIS FUNCTION, ONE SPECTRA MIGHT CORRESPODING TO TWO PEPTIDES/PSMs.
 bool PeptideProphetParser::getPSMInfobyScan(int scan, PSMInfo &psminfo) {
@@ -888,16 +927,19 @@ bool PeptideProphetParser::getPSMInfobyScan(int scan, PSMInfo &psminfo) {
     return true;
 }
 
+// input: SpectrumName == SCAN, CHARGE, FILENAME
 bool PeptideProphetParser::getPSMInfobySpectrumName(string spectrumName, PSMInfo &psminfo) {
     if (m_spectrumName2psminfoidx.count(spectrumName) == 0) return false;
     psminfo = m_psm[m_spectrumName2psminfoidx[spectrumName]];return true;
 }
 
+// input: SCAN, FILENAME
 bool PeptideProphetParser::getPSMInfobyScanFileName(string filename, int scan, PSMInfo &psminfo) {
     string name = File::CFile(filename).basename;
     return getPSMInfo(scan, psminfo, name);
 }
 
+// input: SCAN, FILENAME
 // go through charge states 1+ to 7+, once found a valid PSM, stop and return true
 // otherwise, return false
 bool PeptideProphetParser::getPSMInfo(int scan, PSMInfo &psminfo, string &basename) {
@@ -909,6 +951,12 @@ bool PeptideProphetParser::getPSMInfo(int scan, PSMInfo &psminfo, string &basena
     return found;
 }
 
+
+// The API: user should put charge, scan, and other information into the psminfo object.
+// If found, return true, and the object psminfo will be refreshed;
+// If not found, return false, and psminfo is untouched.
+// input: index, charge, scan, filename, basename
+// methd:
 bool PeptideProphetParser::getPsmInfo(PSMInfo &psminfo) {
     int scan = psminfo.start_scan, chg = psminfo.charge;
     string name = psminfo.m_basename;
@@ -921,6 +969,7 @@ bool PeptideProphetParser::getPsmInfo(PSMInfo &psminfo) {
     return found;
 }
 
+// PRIVATE
 bool PeptideProphetParser::getPSMInfo(int scan, int chg, PSMInfo &psminfo, string basename) {
     string spectrumName = generateSpectrumName(scan, chg, basename);
     return getPSMInfobySpectrumName(spectrumName,psminfo);
@@ -1022,6 +1071,17 @@ bool PeptideProphetParser::updateGtInfoOnSpectrumName(string spectrumName, SPsmA
     return ret;
 }
 
+int PeptideProphetParser::getPsmNum() {
+    return m_psm.size();
+}
+
+vector<string> PeptideProphetParser::getAllSoruceFiles() {
+    return m_allSourceFiles;
+}
+
+pair<int, int> PeptideProphetParser::getIndexRange(string filename) {
+    return m_filename2indeRange[filename];
+}
 
 
 mzMLReader::mzMLReader(string filename){
@@ -1289,7 +1349,7 @@ double get_iprophet_prob(SearchHit &sh) {
 // and this is so wrong!!!??
 void extract_pep_prob(vector<double> &tProbs, vector<double> &dProbs, PeptideProphetParser &ppp,
                       double (*getscore)(SearchHit &), bool useAlternativeProt) {
-    int num = ppp.getPSMNum();
+    int num = ppp.getPsmNum();
     for (int i = 0; i < num; i++) {
         PSMInfo psm;
         ppp.getPSMInfobyindex(i, psm);
@@ -1308,6 +1368,23 @@ void extract_pep_prob(vector<double> &tProbs, vector<double> &dProbs, PeptidePro
         }
     }
     cout << "Done data extraction " << endl;
+}
+
+// the pointer should be released by the caller.
+ICPepXMLParser *createPepXML(string filename) {
+    if(filename.find(".pep.xml")==string::npos){
+        cout << "file with wrong format. " << filename << endl;
+        return nullptr;
+    } else{
+        if(filename.find("interact-")==string::npos){
+            // not by xinteract
+            cout << "COMET PepXML detected" << endl;
+            return new  CometPepXMLParser(filename);
+        } else{
+            cout << "XINTERACT PepXML detected" << endl;
+            return new PeptideProphetParser(filename);
+        }
+    }
 }
 
 // the two function below are the same.

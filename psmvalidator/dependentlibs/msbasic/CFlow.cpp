@@ -994,7 +994,8 @@ void plot_FDR_curve(string outputfilename, string title, vector<tuple<double, do
 std::mutex mtx;
 
 void get_feature_from_spec(PSMInfo *psmInfo, CSpectrum *spec, vector<double> *OneSpecFeature, vector<Feature *> *features,
-                      int idx, string mzMLsourcefile, const bool fixMz, bool highMassAcc) {
+                      int idx, string mzMLsourcefile, const bool fixMz, bool highMassAcc, int hitrank=0) {
+
     SpectraSTPeakList *specpkl = new SpectraSTPeakList(1.0, 1);
     string fragType=highMassAcc? "HCD":"CID";
 
@@ -1013,7 +1014,12 @@ void get_feature_from_spec(PSMInfo *psmInfo, CSpectrum *spec, vector<double> *On
         specpkl->insert(mz, intensity, "", "");
     }
 
-    string modified_peptide = psmInfo->searchhits[0]->m_modified_peptide;
+    if(psmInfo->searchhits.size()<=hitrank){
+        cout << "the " << hitrank << "-th peptide is not found: total candiates: " << psmInfo->searchhits.size() << endl;
+        delete specpkl;
+        return;
+    }
+    string modified_peptide = psmInfo->searchhits[hitrank]->m_modified_peptide;
     string plain_peptide = regex_replace(modified_peptide, regex("\[[0-9\.]*\]"), "");
     string newPep = regex_replace(modified_peptide, regex("C"), "C[160]");
 
@@ -1978,8 +1984,6 @@ void ExtractFeatures::run() {
     bool alwaysReCreateFeature = true;
     if (not File::isExist(m_output_feature_file) or alwaysReCreateFeature) {
         // todo: you do not know whether it is Xinteract exported ... PepXML or not...
-
-
         vector<Feature *> features = createFeatureVector(m_fragmodelfile,
                                                          m_ghost, m_minIntFC, m_fragmodelscoretype,
                                                          m_featurelistfile, m_binaryPath);
@@ -2020,23 +2024,13 @@ void ExtractFeatures::run() {
                     tasks[i]->join();
             }
             if (CDebugMode::callDebug()->getMdebug()) {
-                for (int i = 0; i < onefeaturetable.size(); i++) {
-                    cout << "Starting row " << i + 1 << endl;
-                    for (int j = 0; j < features.size(); j++) {
-                        cout << features[j]->m_feature_name << ": " << onefeaturetable[i][j] << endl;
-                    }
-                    cout << "Ending row " << i + 1 << endl;
-                }
+                printFeatureTable(features, onefeaturetable);
             }
             updatePsmTable(ppp, df, index, psmtable);
 
             featuretable.insert(featuretable.end(), onefeaturetable.begin(), onefeaturetable.end());
         }
-
         exportTestingFeature(features, m_output_feature_file, featuretable);
-
-
-
         psmtable.saveAs(corresponding_psm, true, ',');
         psmtable.saveAs(corresponding_psmtsv, true, '\t');
 
@@ -2049,6 +2043,18 @@ void ExtractFeatures::run() {
 //        spdlog::get("A")->info("Running {}", x->getname());
 //        x->run();
 //    }
+}
+
+void
+ExtractFeatures::printFeatureTable(const vector<Feature *> &features,
+                                   const vector<vector<double>> &onefeaturetable) const {
+    for (int i = 0; i < onefeaturetable.size(); i++) {
+        cout << "Starting row " << i + 1 << endl;
+        for (int j = 0; j < features.size(); j++) {
+            cout << features[j]->m_feature_name << ": " << onefeaturetable[i][j] << endl;
+        }
+        cout << "Ending row " << i + 1 << endl;
+    }
 }
 
 void
@@ -2129,3 +2135,232 @@ void ExtractFeatures::exportTestingFeature(const vector<Feature *> &features, co
 }
 
 
+ExtractFeaturesFromPepXML::ExtractFeaturesFromPepXML(string pepxmlfile, string validatorModel,
+                                                     string fragmodelscoretype, double minInt,
+                                                     bool ghost, int threadNum, string featurelistfile,
+                                                     bool useAlternativeProt,
+                                                     string binaryPath, int hitrank) {
+    m_hitrank= hitrank;
+    m_binaryPath = binaryPath;
+    m_useAlternativeProtein = useAlternativeProt;
+    m_name = "extract features from pepXML file";
+    fixMz = false;
+    m_highMassAcc=true;
+    m_featurelistfile = featurelistfile;
+    m_validatorModelFile = validatorModel;
+    m_pepxmlfile = pepxmlfile;
+    m_fragmodelfile = getfragmodelfile(validatorModel, minInt);;
+    m_fragmodelscoretype = fragmodelscoretype;
+    m_minIntFC = minInt;
+    m_ghost = ghost;
+    m_basename = File::CFile(validatorModel).basename;
+
+    m_output_feature_file = m_pepxmlfile + m_basename + ".feat";
+
+    m_threadNum = threadNum <= 0 or threadNum > getProperThreads()? getProperThreads(): threadNum;
+
+}
+#include "CThreadsPool.h"
+class FeatureExtractionThread: public ICThreadTask{
+    ICPepXMLParser * cpx;
+    int i;
+    DataFile *df;
+    string eachfile;
+    bool m_highMassAcc;
+    bool fixMz;
+    vector<Feature *> *features;
+    vector<vector<double>> *onefeaturetable;
+    int m_hitrank;
+public:
+    FeatureExtractionThread(ICPepXMLParser *cpx_, int psmId, DataFile *df_, string filename, bool highMassAcc,
+                            bool fixMZ, vector<Feature *> *features_, vector<vector<double>> *OneSpecFeature_,
+                            int hitrank) {
+        cpx = cpx_;
+        i = psmId;
+        df = df_;
+        eachfile = filename;
+        m_highMassAcc = highMassAcc;
+        fixMz = fixMZ;
+        features = features_;
+        onefeaturetable = OneSpecFeature_;
+        m_hitrank = hitrank;
+    }
+    void run() override{
+        PSMInfo psminfo;
+        cpx->getPSMInfobyindex(i,psminfo);
+        int scanNum = psminfo.start_scan;
+        // search for spec with scanNum
+        int idx = df->getIdxByScan(scanNum);
+        CSpectrum * spec = df->getSpectrum(idx);
+
+        get_feature_from_spec(&psminfo, spec, &(*onefeaturetable)[i], features,
+                              idx, eachfile, fixMz, m_highMassAcc,m_hitrank);
+        // PSMInfo *psmInfo, CSpectrum *spec, vector<double> *OneSpecFeature, vector<Feature *> *features,
+        //                      int idx, string mzMLsourcefile, const bool fixMz, bool highMassAcc
+    }
+};
+
+void ExtractFeaturesFromPepXML::run() {
+    int found=m_output_feature_file.find_last_of('.');
+    string filebasename ="";
+    if(found == string::npos){
+        // not find
+        filebasename = m_output_feature_file;
+    }else{
+        filebasename = m_output_feature_file.substr(0, found);
+    }
+    cout << "filebasename: " << filebasename << endl;
+    string corresponding_psm = filebasename+".psm";
+    string corresponding_psmtsv = filebasename+".psm.tsv";
+    cout << "Export to two files; " << corresponding_psm << "\t" << corresponding_psmtsv << endl;
+
+    bool alwaysReCreateFeature = true;
+    if(File::isExist(m_output_feature_file) and not alwaysReCreateFeature) return;
+
+
+    vector<Feature *> features = createFeatureVector(m_fragmodelfile,
+                                                     m_ghost, m_minIntFC, m_fragmodelscoretype,
+                                                     m_featurelistfile, m_binaryPath);
+    vector<vector<double>> featuretable;
+    CTable psmtable;
+    vector<string> header = {"filename", "id", "scan", "modpep", "charge", "protein", "ppprob", "iprob"};
+    psmtable.setHeader(header);
+//    CometPepXMLParser cpx(m_pepxmlfile);
+    ICPepXMLParser * cpx = createPepXML(m_pepxmlfile);
+
+
+    for (auto eachfile : cpx->getAllSoruceFiles()) {
+        DataFile *df = new DataFile(eachfile, 0, -1);
+
+//        auto range = cpx.m_filename2indeRange[eachfile];
+        auto range = cpx->getIndexRange(eachfile);
+        int sampleNum = range.second - range.first;
+        vector<vector<double>> onefeaturetable(sampleNum, vector<double>(features.size(), 0.0));
+        vector<int> psmIdx(range.second-range.first,0);
+        std::iota(psmIdx.begin(), psmIdx.end(),range.first);
+        Progress ps(range.second - range.first,eachfile);
+        vector<ICThreadTask*> tasks;
+        // create task, then run them.
+        for(int i = range.first; i < range.second; i ++){
+            tasks.push_back(new FeatureExtractionThread(cpx, i, df, eachfile, m_highMassAcc, fixMz, &features,
+                                                        &onefeaturetable, m_hitrank));
+        }
+        CTaskPool::issueTasks(tasks,false, true,30,eachfile);
+        for(int i = range.first; i < range.second; i ++){
+            delete tasks[i];
+        }
+
+
+//        for(int i = range.first; i < range.second; i ++){
+//            ps.increase();
+//            PSMInfo psminfo;
+//            cpx->getPSMInfobyindex(i,psminfo);
+//            int scanNum = psminfo.start_scan;
+//            // search for spec with scanNum
+//            int idx = df->getIdxByScan(scanNum);
+//            CSpectrum * spec = df->getSpectrum(idx);
+//
+//            get_feature_from_spec(&psminfo, spec, &onefeaturetable[i], &features,
+//                                  idx, eachfile, fixMz, m_highMassAcc);
+//        }
+        updatePsmTable(cpx, df, psmIdx, psmtable);
+//
+        featuretable.insert(featuretable.end(), onefeaturetable.begin(), onefeaturetable.end());
+    }
+    exportTestingFeature(features, m_output_feature_file, featuretable);//
+    psmtable.saveAs(corresponding_psm, true, ',');
+    psmtable.saveAs(corresponding_psmtsv, true, '\t');
+
+    for (auto x: features) {
+        delete x;
+    }
+    cout << "release cpx" << endl;
+    delete cpx;
+
+}
+
+void ExtractFeaturesFromPepXML::exportTestingFeature(const vector<Feature *> &features, const string &feature_outfile,
+                                                     const vector<vector<double>> &featuretable) const {
+    ofstream fout(feature_outfile.c_str(), ios_base::out);
+    for (auto x: features) {
+        fout << x->m_feature_name << ",";
+    }
+    fout << "class" << endl;
+
+    for (int i = 0; i < featuretable.size(); i++) {
+        for (int j = 0; j < featuretable[i].size(); j++) {
+            fout << featuretable[i][j] << ",";
+        }
+        fout << "-1" << endl;
+    }
+    fout.close();
+    cout << "Feature exported to file " << feature_outfile << endl;
+}
+
+void ExtractFeaturesFromPepXML::updatePsmTable(ICPepXMLParser *pepxml, DataFile *df, const vector<int> &psmIdx,
+                                               CTable &psmtable) const {
+    int mixtureSpectraNum = 0;
+    int decoy2targetNum = 0, decoynum=0, targetnum=0;
+    unordered_set<string> decoy2target_peptides;
+    bool verbose=true;
+    string name = File::CFile(df->getSourceFileName()).basename;
+    //pair<int, int> range;
+    for(int i = 0; i < psmIdx.size(); i ++){
+        int j = psmIdx[i];
+        PSMInfo psmInfo;
+        pepxml->getPSMInfobyindex(j, psmInfo);
+        int scan = psmInfo.start_scan;
+        int idx =df->getIdxByScan(scan);
+        CSpectrum *spec = df->getSpectrum(idx);
+
+
+        vector<string> tmp={
+                df->getSourceFileName(),
+                to_string(idx),
+                to_string(spec->m_scanNum),
+                "?",
+                to_string(psmInfo.charge),
+                "?",
+                "?",
+                "?"
+        };
+
+        if(psmInfo.searchhits.size()<=m_hitrank){
+            cout << "[Info] the " << m_hitrank << "-th peptide does not found! total candidates: "
+            << psmInfo.searchhits.size() << endl;
+
+        } else{
+            string proteinACNum = psmInfo.searchhits.at(m_hitrank)->m_protein;
+            SearchHit &sh0 = *psmInfo.searchhits[m_hitrank];
+
+            if(m_useAlternativeProtein and sh0.m_protein!=psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(m_useAlternativeProtein))
+            {
+                proteinACNum = psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(m_useAlternativeProtein);
+                if(verbose){
+                    cout << "Protein changed from: "<< sh0.m_protein
+                         << " to " << proteinACNum
+                         <<" for peptide " << sh0.m_peptide<< endl;
+                }
+                decoy2targetNum ++;
+                decoy2target_peptides.insert(sh0.m_peptide);
+            }
+            if(psmInfo.isDecoy(m_useAlternativeProtein)){
+                decoynum++;
+            }else{
+                targetnum++;
+            }
+    //        psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(), // use proteinnACNum now
+    tmp[3]=sh0.m_modified_peptide;
+            tmp[5]=proteinACNum.substr(0,proteinACNum.find_first_of(' '));
+            tmp[6]=to_string(sh0.m_peptideprophet_prob);
+            tmp[7]=to_string(sh0.m_iprophet_prob);
+
+        }
+        psmtable.addRow(tmp);
+    }
+    cout << "[Info] " << decoy2targetNum <<" PSMs ("<< decoy2target_peptides.size()
+         << " Peptides) changed from DECOY to TARGET; Decoy: " << decoynum
+         << " Target: " << targetnum << " Total:  "<< psmIdx.size()
+         << endl;
+    cout << "[Info] " << mixtureSpectraNum << " mixture spectra detected" << endl;
+}
