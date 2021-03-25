@@ -1307,9 +1307,10 @@ ValidatePSM::updatePsmTable(PeptideProphetParser &ppp, DataFile *df, const vecto
         string proteinACNum = psmInfo.searchhits.at(0)->m_protein;
         SearchHit &sh0 = *psmInfo.searchhits[0];
 
-        if(m_useAlternativeProtein and sh0.m_protein!=psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(m_useAlternativeProtein))
+        if(m_useAlternativeProtein and sh0.m_protein!= psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(
+                m_useAlternativeProtein, 0))
         {
-            proteinACNum = psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(m_useAlternativeProtein);
+            proteinACNum = psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(m_useAlternativeProtein, 0);
             if(verbose){
 
                 cout << "Protein changed from: "<< sh0.m_protein
@@ -1319,7 +1320,7 @@ ValidatePSM::updatePsmTable(PeptideProphetParser &ppp, DataFile *df, const vecto
             decoy2targetNum ++;
             decoy2target_peptides.insert(sh0.m_peptide);
         }
-        if(psmInfo.isDecoy(m_useAlternativeProtein)){
+        if(psmInfo.isDecoy(m_useAlternativeProtein, 0)){
             decoynum++;
         }else{
             targetnum++;
@@ -2081,9 +2082,10 @@ ExtractFeatures::updatePsmTable(PeptideProphetParser &ppp, DataFile *df, const v
         string proteinACNum = psmInfo.searchhits.at(0)->m_protein;
         SearchHit &sh0 = *psmInfo.searchhits[0];
 
-        if(m_useAlternativeProtein and sh0.m_protein!=psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(m_useAlternativeProtein))
+        if(m_useAlternativeProtein and sh0.m_protein!= psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(
+                m_useAlternativeProtein, 0))
         {
-            proteinACNum = psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(m_useAlternativeProtein);
+            proteinACNum = psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(m_useAlternativeProtein, 0);
             if(verbose){
                 cout << "Protein changed from: "<< sh0.m_protein
                      << " to " << proteinACNum
@@ -2092,7 +2094,7 @@ ExtractFeatures::updatePsmTable(PeptideProphetParser &ppp, DataFile *df, const v
             decoy2targetNum ++;
             decoy2target_peptides.insert(sh0.m_peptide);
         }
-        if(psmInfo.isDecoy(m_useAlternativeProtein)){
+        if(psmInfo.isDecoy(m_useAlternativeProtein, 0)){
             decoynum++;
         }else{
             targetnum++;
@@ -2194,10 +2196,9 @@ public:
         int idx = df->getIdxByScan(scanNum);
         CSpectrum * spec = df->getSpectrum(idx);
 
-        get_feature_from_spec(&psminfo, spec, &(*onefeaturetable)[i], features,
+        get_feature_from_spec(&psminfo, spec, &((*onefeaturetable)[i]), features,
                               idx, eachfile, fixMz, m_highMassAcc,m_hitrank);
-        // PSMInfo *psmInfo, CSpectrum *spec, vector<double> *OneSpecFeature, vector<Feature *> *features,
-        //                      int idx, string mzMLsourcefile, const bool fixMz, bool highMassAcc
+
     }
 };
 
@@ -2222,51 +2223,37 @@ void ExtractFeaturesFromPepXML::run() {
     vector<Feature *> features = createFeatureVector(m_fragmodelfile,
                                                      m_ghost, m_minIntFC, m_fragmodelscoretype,
                                                      m_featurelistfile, m_binaryPath);
-    vector<vector<double>> featuretable;
     CTable psmtable;
     vector<string> header = {"filename", "id", "scan", "modpep", "charge", "protein", "ppprob", "iprob"};
     psmtable.setHeader(header);
-//    CometPepXMLParser cpx(m_pepxmlfile);
+
     ICPepXMLParser * cpx = createPepXML(m_pepxmlfile);
 
+    vector<vector<double>> featuretable(cpx->getPsmNum(), vector<double>(features.size(), 0.0));
 
-    for (auto eachfile : cpx->getAllSoruceFiles()) {
+    vector<string> allSourceFiles = cpx->getAllSoruceFiles();
+    for(int file_idx = 0; file_idx < allSourceFiles.size(); file_idx ++){
+        string eachfile = allSourceFiles[file_idx];
         DataFile *df = new DataFile(eachfile, 0, -1);
-
-//        auto range = cpx.m_filename2indeRange[eachfile];
         auto range = cpx->getIndexRange(eachfile);
         int sampleNum = range.second - range.first;
-        vector<vector<double>> onefeaturetable(sampleNum, vector<double>(features.size(), 0.0));
+
         vector<int> psmIdx(range.second-range.first,0);
         std::iota(psmIdx.begin(), psmIdx.end(),range.first);
-        Progress ps(range.second - range.first,eachfile);
+
         vector<ICThreadTask*> tasks;
+        vector<FeatureExtractionThread> vtask;
         // create task, then run them.
         for(int i = range.first; i < range.second; i ++){
-            tasks.push_back(new FeatureExtractionThread(cpx, i, df, eachfile, m_highMassAcc, fixMz, &features,
-                                                        &onefeaturetable, m_hitrank));
+            vtask.emplace_back(cpx, i, df, eachfile, m_highMassAcc, fixMz, &features,
+                               &featuretable, m_hitrank);
         }
-        CTaskPool::issueTasks(tasks,false, true,30,eachfile);
-        for(int i = range.first; i < range.second; i ++){
-            delete tasks[i];
+        for(int i = 0; i < vtask.size(); i ++){
+            tasks.push_back(&vtask[i]);
         }
-
-
-//        for(int i = range.first; i < range.second; i ++){
-//            ps.increase();
-//            PSMInfo psminfo;
-//            cpx->getPSMInfobyindex(i,psminfo);
-//            int scanNum = psminfo.start_scan;
-//            // search for spec with scanNum
-//            int idx = df->getIdxByScan(scanNum);
-//            CSpectrum * spec = df->getSpectrum(idx);
-//
-//            get_feature_from_spec(&psminfo, spec, &onefeaturetable[i], &features,
-//                                  idx, eachfile, fixMz, m_highMassAcc);
-//        }
+        CTaskPool::issueTasks(tasks,false, true,m_threadNum,eachfile);
         updatePsmTable(cpx, df, psmIdx, psmtable);
-//
-        featuretable.insert(featuretable.end(), onefeaturetable.begin(), onefeaturetable.end());
+        delete df;
     }
     exportTestingFeature(features, m_output_feature_file, featuretable);//
     psmtable.saveAs(corresponding_psm, true, ',');
@@ -2334,9 +2321,10 @@ void ExtractFeaturesFromPepXML::updatePsmTable(ICPepXMLParser *pepxml, DataFile 
             string proteinACNum = psmInfo.searchhits.at(m_hitrank)->m_protein;
             SearchHit &sh0 = *psmInfo.searchhits[m_hitrank];
 
-            if(m_useAlternativeProtein and sh0.m_protein!=psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(m_useAlternativeProtein))
+            if(m_useAlternativeProtein and sh0.m_protein!= psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(
+                    m_useAlternativeProtein, m_hitrank))
             {
-                proteinACNum = psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(m_useAlternativeProtein);
+                proteinACNum = psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(m_useAlternativeProtein, m_hitrank);
                 if(verbose){
                     cout << "Protein changed from: "<< sh0.m_protein
                          << " to " << proteinACNum
@@ -2345,7 +2333,7 @@ void ExtractFeaturesFromPepXML::updatePsmTable(ICPepXMLParser *pepxml, DataFile 
                 decoy2targetNum ++;
                 decoy2target_peptides.insert(sh0.m_peptide);
             }
-            if(psmInfo.isDecoy(m_useAlternativeProtein)){
+            if(psmInfo.isDecoy(m_useAlternativeProtein, m_hitrank)){
                 decoynum++;
             }else{
                 targetnum++;

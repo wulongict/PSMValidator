@@ -405,12 +405,12 @@ PSMInfo::PSMInfo() {
 
 
 // changed!
-bool PSMInfo::isDecoy(bool useAlternativeProt) {
+bool PSMInfo::isDecoy(bool useAlternativeProt, int hitrank) {
     if(searchhits.empty()) {
         cout << "Error: empty hits!" << endl;
         return false;
     }
-    return searchhits.at(0)->isDecoy(useAlternativeProt);
+    return searchhits.at(hitrank)->isDecoy(useAlternativeProt);
 
 }
 
@@ -418,8 +418,8 @@ void PSMInfo::printSearchHit(int k) {
     searchhits.at(k)->print();
 }
 
-string PSMInfo::getProtein_UseAlterProteinIfItsNotDecoy(bool useAlternativeProt) {
-    return searchhits.at(0)->getProtein_UseAlterProteinIfItsNotDecoy(useAlternativeProt);
+string PSMInfo::getProtein_UseAlterProteinIfItsNotDecoy(bool useAlternativeProt, int hitrank) {
+    return searchhits.at(hitrank)->getProtein_UseAlterProteinIfItsNotDecoy(useAlternativeProt);
 }
 
 string PSMInfo::getFirstAlterProteinNotDecoy() {
@@ -905,6 +905,9 @@ string PeptideProphetParser::getInputfile() const {
 }
 
 void PeptideProphetParser::getPSMInfobyindex(int i, PSMInfo &psminfo) {
+    if(i<0 or i >= m_psm.size()) {
+        cout << "index out of range" << endl;
+    }
     psminfo = m_psm[i];
 }
 
@@ -1046,7 +1049,7 @@ bool PeptideProphetParser::updateGtInfoOnSpectrumName(string spectrumName, SPsmA
 
             gtinfo.pProb =sh0.m_peptideprophet_prob;
             gtinfo.iProb = sh0.m_iprophet_prob;
-            gtinfo.protein = psminfo.getProtein_UseAlterProteinIfItsNotDecoy();
+            gtinfo.protein = psminfo.getProtein_UseAlterProteinIfItsNotDecoy(true, 0);
             if(gtinfo.protein.find("DECOY") != string::npos)   {
                 gtinfo.isDecoy = 1;
             } else{
@@ -1361,7 +1364,7 @@ void extract_pep_prob(vector<double> &tProbs, vector<double> &dProbs, PeptidePro
 
         double prob = getscore(*psm.searchhits[0]);
 
-        if (psm.isDecoy(useAlternativeProt)) {
+        if (psm.isDecoy(useAlternativeProt, 0)) {
             dProbs.push_back(prob);
         } else {
             tProbs.push_back(prob);
@@ -1372,7 +1375,7 @@ void extract_pep_prob(vector<double> &tProbs, vector<double> &dProbs, PeptidePro
 
 // the pointer should be released by the caller.
 ICPepXMLParser *createPepXML(string filename) {
-    if(filename.find(".pep.xml")==string::npos){
+    if(filename.find(".pep.xml")==string::npos and filename.find(".pepXML")==string::npos){
         cout << "file with wrong format. " << filename << endl;
         return nullptr;
     } else{

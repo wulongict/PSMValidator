@@ -89,7 +89,7 @@ public:
                   double cterm_mass, map<int, double> pos_mass, vector<string> &altprots);
     SearchHit(const SearchHit & other);
     string getFirstAlterProteinNotDecoy();
-    bool isDecoy(bool useAlternativeProt=true);
+    bool isDecoy(bool useAlternativeProt);
     string getProtein_UseAlterProteinIfItsNotDecoy(bool useAlternativeProt=true);
 
 };
@@ -125,9 +125,9 @@ public:
         charge = chg;
         m_basename = basenameStr;
     }
-    bool isDecoy(bool useAlternativeProt=true);
+    bool isDecoy(bool useAlternativeProt, int hitrank);
     void printSearchHit(int k);
-    string getProtein_UseAlterProteinIfItsNotDecoy(bool useAlternativeProt=true);
+    string getProtein_UseAlterProteinIfItsNotDecoy(bool useAlternativeProt, int hitrank);
 
     string getFirstAlterProteinNotDecoy();
     double getParentMz();

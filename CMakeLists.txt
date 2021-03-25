@@ -7,6 +7,7 @@ project(PSMValidator)
 # http://stackoverflow.com/questions/6594796/how-do-i-make-cmake-output-into-a-bin-dir
 # I just put everything in one folder, which makes it easy to find a file.
 # Maybe later i will change it in the future
+#set(CMAKE_BUILD_TYPE Debug)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Release)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Release)
