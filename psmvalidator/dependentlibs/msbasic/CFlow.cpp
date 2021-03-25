@@ -27,6 +27,7 @@
 #include "../../../External/SpectraST/SpectraSTPeakList.hpp"
 //#include "../../../gnuplot-iostream/gnuplot-iostream.h"
 #include "../../../External/gnuplot-iostream/gnuplot-iostream.h"
+#include "../../../librarymsms/CThreadsPool.h"
 #include <random>
 
 
@@ -2160,7 +2161,7 @@ ExtractFeaturesFromPepXML::ExtractFeaturesFromPepXML(string pepxmlfile, string v
     m_threadNum = threadNum <= 0 or threadNum > getProperThreads()? getProperThreads(): threadNum;
 
 }
-#include "CThreadsPool.h"
+
 class FeatureExtractionThread: public ICThreadTask{
     ICPepXMLParser * cpx;
     int i;

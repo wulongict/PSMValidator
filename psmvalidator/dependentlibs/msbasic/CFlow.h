@@ -17,6 +17,7 @@ class PeptideProphetParser;
 class CTable;
 class SimpleTimer;
 class Progress;
+class ICPepXMLParser;
 
 class CROCPlot {
     struct SROC{
@@ -164,7 +165,7 @@ public:
 
     void updatePsmTable(PeptideProphetParser &ppp, DataFile *df, const vector<int> &index, CTable &psmtable) const;
 };
-#include "XMLFileParser.h"
+
 class ExtractFeaturesFromPepXML : public CFlow {
 public:
     ExtractFeaturesFromPepXML(string pepxmlfile, string validatorModel, string fragmodelscoretype, double minInt,
