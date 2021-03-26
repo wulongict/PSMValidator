@@ -1,0 +1,1 @@
+xelatex  -shell-escape -synctex=1 -interaction=nonstopmode -file-line-error -output-directory=../Release/docs PSMValidatorManual.tex

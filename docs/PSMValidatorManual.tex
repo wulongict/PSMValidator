@@ -1,0 +1,223 @@
+\documentclass{ctexart}
+\usepackage[left=4cm,right=4cm]{geometry}
+% \documentclass{ctexbook}
+\usepackage{fontspec}
+\usepackage{blindtext}
+% \usepackage[utf8x]{inputenc}
+\usepackage{hyperref}
+% \usepackage{listings}
+\usepackage[table]{xcolor}
+% \usepackage{xcolor}
+\usepackage{listings}
+\usepackage{amsfonts}
+\usepackage[english]{babel}
+\usepackage{url}
+\lstset{
+breaklines=true,  
+basicstyle=\ttfamily,
+  showstringspaces=false,
+  commentstyle=\color{green},
+  keywordstyle=\color{blue}
+}
+
+
+\title{The User Manual of PSM Validator}
+\date{2021 March}
+\author{Long WU\\ HKUST}
+\begin{document}
+\maketitle
+
+% \begin{document}
+
+\tableofcontents
+
+\section{Introduction}
+
+Validate PSM with a universal score. 
+
+
+
+\section{ Installation}
+
+\subsection{Install with binary package}
+
+
+It is highly recommended to use the compiled exectuables due to the difficulty to compile C++ source code and reconcile all the dependencies. Download from \href{https://github.com/wulongict/PSMValidator/releases/tag/v1.0.0} {here} 
+Those are the binary files in the bin folder:  
+\begin{verbatim}
+.
+|-- bin
+|   |-- comet
+|   |-- predict
+|   |-- psmvalidator
+|   |-- ranger
+|   `-- train
+\end{verbatim}
+
+
+\subsection{ Compile from source code}
+
+\subsubsection{Prerequisites}
+
+The following packages are required to compile from source code  
+
+\begin{table}
+  \caption{\label{tab:dependencies}dependencies of PSMValidator}
+  {
+    \rowcolors{2}{black!20!yellow!0}{black!90!yellow!20}
+    \begin{tabular}{|c|c|c|c|}
+      \hline
+      package&version&provided&function \\ 
+      \hline
+      spdlog&x&YES&logger\\
+      comet&x&YES&  generate ground truth PSMs\\
+      ranger&x&YES&  random forest\\
+      liblinear&2.21&YES& Logistic Regression \\
+      rapidxml&1.13&YES&  xml parser\\
+      SpectraST&5.0&YES&spectra annotation\\
+      sqlite3&3.0&YES&\\
+      Boost&1.65&YES&File system; program option parser\\
+      gnuplot-iostream&x&YES&generate plots\\
+      gnuplot&x&NO&needed by gnuplot-iostream\\
+      gsl&1.16&NO&SpectraST \\
+      \hline
+    \end{tabular}
+    }
+
+  \end{table}
+    
+    The following script installs the prerequisites packages.
+    
+\begin{lstlisting}[language=bash,caption=install GSL v1.16 and other dependencies]
+# part one, install GSL 1.16
+GSL_VERSION=$(gsl-config --version)
+if [ "$GSL_VERSION" == "1.16" ]; then
+  echo "GSL version 1.16 already installed!"
+else
+  echo GSL version is $GSL_VERSION
+  wget https://mirror-hk.koddos.net/gnu/gsl/gsl-1.16.tar.gz
+  tar xvf gsl-1.16.tar.gz
+  # shellcheck disable=SC2164
+  (
+    cd gsl-1.16 || exit
+    ./configure
+    make all -j 10
+    sudo make install
+  )
+fi
+
+# part two install other packages.
+sudo apt-get install sqlite3 libsqlite3-dev gnuplot gnuplot-qt
+\end{lstlisting}
+
+ 
+
+\subsubsection{ Compilation and installation from source code (Ubuntu)}
+
+First, install cmake, build-essential and gnuplot with following commands
+
+\begin{lstlisting}[language=bash]
+sudo apt-get install cmake build-essential gnuplot
+\end{lstlisting}
+
+Next, compile and install the psmvalidator with following commands.
+
+\begin{lstlisting}[language=bash,caption=compile and install from soruce code of PSMValidator]
+unzip PSMValidator_v1.0.0.zip
+cd </path/to/the/source/code>  # change accordingly
+cmake .
+cmake --build build
+cmake --install . --prefix .
+\end{lstlisting}
+
+
+\section{ Basic usage}
+
+\subsection{Tree structure after installed}
+
+\begin{lstlisting}
+.
+|-- bin
+|   |-- comet
+|   |-- predict
+|   |-- psmvalidator
+|   |-- ranger
+|   `-- train
+|-- model
+|   |-- nist_human_hcd_selected_features.txt_2.000000_frag.model
+|   `-- nist_human_hcd_selected_features.txtmtry_8_ntree_900_trN_20000.forest
+|-- param
+|   `-- psmvalidator.conf
+|-- predict
+|   |-- 01625b_GD2-TUM_first_pool_12_01_01-3xHCD-1h-R1.mzML
+|   |-- interact-01625b_GD2-TUM_first_pool_12_01_01-3xHCD-1h-R1.ipro.pep.xml
+|   `-- TUM_first_pool_12.pep.list
+|-- scripts
+|   |-- train_small_demo_mgf.bash
+|   `-- validate_psm.bash
+`-- train
+    |-- comet16low.param
+    |-- featurelist.txt
+    |-- features.txt
+    |-- human_hcd_selected_new_small.mgf
+    |-- uniprot-human-2020-12.fasta
+    |-- uniprot-human-2020-12TD_only_decoy.fasta
+    |-- uniprot_yeast_reviewed_6721_Nov152016.fasta
+    `-- uniprot_yeast_reviewed_6721_Nov152016TD_only_decoy.fasta
+\end{lstlisting}
+                                      
+\subsection{Train a demo validator}
+
+\begin{itemize}
+  \item input
+  \begin{itemize}
+    \item spectra (mgf)
+    \begin{itemize}
+      \item \path{train/human_hcd_selected_new_small.mgf }
+    \end{itemize} 
+    \item database (fasta)
+    \begin{itemize}
+      \item target: \path{uniprot-human-2020-12.fasta}
+      \item decoy:  \path{uniprot-human-2020-12TD_only_decoy.fasta}
+    \end{itemize} 
+  \end{itemize}
+
+  \item output
+  \begin{itemize}
+    \item model
+    \begin{itemize}
+      \item \path{human_hcd_selected_new_small_mtry_8_ntree_900_features.forest}
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+to train the validator, run the following command. 
+\begin{lstlisting}[language=bash]
+  cd scripts
+  ./train_small_demo_mgf.bash
+\end{lstlisting}
+
+\subsection{Prediction}
+
+\begin{itemize}
+  \item input 
+  \begin{itemize}
+    \item Search result: Comet search result (PepXML)
+    \item Model: \path{human_hcd_selected_new_small_mtry_8_ntree_900_features.forest}
+  \end{itemize} 
+
+  \item output
+  \begin{itemize}
+    \item result table with RF(random forest) score
+
+  \end{itemize} 
+\end{itemize} 
+
+To use the validator, users could directly use the trained model. Here is an example:
+
+\begin{lstlisting}[language=bash]
+cd scripts
+./validate_psm.bash
+\end{lstlisting}
+
+\end{document}
