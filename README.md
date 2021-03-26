@@ -27,9 +27,9 @@ The following packages are required to compile from source code
 |liblinear|2.21|YES| Logistic Regression |
 |rapidxml|1.13|YES|  xml parser|
 |SpectraST|5.0|YES|spectra annotation|
-|sqlite3|3.0|YES||
 |Boost|1.65|YES|File system; program option parser|
 |gnuplot-iostream|x|YES|generate plots|
+|sqlite3|3.0|NO||
 |gnuplot|x|NO|needed by gnuplot-iostream|
 |gsl|1.16|NO|SpectraST|
 
@@ -52,7 +52,7 @@ else
   )
 fi
 
-# part two install other packages.
+# part two install other packages.: sqlite3, gnuplot
 sudo apt-get install sqlite3 libsqlite3-dev gnuplot gnuplot-qt
 ```
 

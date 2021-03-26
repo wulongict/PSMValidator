@@ -47,21 +47,16 @@ add_executable(testCFlow ../testCFlow.cpp ../CFlow.cpp
         )
 message(${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(testCFlow
-        pthread
+        ${Boost_LIBRARIES}
+        # pthread
         sqlite3
         spectrastlib_static
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Release/Release/liblinear_static.a
         blas
-        z
-        dl
-        gsl gslcblas
+        # z dl gsl gslcblas pthread
         gtest gtest_main spdlog
-        boost_system
-        boost_filesystem
-        boost_iostreams
-        boost_program_options
-        boost_timer
-        boost_chrono
+        
         )
 target_include_directories(testCFlow PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Release/Release)
 target_link_directories(testCFlow PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../../../Release/Release)
+

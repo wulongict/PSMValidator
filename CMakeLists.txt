@@ -44,6 +44,7 @@ add_subdirectory(External/SpectraST)
 file(TOUCH_NOCREATE psmvalidator_main.cpp)
 add_subdirectory(psmvalidator)
 add_dependencies(psmvalidator boost ranger train predict)
+add_dependencies(testCFlow boost)
 #add_subdirectory(librarymsms)
 include_directories(External/spdlog-1.x/include)
 
