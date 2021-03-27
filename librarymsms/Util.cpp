@@ -177,13 +177,13 @@ void CTable::saveAs(const string& filename, bool with_header, char delimtor) {
     if (fout.is_open()) {
         Progress ps(m_row, "export table " + filename);
         if (with_header) {
-            cout << "Exporting header.." << endl;
+//            cout << "Exporting header.." << endl;
             for (int j = 0; j < m_col; j++) {
                 fout << m_column_header[j];
                 if (j != m_col - 1) fout << delimtor;
             }
             fout << endl;
-            cout << "Header done!" << endl;
+//            cout << "Header done!" << endl;
         }
         for (int i = 0; i < m_row; i++) {
             ps.increase();

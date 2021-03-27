@@ -1016,7 +1016,7 @@ void get_feature_from_spec(PSMInfo *psmInfo, CSpectrum *spec, vector<double> *On
     }
 
     if(psmInfo->searchhits.size()<=hitrank){
-        cout << "the " << hitrank << "-th peptide is not found: total candiates: " << psmInfo->searchhits.size() << endl;
+//        cout << "the " << hitrank << "-th peptide is not found: total candiates: " << psmInfo->searchhits.size() << endl;
         delete specpkl;
         return;
     }
@@ -2285,6 +2285,18 @@ void ExtractFeaturesFromPepXML::exportTestingFeature(const vector<Feature *> &fe
     cout << "Feature exported to file " << feature_outfile << endl;
 }
 
+string i_th(int i){
+    string ret = "th";
+    switch (i) {
+        case 1: ret = "st"; break;
+        case 2: ret = "nd";break;
+        case 3: ret = "rd";break;
+        default:
+            ret = "th";
+    }
+    return ret;
+}
+
 void ExtractFeaturesFromPepXML::updatePsmTable(ICPepXMLParser *pepxml, DataFile *df, const vector<int> &psmIdx,
                                                CTable &psmtable) const {
     int mixtureSpectraNum = 0;
@@ -2293,6 +2305,7 @@ void ExtractFeaturesFromPepXML::updatePsmTable(ICPepXMLParser *pepxml, DataFile 
     bool verbose=true;
     string name = File::CFile(df->getSourceFileName()).basename;
     //pair<int, int> range;
+    int num_search_hit_not_found = 0;
     for(int i = 0; i < psmIdx.size(); i ++){
         int j = psmIdx[i];
         PSMInfo psmInfo;
@@ -2314,8 +2327,9 @@ void ExtractFeaturesFromPepXML::updatePsmTable(ICPepXMLParser *pepxml, DataFile 
         };
 
         if(psmInfo.searchhits.size()<=m_hitrank){
-            cout << "[Info] the " << m_hitrank << "-th peptide does not found! total candidates: "
-            << psmInfo.searchhits.size() << endl;
+//            cout << "[Info] the " << m_hitrank << i_th(m_hitrank)<< " peptide does not found! total candidates: "
+//            << psmInfo.searchhits.size() << endl;
+            num_search_hit_not_found ++;
 
         } else{
             string proteinACNum = psmInfo.searchhits.at(m_hitrank)->m_protein;
@@ -2352,4 +2366,88 @@ void ExtractFeaturesFromPepXML::updatePsmTable(ICPepXMLParser *pepxml, DataFile 
          << " Target: " << targetnum << " Total:  "<< psmIdx.size()
          << endl;
     cout << "[Info] " << mixtureSpectraNum << " mixture spectra detected" << endl;
+    cout << "[Info] " << num_search_hit_not_found << " MS2 spectra do not have " <<  m_hitrank << i_th(m_hitrank) << " hit (0-hit is top hit)" << endl;
+}
+
+RFModelConfig::RFModelConfig(string configFileName) {
+    m_exportName = configFileName;
+    string line;
+    ifstream fin(configFileName, ios::in);
+    map<string, string> key_values;
+    while(std::getline(fin,line)){
+        cout << line << endl;
+        vector<string> tokens;
+        split_string(line,tokens, '=');
+        trim_space_only(tokens[0]);
+        trim_space_only(tokens[1]);
+        key_values[tokens[0]] = tokens[1];
+    }
+    m_ranger_binary_path = key_values["ranger_binary_path"];
+    m_tsvfile =  key_values["feature_tsv_file"];
+    m_mtry = stringTo<int>( key_values["mtry"]);
+    m_ntree = stringTo<int>( key_values["ntree"]);
+    m_isTraining = stringTo<bool>( key_values["is_training"]);
+    m_maxDepth = stringTo<int>( key_values["maxDepth"]);
+    m_threadnum = stringTo<int>( key_values["threadnum"]);
+    m_rfModel =  key_values["rf_model_file"];
+    m_probPrediction = stringTo<bool>( key_values["is_prob_pred"]);
+
+}
+
+void RFModelConfig::write() {
+    ofstream fout(m_exportName, ios::out);
+    fout <<"ranger_binary_path = "<<m_ranger_binary_path << endl;
+    fout <<"mtry = "<<        m_mtry << endl;
+    fout <<"ntree = "<<m_ntree << endl;
+    fout <<"feature_tsv_file = "<<m_tsvfile << endl;
+    fout <<"threadnum = "<<        m_threadnum << endl;
+    fout <<"is_training = "<<        m_isTraining << endl;
+    fout <<"maxDepth = "<<        m_maxDepth << endl;
+    fout <<"is_prob_pred = "<<m_probPrediction << endl;
+    fout <<"rf_model_file = "<<m_rfModel << endl;
+}
+
+RFModelConfig::RFModelConfig(string featuretsv, bool isTraining, string RFmodelfile, bool probPrediction, int mtry,
+                             int ntree, int maxdepth, string rangerbinary, string exportName) {
+    //m_name = "Run ranger (random-forest)";
+    m_tsvfile = featuretsv;
+    m_isTraining = isTraining;
+    m_rfModel = RFmodelfile;
+    m_mtry = mtry;
+    m_ntree = ntree;
+    m_maxDepth = maxdepth;
+    m_probPrediction = probPrediction;
+
+    m_ranger_binary_path = rangerbinary;
+    m_threadnum = getProperThreads();
+    m_exportName = exportName;
+}
+
+RFModelConfig::~RFModelConfig() {
+    cout << "calling destructor RFMODELCONFIG" << endl;
+    write();
+}
+
+void RFModelConfig::print() {
+    cout << "m_tsvfile = " <<  m_tsvfile << endl;
+    cout << "m_isTraining = " <<          m_isTraining << endl;
+    cout << "m_rfModel = " <<  m_rfModel << endl;
+    cout << "m_mtry = " <<          m_mtry << endl;
+    cout << "m_ntree = " <<  m_ntree << endl;
+    cout << "m_maxDepth = " <<          m_maxDepth << endl;
+    cout << "m_probPrediction = " <<  m_probPrediction << endl;
+
+    cout << "m_ranger_binary_path = " <<  m_ranger_binary_path << endl;
+    cout << "m_threadnum = " <<          m_threadnum << endl;
+    cout << "m_exportName = " <<  m_exportName << endl;
+
+}
+
+IConfigFile::~IConfigFile() {
+    cout << "calling destructor RFMODELCONFIG" << endl;
+    write();
+}
+
+void IConfigFile::write() {
+    cout << "calling THIS ONE... RFMODELCONFIG" << endl;
 }

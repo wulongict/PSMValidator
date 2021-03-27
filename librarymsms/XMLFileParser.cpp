@@ -96,10 +96,12 @@ void CometPepXMLParser::export_psm_info(vector<shared_ptr<PSMInfo>> &psm,xml_doc
     m_currentNode = breadth_first_search("msms_run_summary", &doc, false);
     vector<xml_node<> *> sourcefileNodes = find_all_siblings("msms_run_summary", m_currentNode);
 
-
     for (auto &x: sourcefileNodes) {
         string newfile = x->first_attribute("base_name")->value();
-        newfile += x->first_attribute("raw_data")->value();
+        spdlog::get("A")->info("Get base fileanme: {}", newfile);
+        string extension =  x->first_attribute("raw_data")->value();
+        if(extension.at(0)!='.') extension = '.' + extension;
+        newfile += extension;
         m_allSourceFiles.push_back(newfile);
         spdlog::get("A")->info("Get source fileanme: {}", newfile);
 

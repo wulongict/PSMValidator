@@ -274,6 +274,34 @@ class AnnotationFormat{
     // Note: feels that I have developed something like this...
 };
 
+// an interface for config file.
+class IConfigFile{
+public:
+    IConfigFile()=default;
+    virtual void write();;
+    virtual ~IConfigFile();
+};
+
+class RFModelConfig: public IConfigFile{
+    string m_tsvfile;
+    bool m_isTraining;
+    string m_rfModel;
+    bool m_probPrediction;
+    int m_mtry;
+    int m_ntree;
+    int m_maxDepth;
+    string m_ranger_binary_path;
+    int m_threadnum;
+    string m_exportName;
+public:
+    RFModelConfig(string featuretsv, bool isTraining, string RFmodelfile, bool probPrediction, int mtry, int ntree,
+    int maxdepth, string rangerbinary, string exportName);
+    RFModelConfig(string configFileName);
+    ~RFModelConfig()override;
+    void write() override;
+    void print();
+};
+
 class RangerWraper : public CFlow {
     string m_tsvfile;
     bool m_isTraining;
@@ -292,6 +320,9 @@ public:
                  int maxdepth, string rangerbinary);
     void run();
     void update_with_key_value_pair(string key, string value);
+    ~RangerWraper(){
+
+    }
 };
 
 class FeatureWorkFlow : public CFlow {
