@@ -19,6 +19,13 @@ class SimpleTimer;
 class Progress;
 class ICPepXMLParser;
 
+class CException : public std::runtime_error{
+public:
+    CException(const char * msg);
+};
+
+
+
 class CROCPlot {
     struct SROC{
         double tpr;
@@ -60,9 +67,9 @@ class CROCPlot {
     vector<SROC> m_struct_roc;
 public:
     CROCPlot(vector<double> &postiveScores, vector<double> &negativeScores);
-    void saveROCtoTXT(string roc_data);
+    void saveROCtoTXT(const string& roc_data);
     double getAUC();
-    void plotROCtoPNG(double auc, string roc_png_filename, string scorename);
+    void plotROCtoPNG(double auc, const string& roc_png_filename, const string& scorename);
 };
 
 class CTruth {
@@ -78,7 +85,7 @@ class CScanPepList: public CTruth {
     vector<tuple<int, string>> m_scanPepList;
     string m_truthfile;
 public:
-    CScanPepList(string scanpepListFile);
+    CScanPepList(const string& scanpepListFile);
     bool validate(int scan, string modified_pep);
     string getTruth(int scan);
     string getTruthFileName(){return m_truthfile;}
@@ -89,25 +96,25 @@ class CTruthPepList: public CTruth{
 
     string m_truthfile;
 public:
-    CTruthPepList(string pepListFile);
+    CTruthPepList(const string& pepListFile);
     bool validate(int scan, string modified_pep);
     string getTruthFileName(){return m_truthfile;}
 };
 
-shared_ptr<CTruth> CreateTruth(string filename, string method);
+shared_ptr<CTruth> CreateTruth(const string& filename, const string& method);
 
 class HTMLReporter {
     string m_outfilename;
     ofstream m_fout;
 public:
-    HTMLReporter(string filename, string title = "PSM Validator");
+    HTMLReporter(string filename, const string& title = "PSM Validator");
     ~HTMLReporter();
-    void addImage(string filename, string title, string description);
+    void addImage(const string& filename, const string& title, string description);
 };
 
 void load_tsv_file(const string &filename, vector<vector<string>> &data);
 
-string getfragmodelfile(string inputfile, double m_minIntenFC, bool isTraining=false);
+string getfragmodelfile(const string& inputfile, double m_minIntenFC, bool isTraining=false);
 
 class CFlow {
     vector<CFlow *> following_steps;
@@ -122,18 +129,18 @@ public:
     virtual void notify(string msg);
     virtual void update(string msg);
     virtual void update_with_key_value_pair(string key, string value){}
-    string getname();
+    string getname() const;
 };
 
 vector<Feature *>
-createFeatureVector(string fragmodel, bool ghost, double minIntFC, string fragscoretype, string featurelistfile,
+createFeatureVector(const string& fragmodel, bool ghost, double minIntFC, const string& fragscoretype, const string& featurelistfile,
                     string binaryPath);
 
 //void get_feature_from_spec(PSMInfo *psmInfo, CSpectrum *spec, vector<double> *OneSpecFeature, vector<Feature *> *features,
 //                      int idx, string mzMLsourcefile, const bool fixMz, bool highMassAcc);
 
 void
-workOnOneBatch(PeptideProphetParser *ppp, string mzMLsourcefile, DataFile *df, vector<int> *index, vector<int> *batches,
+workOnOneBatch(PeptideProphetParser *ppp, const string& mzMLsourcefile, DataFile *df, vector<int> *index, vector<int> *batches,
                int i, vector<Feature *> *features, vector<vector<double>> *featuretable, shared_ptr<Progress> ps,
                bool fixMz, bool highMassAcc);
 
@@ -154,7 +161,7 @@ class ValidatePSM : public CFlow {
     bool m_useAlternativeProtein;
     string m_output_feature_file;
 public:
-    ValidatePSM(string pepxmlfile, string validatorModel, string fragmodelscoretype, double minInt, bool ghost,
+    ValidatePSM(string pepxmlfile, const string& validatorModel, string fragmodelscoretype, double minInt, bool ghost,
                 int threadNum, shared_ptr<CTruth> truth, int mtry, int ntree, string featurelistfile, int maxdepth,
                 bool useAlternativeProt, string rangerbinary, string binaryPath);
     void getProcessed_i(DataFile *df, PeptideProphetParser &ppp,  vector<int> &index);
@@ -168,7 +175,7 @@ public:
 
 class ExtractFeaturesFromPepXML : public CFlow {
 public:
-    ExtractFeaturesFromPepXML(string pepxmlfile, string validatorModel, string fragmodelscoretype, double minInt,
+    ExtractFeaturesFromPepXML(string pepxmlfile, const string& validatorModel, string fragmodelscoretype, double minInt,
                               bool ghost, int threadNum, string featurelistfile, bool useAlternativeProt,
                               string binaryPath, int hitrank);
     void run();
@@ -223,7 +230,7 @@ private:
                               const vector<vector<double>> &featuretable) const;
 public:
 
-    ExtractFeatures(string pepxmlfile, string validatorModel, string fragmodelscoretype, double minInt,
+    ExtractFeatures(string pepxmlfile, const string& validatorModel, string fragmodelscoretype, double minInt,
                     bool ghost, int threadNum, string featurelistfile, bool useAlternativeProt,
                     string binaryPath);
 
@@ -232,8 +239,8 @@ public:
     void printFeatureTable(const vector<Feature *> &features, const vector<vector<double>> &onefeaturetable) const;
 };
 
-void plot_FDR_curve(string outputfilename, string title, vector<tuple<double, double>> &fdr_counts);
-void plot_ROC_with_score(CTable &psmtable, int column, string scoreName, string outprefix, bool onlytarget, HTMLReporter *reporter);
+void plot_FDR_curve(const string& outputfilename, const string& title, vector<tuple<double, double>> &fdr_counts);
+void plot_ROC_with_score(CTable &psmtable, int column, const string& scoreName, string outprefix, bool onlytarget, HTMLReporter *reporter);
 
 class resultAnalysis : public CFlow {
     string m_pepxmlfile;
@@ -258,7 +265,7 @@ class RangerFormat : public CFlow {
     const int m_MIN_SAMPLE_NUM;// = 1000;
     const int m_MAX_SAMPLE_NUM;//=90000;
 public:
-    RangerFormat(string posFeature, string negFeature, string outPNsampleName, int trainingSampleSize);
+    RangerFormat(const string &posFeature, const string &negFeature, const string &outPNsampleName, int trainingSampleSize);
     void run();
     int exportTrainingFeaturesToCSV(vector<vector<string>> &feature, const string &label, ofstream &fout, int start_col,
                                     int start_row, const int MAX_SAMPLE_NUM) const;
@@ -274,15 +281,9 @@ class AnnotationFormat{
     // Note: feels that I have developed something like this...
 };
 
-// an interface for config file.
-class IConfigFile{
-public:
-    IConfigFile()=default;
-    virtual void write();;
-    virtual ~IConfigFile();
-};
 
-class RFModelConfig: public IConfigFile{
+
+class RFModelConfig{
     string m_tsvfile;
     bool m_isTraining;
     string m_rfModel;
@@ -294,11 +295,32 @@ class RFModelConfig: public IConfigFile{
     int m_threadnum;
     string m_exportName;
 public:
+    const string &getMTsvfile() const;
+
+    bool isMIsTraining() const;
+
+    const string &getMRfModel() const;
+
+    bool isMProbPrediction() const;
+
+    int getMMtry() const;
+
+    int getMNtree() const;
+
+    int getMMaxDepth() const;
+
+    const string &getMRangerBinaryPath() const;
+
+    int getMThreadnum() const;
+
+    const string &getMExportName() const;
+
+public:
     RFModelConfig(string featuretsv, bool isTraining, string RFmodelfile, bool probPrediction, int mtry, int ntree,
     int maxdepth, string rangerbinary, string exportName);
-    RFModelConfig(string configFileName);
-    ~RFModelConfig()override;
-    void write() override;
+    RFModelConfig(const string &configFileName);
+    ~RFModelConfig();
+    void write() ;
     void print();
 };
 
@@ -316,8 +338,9 @@ class RangerWraper : public CFlow {
     void predict_with_model() const;
     int m_threadnum;
 public:
-    RangerWraper(string featuretsv, bool isTraining, string RFmodelfile, bool probPrediction, int mtry, int ntree,
+    RangerWraper(const string& featuretsv, bool isTraining, string RFmodelfile, bool probPrediction, int mtry, int ntree,
                  int maxdepth, string rangerbinary);
+    RangerWraper(RFModelConfig &rfconfig){}
     void run();
     void update_with_key_value_pair(string key, string value);
     ~RangerWraper(){
@@ -341,7 +364,7 @@ class FeatureWorkFlow : public CFlow {
 public:
     // This is the workflow for generating model fragmentation
     FeatureWorkFlow(string inputfile, bool ghost, double minInt, string &fragmodelfile,
-                    string fragscoretype, string annotationMethod, bool debug, string basename,
+                    string fragscoretype, string annotationMethod, bool debug, const string& basename,
                     string featurelistfile, bool isLowMassAcc, string binaryPath);
     void run();
     void update_with_key_value_pair(string key, string value);
@@ -363,7 +386,7 @@ class FragModel : public CFlow {
     string m_binaryPath;
     void extractFeatures(bool verbosity, CPeakPairsImporter &positivePeakPairs, CPeakPairsImporter &negativePeakPairs);
 public:
-    FragModel(string mgf_input, bool verbosity, double minIntenFC, bool overwrite, string &fragPatternModel,
+    FragModel(const string &mgf_input, bool verbosity, double minIntenFC, bool overwrite, string &fragPatternModel,
               bool outputfeature, bool useGhostPeak, bool isLowMassAcc, string binaryPath);
     ~FragModel();
     void run();
@@ -381,8 +404,8 @@ class FragPatternScoreFlow : public CFlow {
     string m_scoretype;
     bool m_isLowMassAcc;
 public:
-    FragPatternScoreFlow(string inputfile, bool verbosity, double minIntenFC, bool overwrite, string outputmodelfile,
-                         string scoretype, string searchresult, bool isLowMassAcc, string binaryPath);
+    FragPatternScoreFlow(const string &inputfile, bool verbosity, double minIntenFC, bool overwrite, string outputmodelfile,
+                         string scoretype, const string& searchresult, bool isLowMassAcc, string binaryPath);
     ~FragPatternScoreFlow();
     void run();
 };
@@ -394,9 +417,9 @@ class CometSearch : public CFlow {
     string m_outputname;
     string m_specfile;
 public:
-    CometSearch(string cometbinary, string database, string paramfile, string outputname, string specfile);
+    CometSearch(const string &cometbinary, const string &database, const string &paramfile, const string &outputname, const string &specfile);
     virtual ~CometSearch();
-    virtual void run();
+    virtual void run()  override;
 };
 
 class CometSearchTD : public CFlow {
@@ -439,11 +462,11 @@ class FlowAll : public CFlow {
     string m_inputspec;
     vector<CFlow *> m_pFlow;
 public:
-    FlowAll(string fragscoretype, bool useGhostPeak, bool outputfeature, bool overwrite, double minIntenFC, bool verbosity,
-            string fragPatternModelFilename, string inputfile, string cometbinary, string targetdb, string decoydb,
+    FlowAll(const string& fragscoretype, bool useGhostPeak, bool outputfeature, bool overwrite, double minIntenFC, bool verbosity,
+            string fragPatternModelFilename, const string& inputfile, string cometbinary, string targetdb, string decoydb,
             string paramfile, bool isTraingRF, bool isRFProbOut, string writeRFModelTo, string validatorRFmodel,
-            int mtry, int ntree, string featurelistfile, bool isLowMassAcc, int trainingSampleSize, int maxdepth,
-            string rangerbinary, string binaryPath);
+            int mtry, int ntree, const string& featurelistfile, bool isLowMassAcc, int trainingSampleSize, int maxdepth,
+            const string& rangerbinary, const string& binaryPath);
     void run();
     ~FlowAll();
 };
