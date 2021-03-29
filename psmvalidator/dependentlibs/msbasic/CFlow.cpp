@@ -1419,7 +1419,7 @@ void plot_ROC_with_score(CTable &psmtable, int column, const string& scoreName, 
         string second_out_fig = outfigure.substr(0,outfigure.length()-4)+"_full.png";
         reporter->addImage(second_out_fig, second_out_fig,"");
     }
-    spdlog::get("A")->info("AUC of score {} is {}; ",scoreName,  auc);
+    spdlog::get("A")->info("AUC of score {} is {:.4f}; ",scoreName,  auc);
 }
 
 shared_ptr<CTruth> CreateTruth(const string& filename, const string& method) {
@@ -1742,7 +1742,7 @@ public:
     void plot(const string& title,const string& filename)    {
         SFdrScore afs(0.01,0,0,1.0);
         auto y=upper_bound(m_FdrScore.begin(), m_FdrScore.end(),afs, [](const SFdrScore &u, const SFdrScore &v)->bool{return u.m_fdr<v.m_fdr;});
-        spdlog::get("A")->info("{}: FDR: {}, #PSM: {}, #PSM_Incorr: {}, Probability cut-off: {}", title,y->m_fdr, y->m_corr, y->m_incorr, y->m_score );
+        spdlog::get("A")->info("{}: FDR: {:.04f}, #PSM: {}, #PSM_Incorr: {}, Probability cut-off: {:.04f}", title,y->m_fdr, y->m_corr, y->m_incorr, y->m_score );
         vector<tuple<double, double>> tmpobj;
         for(auto each: m_FdrScore)  {
             tmpobj.emplace_back(each.m_fdr,each.m_corr);
