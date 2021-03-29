@@ -10,6 +10,7 @@
 #include "dependentlibs/msbasic/CFlow.h"
 #include "spdlog/spdlog.h"
 #include "dependentlibs/msbasic/commonfun.h"
+#include <stdexcept>
 
 void generateConfigFile(const boost::program_options::options_description &patternLR, string filename);
 
@@ -124,7 +125,7 @@ boost::program_options::variables_map getParam(int argc, char *argv[]) {
     if (vm.count("help") and vm.at("help").as<bool>()) {
         cout << "Build: " << __DATE__ << " " << __TIME__ << endl;
         cout << patternLR << endl;
-        throw invalid_argument("Program Finish");
+        throw CException("Program Finish");
     }
     displayParam(vm);
     return vm;
@@ -257,7 +258,7 @@ CFlow *CreateFlow(int argc, char *argv[]) {
         if (not isTrainingRFModel) {
             if (not File::isExist(rfModelRead)) {
                 spdlog::get("A")->error("Random forest model file {} does not exist!", rfModelRead);
-                throw invalid_argument(
+                throw CException(
                         "\nPlease try to add random forest model with option: --validatorModel XXX.forest\n");
             }
         }
@@ -280,7 +281,7 @@ CFlow *CreateFlow(int argc, char *argv[]) {
         if (not isTrainingRFModel) {
             if (not File::isExist(rfModelRead)) {
                 spdlog::get("A")->error("Random forest model file {} does not exist!", rfModelRead);
-                throw invalid_argument(
+                throw CException(
                         "\nPlease try to add random forest model with option: --validatorModel XXX.forest\n");
             }
         }
@@ -329,6 +330,19 @@ void displayTitle() {
                            "-------------------------------------------------", __DATE__, __TIME__);
 }
 
+// c++ 11 feature: current_exception
+// source: https://en.cppreference.com/w/cpp/error/current_exception
+void handle_eptr(std::exception_ptr eptr) // passing by value is ok
+{
+    try {
+        if (eptr) {
+            std::rethrow_exception(eptr);
+        }
+    } catch(const std::exception& e) {
+        std::cout << "Caught exception \"" << e.what() << "\"\n";
+    }
+}
+
 int main(int argc, char *argv[]) {
     initlog("psmvalidator.log", "A");
     displayTitle();
@@ -349,7 +363,9 @@ int main(int argc, char *argv[]) {
     catch (const exception &ex) {
         cerr << "program exit with exception: " << ex.what() << endl;
     } catch (...) {
-        cerr << "Unknown exceptions caused crash. Program terminated!" << endl;
+        std::exception_ptr eptr = std::current_exception();
+//        cerr << "Unknown exceptions caused crash. Program terminated!" << endl;
+        handle_eptr(eptr);
     }
     spdlog::drop_all();
     return 0;

@@ -109,7 +109,7 @@ class HTMLReporter {
 public:
     HTMLReporter(string filename, const string& title = "PSM Validator");
     ~HTMLReporter();
-    void addImage(const string& filename, const string& title, string description);
+    void addImage(const string& filename, const string& title, const string& description);
 };
 
 void load_tsv_file(const string &filename, vector<vector<string>> &data);
@@ -334,13 +334,13 @@ class RangerWraper : public CFlow {
     int m_ntree;
     int m_maxDepth;
     string m_ranger_binary_path;
-    void train_model() const;
-    void predict_with_model() const;
+    void train() const;
+    void predict() const;
     int m_threadnum;
 public:
     RangerWraper(const string& featuretsv, bool isTraining, string RFmodelfile, bool probPrediction, int mtry, int ntree,
                  int maxdepth, string rangerbinary);
-    RangerWraper(RFModelConfig &rfconfig){}
+    RangerWraper(RFModelConfig &rfconfig);
     void run();
     void update_with_key_value_pair(string key, string value);
     ~RangerWraper(){

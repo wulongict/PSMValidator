@@ -147,8 +147,7 @@ void FeatureWorkFlow::run() {
         message = "negafile " + m_feature_outputname;
     } else {
         spdlog::get("A")->info("Invalid annotation method: {}", m_annotationMethod);
-        invalid_argument e("invalid annotation method!");
-        throw e;
+        throw CException("invalid annotation method!");
     }
     notify(message);
 
@@ -475,14 +474,12 @@ FlowAll::FlowAll(const string& fragscoretype, bool useGhostPeak, bool outputfeat
     if (isTrainingRF) {
         RFModelConfig rfconfig(combinedPNfeature, isTrainingRF, writeRFModelTo, true, mtry, ntree, maxdepth, rangerbinary, writeRFModelTo + ".conf");
         rfconfig.write();
-        m_pFlow.push_back(new RangerWraper(combinedPNfeature, isTrainingRF, writeRFModelTo, true, mtry, ntree, maxdepth,
-                                           rangerbinary));
+        m_pFlow.push_back(new RangerWraper(rfconfig));
 
     } else {
         RFModelConfig rfconfig(combinedPNfeature, isTrainingRF, validatorRFmodel, true, mtry, ntree, maxdepth, rangerbinary, validatorRFmodel + ".conf");
         rfconfig.write();
-        m_pFlow.push_back(new RangerWraper(combinedPNfeature, isTrainingRF, validatorRFmodel, true, mtry, ntree, maxdepth,
-                                           rangerbinary));
+        m_pFlow.push_back(new RangerWraper(rfconfig));
 
     }
 
@@ -615,7 +612,7 @@ void plotROCtoPNG(double auc, vector<tuple<double, double>> &roc, const string& 
 // The assumption can be invalid sometimes...
 void getscore(vector<vector<string>> &data, vector<double> &postiveScores, vector<double> &negativeScores) {
     int num_skip_header_lines = 3;
-    int sample_num = data.size() - num_skip_header_lines;
+    int sample_num = (int)data.size() - num_skip_header_lines;
     cout << "Sample Number: " << sample_num << endl;
     int postive_num = sample_num / 2, negative_num = sample_num / 2;
     if (sample_num % 2 == 1) {
@@ -720,13 +717,13 @@ void FeatureImportanceProcess(const string& importance_file) {
 
 void RangerWraper::run() {
     if (m_isTraining) {
-        train_model();
+        train();
         // the input file should be be hard coded here
         string importance_file = m_rfModel.substr(0, m_rfModel.length() - 7) + ".importance";
         FeatureImportanceProcess(importance_file);
         notify(string("RFModel ") + m_rfModel);
     } else {
-        predict_with_model();
+        predict();
 
     }
 }
@@ -750,8 +747,23 @@ RangerWraper::RangerWraper(const string& featuretsv, bool isTraining, string RFm
     m_threadnum = getProperThreads();
 }
 
+RangerWraper::RangerWraper(RFModelConfig &rfconfig) {
+    m_name = "Run ranger (random-forest)";
+    m_tsvfile = rfconfig.getMTsvfile();
+    m_isTraining = rfconfig.isMIsTraining();
+    m_rfModel = rfconfig.getMRfModel();
+    m_mtry = rfconfig.getMMtry();
+    m_ntree = rfconfig.getMNtree();
+    m_maxDepth = rfconfig.getMMaxDepth();
 
-void RangerWraper::predict_with_model() const {
+
+    m_probPrediction = rfconfig.isMProbPrediction();
+    m_predictionprefix = m_tsvfile.substr(0, m_tsvfile.length() - 5); // magic value
+    m_ranger_binary_path = rfconfig.getMRangerBinaryPath();
+    m_threadnum = rfconfig.getMThreadnum();
+}
+
+void RangerWraper::predict() const {
     string ranger_commandline = m_ranger_binary_path + " --treetype 1 --ntree " + to_string(m_ntree) +"  --verbose --depvarname class  "
                                                      " --targetpartitionsize 1 --impmeasure 1 --outprefix " + m_predictionprefix +
                                 " --nthreads " + to_string(m_threadnum) + " --seed 100 --predict " + m_rfModel + " --mtry " + to_string(m_mtry);
@@ -770,7 +782,7 @@ void RangerWraper::predict_with_model() const {
     }
 }
 
-void RangerWraper::train_model() const {
+void RangerWraper::train() const {
     string ranger_commandlinex = to_string(m_ranger_binary_path," ",
             " ", "--treetype", 1, "--ntree", m_ntree,
             "--maxdepth", m_maxDepth,
@@ -810,6 +822,8 @@ void RangerWraper::update_with_key_value_pair(string key, string value) {
         m_rfModel = value;
     }
 }
+
+
 
 void load_tsv_file(const string &filename, vector<vector<string>> &data) {
     string line;
@@ -1700,7 +1714,7 @@ HTMLReporter::~HTMLReporter() {
     spdlog::get("A")->info("HTML report file {} generated!", m_outfilename);
 }
 
-void HTMLReporter::addImage(const string& filename, const string& title, string description) {
+void HTMLReporter::addImage(const string& filename, const string& title, const string& description) {
     string outstr = "<figure>\n";
     outstr += "  <img src=\"" + filename + "\" >\n";
     outstr += "  <figcaption>" + title + " </figcaption>\n";
@@ -1750,7 +1764,7 @@ public:
         plot_FDR_curve(filename,title, tmpobj);
     }
 
-    ~CFdrNumCorr(){}
+    ~CFdrNumCorr()= default;
     void saveAs(const string& outputfile){
         ofstream fout(outputfile.c_str(), ios::out);
         for (auto x: m_fdr_counts) {
@@ -1775,7 +1789,7 @@ public:
         int tcount = 0, dcount = 0;
         // why?
         m_FdrScore.emplace_back(SFdrScore(0.0, 0 , 1, 1.0));
-        m_fdr_counts.push_back(make_tuple(0.0, 0.0));
+        m_fdr_counts.emplace_back(0.0, 0.0);
         while (tcount < tProbs.size() and dcount < dProbs.size()) {
             double score = 1.0;
             if (tProbs[tcount] >= dProbs[dcount]) {
@@ -2202,7 +2216,7 @@ public:
 
 void ExtractFeaturesFromPepXML::run() {
     int found=m_output_feature_file.find_last_of('.');
-    string filebasename ="";
+    string filebasename;
     if(found == string::npos){
         // not find
         filebasename = m_output_feature_file;
@@ -2419,7 +2433,7 @@ RFModelConfig::RFModelConfig(string featuretsv, bool isTraining, string RFmodelf
     m_exportName = exportName;
 }
 
-RFModelConfig::~RFModelConfig() {}
+RFModelConfig::~RFModelConfig() = default;
 
 void RFModelConfig::print() {
     cout << "m_tsvfile = " <<  m_tsvfile << endl;
