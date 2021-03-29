@@ -889,7 +889,7 @@ void PeptideProphetParser::initialize() {
         m_use_iProb = true;
     }
     m_threshold = getThresholdForFDR(0.01, m_use_iProb);
-    cout << "Find FDR < 1% threshold for " << (m_use_iProb? "iProphet": "PeptidePropeht: ") << m_threshold << endl;
+    cout << "Find FDR < 1% threshold for " << (m_use_iProb? "iProphet: ": "PeptidePropeht: ") << m_threshold << endl;
 }
 
 bool PeptideProphetParser::isPSMSignificant(int i) {
