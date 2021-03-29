@@ -338,8 +338,6 @@ class RangerWraper : public CFlow {
     void predict() const;
     int m_threadnum;
 public:
-    RangerWraper(const string& featuretsv, bool isTraining, string RFmodelfile, bool probPrediction, int mtry, int ntree,
-                 int maxdepth, string rangerbinary);
     RangerWraper(RFModelConfig &rfconfig);
     void run();
     void update_with_key_value_pair(string key, string value);

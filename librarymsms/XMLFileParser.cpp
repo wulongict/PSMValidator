@@ -92,15 +92,15 @@ void XMLParser::first_attribute(xml_node<> *node, string attr_name, T &attr_val)
 }
 
 void CometPepXMLParser::export_psm_info(vector<shared_ptr<PSMInfo>> &psm,xml_document<> &doc) {
-    // get the source files.
     m_currentNode = breadth_first_search("msms_run_summary", &doc, false);
     vector<xml_node<> *> sourcefileNodes = find_all_siblings("msms_run_summary", m_currentNode);
 
     for (auto &x: sourcefileNodes) {
         string newfile = x->first_attribute("base_name")->value();
-        spdlog::get("A")->info("Get base fileanme: {}", newfile);
         string extension =  x->first_attribute("raw_data")->value();
+        // sometimes, the raw_data is mzXML, NOT .mzXML, the dot is missing. So this is an ad hoc fix.
         if(extension.at(0)!='.') extension = '.' + extension;
+
         newfile += extension;
         m_allSourceFiles.push_back(newfile);
         spdlog::get("A")->info("Get source fileanme: {}", newfile);
@@ -108,7 +108,7 @@ void CometPepXMLParser::export_psm_info(vector<shared_ptr<PSMInfo>> &psm,xml_doc
         string keywords = "spectrum_query";
         m_currentNode = breadth_first_search(keywords, &doc, false);
         vector<xml_node<> *> psm_nodes = find_all_siblings("spectrum_query", m_currentNode);
-//        cout << "[Info] PSMs found:" << psm_nodes.size() << endl;
+
         Progress ps(psm_nodes.size(), "Parsing spectrum in CometPepXML file");
         for (auto spectrum_query_node: psm_nodes) {
             ps.increase();
@@ -156,10 +156,9 @@ CometPepXMLParser::CometPepXMLParser(string filename) {
         export_psm_info(psm,doc);
         cout << "[Info] " << psm.size() << " PSMs extracted from input file" << endl;
         doc.clear();
-        cout << "[Info] buffer released====released" << endl;
 
         for(int i = 0 ; i < psm.size(); i ++)   {
-            // what if one scan exist twice?
+            // what if one scan occurs twice?
 //        if(m_scan2psminfoidx.count(psm[i].start_scan)==1){
 //            int pre_idx = m_scan2psminfoidx.find(psm[i].start_scan)->second;
 //            cout << "duplicate scan found (old): " << pre_idx << "\t" << psm[pre_idx].start_scan << "\t" << psm[pre_idx].charge << endl;

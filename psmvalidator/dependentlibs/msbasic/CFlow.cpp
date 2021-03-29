@@ -728,25 +728,6 @@ void RangerWraper::run() {
     }
 }
 
-// Sometimes, decoy can be target!!!
-RangerWraper::RangerWraper(const string& featuretsv, bool isTraining, string RFmodelfile, bool probPrediction, int mtry,
-                           int ntree,
-                           int maxdepth, string rangerbinary) {
-    m_name = "Run ranger (random-forest)";
-    m_tsvfile = featuretsv;
-    m_isTraining = isTraining;
-    m_rfModel = RFmodelfile;
-    m_mtry = mtry;
-    m_ntree = ntree;
-    m_maxDepth = maxdepth;
-
-
-    m_probPrediction = probPrediction;
-    m_predictionprefix = featuretsv.substr(0, featuretsv.length() - 5); // magic value
-    m_ranger_binary_path = rangerbinary;
-    m_threadnum = getProperThreads();
-}
-
 RangerWraper::RangerWraper(RFModelConfig &rfconfig) {
     m_name = "Run ranger (random-forest)";
     m_tsvfile = rfconfig.getMTsvfile();
@@ -1011,8 +992,6 @@ void plot_FDR_curve(const string& outputfilename, const string& title, vector<tu
     gnuplot.send1d(fdr_counts);
 }
 
-// removed ...
-std::mutex mtx;
 
 void get_feature_from_spec(PSMInfo *psmInfo, CSpectrum *spec, vector<double> *OneSpecFeature, vector<Feature *> *features,
                       int idx, string mzMLsourcefile, const bool fixMz, bool highMassAcc, int hitrank=0) {
@@ -1044,14 +1023,12 @@ void get_feature_from_spec(PSMInfo *psmInfo, CSpectrum *spec, vector<double> *On
     string plain_peptide = regex_replace(modified_peptide, regex("[[0-9.]*]"), "");
     string newPep = regex_replace(modified_peptide, regex("C"), "C[160]");
 
-    mtx.lock();
     spdlog::get("A")->debug("Modified peptide to be used for annotation: {}", psmInfo->searchhits[0]->m_modified_peptide);
     Peptide *ipep = new Peptide(newPep, psmInfo->charge); // peptide done
     if (!ipep) {
         spdlog::get("A")->error("Get nullptr in feature extraction step ");
         throw CException("Invalid pointer");
     }
-    mtx.unlock();
     specpkl->setPeptidePtr(ipep);
 
     // If set to true, it will fix the Mz to the theoretical value of the first annotated peak.
@@ -1187,10 +1164,10 @@ ValidatePSM::ValidatePSM(string pepxmlfile, const string& validatorModel, string
 
     m_output_feature_file = m_pepxmlfile + m_basename + ".feat";
 
-    RFModelConfig rfconfig(m_output_feature_file, false, validatorModel, true, mtry, ntree, maxdepth, rangerbinary, validatorModel + ".conf");
+    RFModelConfig rfconfig(m_output_feature_file, false, validatorModel, true, mtry, ntree,
+                           maxdepth, rangerbinary, validatorModel + ".conf");
     rfconfig.write();
-    m_other_steps.push_back(new RangerWraper(m_output_feature_file, false, validatorModel, true, mtry,
-                                             ntree, maxdepth, rangerbinary));
+    m_other_steps.push_back(new RangerWraper(rfconfig));
     m_other_steps.push_back(new resultAnalysis(m_pepxmlfile, truth, File::CFile(validatorModel).basename,m_useAlternativeProtein));
     m_threadNum = threadNum <= 0 or threadNum > getProperThreads()? getProperThreads(): threadNum;
 }
@@ -1249,6 +1226,7 @@ void ValidatePSM::run() {
         vector<Feature *> features = createFeatureVector(m_fragmodelfile,
                                                          m_ghost, m_minIntFC, m_fragmodelscoretype,
                                                          m_featurelistfile, m_binaryPath);
+        Peptide::defaultTables();
         vector<vector<double>> featuretable;
         CTable psmtable;
         vector<string> header = {"filename", "id", "scan", "modpep", "charge", "protein", "ppprob", "iprob"};
@@ -2007,6 +1985,7 @@ void ExtractFeatures::run() {
         vector<Feature *> features = createFeatureVector(m_fragmodelfile,
                                                          m_ghost, m_minIntFC, m_fragmodelscoretype,
                                                          m_featurelistfile, m_binaryPath);
+        Peptide::defaultTables();
         vector<vector<double>> featuretable;
         CTable psmtable;
         vector<string> header = {"filename", "id", "scan", "modpep", "charge", "protein", "ppprob", "iprob"};
@@ -2235,6 +2214,7 @@ void ExtractFeaturesFromPepXML::run() {
     vector<Feature *> features = createFeatureVector(m_fragmodelfile,
                                                      m_ghost, m_minIntFC, m_fragmodelscoretype,
                                                      m_featurelistfile, m_binaryPath);
+    Peptide::defaultTables();
     CTable psmtable;
     vector<string> header = {"filename", "id", "scan", "modpep", "charge", "protein", "ppprob", "iprob"};
     psmtable.setHeader(header);
@@ -2337,8 +2317,6 @@ void ExtractFeaturesFromPepXML::updatePsmTable(ICPepXMLParser *pepxml, DataFile 
         };
 
         if(psmInfo.searchhits.size()<=m_hitrank){
-//            cout << "[Info] the " << m_hitrank << i_th(m_hitrank)<< " peptide does not found! total candidates: "
-//            << psmInfo.searchhits.size() << endl;
             num_search_hit_not_found ++;
 
         } else{
@@ -2362,7 +2340,7 @@ void ExtractFeaturesFromPepXML::updatePsmTable(ICPepXMLParser *pepxml, DataFile 
             }else{
                 targetnum++;
             }
-    //        psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(), // use proteinnACNum now
+
     tmp[3]=sh0.m_modified_peptide;
             tmp[5]=proteinACNum.substr(0,proteinACNum.find_first_of(' '));
             tmp[6]=to_string(sh0.m_peptideprophet_prob);

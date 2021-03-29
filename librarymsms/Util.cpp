@@ -74,7 +74,7 @@ CTable::CTable(const string& filename, char delimitor, bool has_header, int skip
             getline(fin, line);
             trim_space_only(line);
             split_string(line, m_column_header, m_delim);
-            cout << "Get has_header: " << line << endl;
+            cout << endl << "Header: " << endl << line << endl;
         }
         while (getline(fin, line)) {
             cps.increase();
@@ -134,6 +134,8 @@ void CTable::setEntry(int row, int col, string value) {
     }
 }
 
+// this function is not good, because it changed column number.
+// Warning: after using this function, the column row is no longer aligned with other rows. as it has one more element.
 void CTable::appendEntry(int row, const string& value) { // not a good one; the header is left out
     if (row >= 0 && row < m_row) {
         m_table[row].push_back(value);
@@ -267,6 +269,66 @@ int CTable::getRowByKey(const string& key, int col) {
         }
         return m_tableindex[key][0];
     }
+}
+
+void CTable::print() {
+    for(size_t i = 0; i < m_row; i ++)
+    {
+        printRow(i);
+    }
+}
+
+CTable::CTable() {
+    m_row = 0;
+    m_col = 0;
+    m_filename = "";
+    m_delim = '\t';
+    m_has_header = false;
+
+}
+
+void CTable::appendHeader(const vector<string> &Header) {
+    for(auto & i : Header)     {
+        m_column_header.push_back(i);
+        m_col += 1;
+    }
+    buildheader2column(true);
+
+}
+
+string CTable::getHeaderByColumn(size_t column) {
+    if(column >=m_col)        {
+        throw logic_error("column number out of header size");
+    }
+    return m_column_header[column];
+}
+
+int CTable::getColByHeader(const string &header) {
+    buildheader2column();
+    if(m_header2col.count(header)==0)
+    {
+        throw logic_error("header not found: " + header );
+    }
+    return m_header2col[header];
+}
+
+void CTable::buildheader2column(bool rebuild) {
+    if(m_header2col.empty() or rebuild)
+    {
+        for(size_t i = 0; i < m_col; i ++)
+        {
+            m_header2col[m_column_header[i]]=i;
+        }
+        cout << "column index build" << endl;
+    }
+}
+
+unsigned long CTable::LengthofRow(size_t k) {
+    return m_table[k].size();
+}
+
+bool CTable::hasHeader() const {
+    return m_has_header;
 }
 
 namespace statistic {

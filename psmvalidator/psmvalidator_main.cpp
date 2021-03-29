@@ -276,7 +276,7 @@ CFlow *CreateFlow(int argc, char *argv[]) {
                                rangerbinary,rfModelRead + ".conf");
         rfconfig.write();
 
-        ptr = new RangerWraper(feature_tsv_file, isTrainingRFModel, rfModelRead, true, mtry, ntree, maxDepth, rangerbinary);
+        ptr = new RangerWraper(rfconfig);
         // check parameter
         if (not isTrainingRFModel) {
             if (not File::isExist(rfModelRead)) {

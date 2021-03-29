@@ -402,9 +402,9 @@ namespace rapidxml
         //! Nodes allocated from the pool are no longer valid.
         virtual ~memory_pool()
         {
-            printf("memory pool destructor\n");
+//            printf("memory pool destructor\n");
             clear();
-            printf("new %ld times, delete %ld times, equal = %s\n", new_times, delete_times, new_times == delete_times? "True":"False");
+//            printf("new %ld times, delete %ld times, equal = %s\n", new_times, delete_times, new_times == delete_times? "True":"False");
         }
 
         //! Allocates a new node from the pool, and optionally assigns name and value to it. 
@@ -530,7 +530,7 @@ namespace rapidxml
         void clear()
         {
             double totalRAMUsed = (RAPIDXML_STATIC_POOL_SIZE + RAPIDXML_DYNAMIC_POOL_SIZE * new_times) *1.0/ 1024/1024;
-            printf("\n == Total RAM Usage: %lf MB ==\n" , totalRAMUsed);
+//            printf("\n == Total RAM Usage: %lf MB ==\n" , totalRAMUsed);
             while (m_begin != m_static_memory)
             {
                 char *previous_begin = reinterpret_cast<header *>(align(m_begin))->previous_begin;
@@ -1383,7 +1383,7 @@ namespace rapidxml
         {
         }
         ~xml_document(){
-            printf("desctructor of xml_document\n");
+//            printf("desctructor of xml_document\n");
         }
 
         //! Parses zero-terminated XML string according to given flags.
@@ -1436,7 +1436,7 @@ namespace rapidxml
         {
             this->remove_all_nodes();
             this->remove_all_attributes();
-            printf("memory pool clear() will be called\n");
+//            printf("memory pool clear() will be called\n");
             memory_pool<Ch>::clear();
         }
         

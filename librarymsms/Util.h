@@ -417,8 +417,9 @@ string getmodificationfrompeptidestring(string peptidestr, modification &mod);
 
 const string CTable_unavailableEntry = "N/A";
 
-class CTable { // Every table got its column; if not, put C0, C1, C2,.... as header
-//    const static string unavailableEntry;
+class CTable {
+    // Every table got its column; if not, put C0, C1, C2,.... as header
+    //    const static string unavailableEntry;
     string m_filename;
     char m_delim;
     bool m_has_header;
@@ -427,90 +428,34 @@ class CTable { // Every table got its column; if not, put C0, C1, C2,.... as hea
     std::map<string,vector<int>> m_tableindex;
     map<string, int> m_header2col;
 public:
-    void buildheader2column(bool rebuild=false){
-        if(m_header2col.empty() or rebuild)
-        {
-            for(size_t i = 0; i < m_col; i ++)
-            {
-                m_header2col[m_column_header[i]]=i;
-            }
-            cout << "column index build" << endl;
-        }
-    }
-    unsigned long LengthofRow(size_t k){
-        return m_table[k].size();
-    }
-
-    void resizeRow(int k, int newsize);
-
-    void print()    {
-        for(size_t i = 0; i < m_row; i ++)
-        {
-            printRow(i);
-        }
-    }
-
-    bool hasHeader() const
-    {
-        return m_has_header;
-    }
-
-    void build_table_index(int col);
-
     size_t m_row;
     size_t m_col;
-    CTable(){
-        m_row = 0;
-        m_col = 0;
-        m_filename = "";
-        m_delim = '\t';
-        m_has_header = false;
+    CTable();
+    CTable(const string& filename, char delimitor, bool has_header, int skipNum = 0);
+    void buildheader2column(bool rebuild=false);
+    void build_table_index(int col);
 
-    }
-    void addRow(const vector<string>& row);
-
-    void appendHeader(const vector<string>& Header)    {
-        for(auto & i : Header)     {
-            m_column_header.push_back(i);
-            m_col += 1;
-        }
-        buildheader2column(true);
-
-    }
-
+    bool hasHeader() const;
+    void appendHeader(const vector<string>& Header);
+    string getHeaderByColumn(size_t column);
+    int getColByHeader(const string& header);
     void setHeader(const vector<string> &header);
 
-    CTable(const string& filename, char delimitor, bool has_header, int skipNum = 0);
+    unsigned long LengthofRow(size_t k);
+    void resizeRow(int k, int newsize);
 
+    int getRowByKey(const string& key, int col);    // key and key column
     string getEntry(int row, int col) const ;
 
-    // key and key column
-    int getRowByKey(const string& key, int col);
-
+    void addRow(const vector<string>& row);
     void setEntry(int row, int col, string value);
-
     void appendEntry(int row, const string& value);
-
-    string getHeaderByColumn(size_t column)    {
-        if(column >=m_col)        {
-            throw logic_error("column number out of header size");
-        }
-        return m_column_header[column];
-    }
-    int getColByHeader(const string& header)
-    {
-        buildheader2column();
-        if(m_header2col.count(header)==0)
-        {
-            throw logic_error("header not found: " + header );
-        }
-        return m_header2col[header];
-    }
 
     void Join(CTable &other);
 
     void saveAs(const string& filename, bool with_header, char delimtor);
 
+    void print();
     void printRow(int i);
 };
 
