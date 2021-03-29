@@ -48,7 +48,7 @@ void CFlow::subscribe(CFlow *previous_step) {
     previous_step->attach(this);
 }
 
-void CFlow::notify(string msg) {
+void CFlow::notify(const string &msg) {
     spdlog::get("A")->info("Send message: {}", msg);
     for (auto x: following_steps) {
         x->update(msg);
@@ -158,7 +158,7 @@ void FeatureWorkFlow::run() {
     // doing debug!!!
     if (CDebugMode::callDebug()->getMdebug() && scan != -1) {
         // todo: fix bug for invalid scan, e.g. -1
-        SimpleTimer st("Ploting Spectrum");
+        st.restart("Ploting Spectrum");
         vector<tuple<double, double, string>> onespec;
         mgfReader.getSpectra(scan, onespec);
         Gnuplot gnuplot("gnuplot -persist ");
@@ -257,7 +257,7 @@ void FragModel::run() {
     notify(string("fragmodel ") + m_modelFileName);
 }
 
-FragModel::~FragModel() {}
+FragModel::~FragModel() = default;
 
 FragPatternScoreFlow::FragPatternScoreFlow(const string &inputfile, bool verbosity, double minIntenFC, bool overwrite,
                                            string outputmodelfile,
@@ -354,7 +354,7 @@ void CometSearch::run() {
     notify(m_database + " " + m_outputname);
 }
 
-CometSearch::~CometSearch() {}
+CometSearch::~CometSearch() = default;
 
 CometSearchTD::CometSearchTD(string cometbinary, string targetdb, string decoydb, string paramfile, string specfile)
         : CFlow() {
@@ -411,7 +411,7 @@ void CometSearchTD::update_with_key_value_pair(string key, string value) {
 FlowAll::FlowAll(const string& fragscoretype, bool useGhostPeak, bool outputfeature, bool overwrite, double minIntenFC,
                  bool verbosity,
                  string fragPatternModelFilename, const string& inputfile, string cometbinary, string targetdb, string decoydb,
-                 string paramfile, bool isTraingRF, bool isRFProbOut, string writeRFModelTo, string validatorRFmodel,
+                 string paramfile, bool isTrainingRF, bool isRFProbOut, string writeRFModelTo, string validatorRFmodel,
                  int mtry, int ntree, const string& featurelistfile, bool isLowMassAcc, int trainingSampleSize, int maxdepth,
                  const string& rangerbinary, const string& binaryPath) : CFlow() {
     if (not File::isExist(inputfile)) {
@@ -472,12 +472,16 @@ FlowAll::FlowAll(const string& fragscoretype, bool useGhostPeak, bool outputfeat
         m_pFlow.push_back(new RangerFormat(psmfeaturefile, decoypsmfeaturefile, combinedPNfeature, trainingSampleSize));
 
     }
-    if (isTraingRF) {
-        m_pFlow.push_back(new RangerWraper(combinedPNfeature, isTraingRF, writeRFModelTo, true, mtry, ntree, maxdepth,
+    if (isTrainingRF) {
+        RFModelConfig rfconfig(combinedPNfeature, isTrainingRF, writeRFModelTo, true, mtry, ntree, maxdepth, rangerbinary, writeRFModelTo + ".conf");
+        rfconfig.write();
+        m_pFlow.push_back(new RangerWraper(combinedPNfeature, isTrainingRF, writeRFModelTo, true, mtry, ntree, maxdepth,
                                            rangerbinary));
 
     } else {
-        m_pFlow.push_back(new RangerWraper(combinedPNfeature, isTraingRF, validatorRFmodel, true, mtry, ntree, maxdepth,
+        RFModelConfig rfconfig(combinedPNfeature, isTrainingRF, validatorRFmodel, true, mtry, ntree, maxdepth, rangerbinary, validatorRFmodel + ".conf");
+        rfconfig.write();
+        m_pFlow.push_back(new RangerWraper(combinedPNfeature, isTrainingRF, validatorRFmodel, true, mtry, ntree, maxdepth,
                                            rangerbinary));
 
     }
@@ -1023,7 +1027,7 @@ void get_feature_from_spec(PSMInfo *psmInfo, CSpectrum *spec, vector<double> *On
         return;
     }
     string modified_peptide = psmInfo->searchhits[hitrank]->m_modified_peptide;
-    string plain_peptide = regex_replace(modified_peptide, regex("\[[0-9\.]*\]"), "");
+    string plain_peptide = regex_replace(modified_peptide, regex("[[0-9.]*]"), "");
     string newPep = regex_replace(modified_peptide, regex("C"), "C[160]");
 
     mtx.lock();
@@ -1169,6 +1173,8 @@ ValidatePSM::ValidatePSM(string pepxmlfile, const string& validatorModel, string
 
     m_output_feature_file = m_pepxmlfile + m_basename + ".feat";
 
+    RFModelConfig rfconfig(m_output_feature_file, false, validatorModel, true, mtry, ntree, maxdepth, rangerbinary, validatorModel + ".conf");
+    rfconfig.write();
     m_other_steps.push_back(new RangerWraper(m_output_feature_file, false, validatorModel, true, mtry,
                                              ntree, maxdepth, rangerbinary));
     m_other_steps.push_back(new resultAnalysis(m_pepxmlfile, truth, File::CFile(validatorModel).basename,m_useAlternativeProtein));
@@ -1572,13 +1578,13 @@ CScanPepList::CScanPepList(const string& scanpepListFile) {
     for(int i = 0; i < x.m_row; i ++)  {
         int scan = atoi(x.getEntry(i,0).c_str());
         string peptide = x.getEntry(i,1);
-        string plainPepStr = regex_replace(peptide.c_str(), regex("\[[0-9\.]*\]"),"");
+        string plainPepStr = regex_replace(peptide.c_str(), regex("[[0-9.]*]"),"");
         m_scanPepList.emplace_back(scan, plainPepStr);
     }
 }
 
 bool CScanPepList::validate(int scan, string modified_pep) {
-    string plainPepStr = regex_replace(modified_pep.c_str(), regex("\[[0-9\.]*\]"),"");
+    string plainPepStr = regex_replace(modified_pep.c_str(), regex("[[0-9.]*]"),"");
     spdlog::get("A")->debug("Validating scan + peptide: {} {} <-- {} ", scan, plainPepStr, modified_pep);
     bool ret = false;
     for(auto & i : m_scanPepList)    {
@@ -1623,7 +1629,7 @@ CTruthPepList::CTruthPepList(const string& pepListFile) {
 // allow partial match
 bool CTruthPepList::validate(int scan, string modified_pep) {
     bool ret = false;
-    string plainPepStr = regex_replace(modified_pep.c_str(), regex("\[[0-9\.]*\]"),"");
+    string plainPepStr = regex_replace(modified_pep.c_str(), regex("[[0-9.]*]"),"");
     plainPepStr = regex_replace(plainPepStr, regex("L"),"I"); // L to I
 //    if (plainPepStr == "FSPVIGR"){
 //        cout << "plainPepStr \"" << plainPepStr << "\" "

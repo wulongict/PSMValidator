@@ -271,6 +271,9 @@ CFlow *CreateFlow(int argc, char *argv[]) {
 
         // input file should be specified as the feature.txt
         string feature_tsv_file;
+        RFModelConfig rfconfig(feature_tsv_file, isTrainingRFModel,rfModelRead,true,mtry,ntree,maxDepth,
+                               rangerbinary,rfModelRead + ".conf");
+        rfconfig.write();
 
         ptr = new RangerWraper(feature_tsv_file, isTrainingRFModel, rfModelRead, true, mtry, ntree, maxDepth, rangerbinary);
         // check parameter

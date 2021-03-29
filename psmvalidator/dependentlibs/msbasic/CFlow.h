@@ -126,7 +126,7 @@ public:
     void attach(CFlow *viewer);
     void subscribe(CFlow *previous_step);
     virtual void run();
-    virtual void notify(string msg);
+    virtual void notify(const string &msg);
     virtual void update(string msg);
     virtual void update_with_key_value_pair(string key, string value){}
     string getname() const;
@@ -464,7 +464,7 @@ class FlowAll : public CFlow {
 public:
     FlowAll(const string& fragscoretype, bool useGhostPeak, bool outputfeature, bool overwrite, double minIntenFC, bool verbosity,
             string fragPatternModelFilename, const string& inputfile, string cometbinary, string targetdb, string decoydb,
-            string paramfile, bool isTraingRF, bool isRFProbOut, string writeRFModelTo, string validatorRFmodel,
+            string paramfile, bool isTrainingRF, bool isRFProbOut, string writeRFModelTo, string validatorRFmodel,
             int mtry, int ntree, const string& featurelistfile, bool isLowMassAcc, int trainingSampleSize, int maxdepth,
             const string& rangerbinary, const string& binaryPath);
     void run();
