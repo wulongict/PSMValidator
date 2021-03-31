@@ -1,4 +1,5 @@
 set -x
+cd $(dirname $0)
 cd ./Release/ 
 #rm CMakeCache.txt
 cmake .. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON 

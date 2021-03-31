@@ -1354,6 +1354,7 @@ double get_iprophet_prob(SearchHit &sh) {
 void extract_pep_prob(vector<double> &tProbs, vector<double> &dProbs, PeptideProphetParser &ppp,
                       double (*getscore)(SearchHit &), bool useAlternativeProt) {
     int num = ppp.getPsmNum();
+    cout << "total number of PSMs to be extracted: " << num << endl;
     for (int i = 0; i < num; i++) {
         PSMInfo psm;
         ppp.getPSMInfobyindex(i, psm);
@@ -1371,7 +1372,7 @@ void extract_pep_prob(vector<double> &tProbs, vector<double> &dProbs, PeptidePro
             tProbs.push_back(prob);
         }
     }
-    cout << "Done data extraction " << endl;
+    cout << "Done data extraction targetScore: " << tProbs.size() << " decoy score " << dProbs.size() << endl;
 }
 
 // the pointer should be released by the caller.

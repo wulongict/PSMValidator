@@ -979,7 +979,7 @@ void plot_FDR_curve(const string &outputfilename, const string &title, vector<tu
     int newFontSize = int(12*DPI_fold); //
     cout << "font size is : " << newFontSize << endl;
     Gnuplot gnuplot;
-    gnuplot << "dpi = 72 ## dpi (variable)\n"
+    gnuplot << "dpi = 300 ## dpi (variable)\n"
                "width = 90 ## mm (variable)\n"
                "height = 90 ## mm (variable)\n"
                "\n"
@@ -998,11 +998,14 @@ void plot_FDR_curve(const string &outputfilename, const string &title, vector<tu
     //gnuplot << "set terminal pngcairo enhanced font \"Arial "<< newFontSize<<"\" size " << width << "," << height <<  endl;
     gnuplot << "set output '" << outputfilename << "'" << endl;
     gnuplot << "set size square " << endl;
-    gnuplot << "set xlabel 'False discovery rate (FDR)' font ',9'" << endl;
-    gnuplot << "set ylabel '#(Identified PSM) ' font ',9'" << endl;
-    gnuplot << "set xrange[0:0.1]" << endl;
-    gnuplot << "set tics font ',9'" << endl;
-    gnuplot << "plot '-' using 1:2 with line lw 2 title \"" << title << "\"" << endl;
+    gnuplot << "set xlabel 'FDR (%)' font ',8'" << endl;
+    gnuplot << "set ylabel 'No of Identified PSMs (K) ' font ',8'" << endl;
+    gnuplot << "set xrange[0:5]" << endl; // 5%
+    gnuplot << "set tics font ',8'" << endl;
+    gnuplot << "set key bottom right" << endl;
+    gnuplot << "n=1000" << endl;
+    gnuplot << "m=100" << endl; // percentages.
+    gnuplot << "plot '-' using ($1*m):($2/n) with line lw 2 " <<  " linecolor rgb \"black\" " << " title \"" << title << "\"" << endl;
 
     gnuplot.send1d(fdr_counts);
 }
@@ -1460,6 +1463,7 @@ void CROCPlot::plotROCtoPNG(double auc, const string &roc_png_filename, const st
         gnuplot << "set ylabel 'true positive rate (TPR)'" << endl;
         gnuplot << "set xrange [0:0.02]" << endl;
         gnuplot << "set yrange [0.5:1]" << endl;
+        gnuplot << "set key bottom right" << endl;
         gnuplot << "plot '-' using 1:2 with line lw 2 title \"" << scorename << " score AUC=" << strAUC << "\"" << endl;
 
         gnuplot.send1d(roc_tuple);
@@ -1474,6 +1478,7 @@ void CROCPlot::plotROCtoPNG(double auc, const string &roc_png_filename, const st
         gnuplot << "set output '" << fullaxis_png << "'" << endl;
         gnuplot << "set xlabel 'false positive rate (FPR)'" << endl;
         gnuplot << "set ylabel 'true positive rate (TPR)'" << endl;
+        gnuplot << "set key bottom right" << endl;
         gnuplot << "plot '-' using 1:2 with line lw 2 title \" " << scorename << " score AUC=" << strAUC << "\""
                 << endl;
 
@@ -1731,7 +1736,7 @@ struct SFdrScore {
 };
 
 class CFdrNumCorr {
-    vector<tuple<double, double>> m_fdr_counts;
+   //vector<tuple<double, double>> m_fdr_counts;
     vector<SFdrScore> m_FdrScore;
 
 public:
@@ -1756,8 +1761,8 @@ public:
 
     void saveAs(const string &outputfile) {
         ofstream fout(outputfile.c_str(), ios::out);
-        for (auto x: m_fdr_counts) {
-            fout << get<0>(x) << "\t" << get<1>(x) << endl;
+        for (auto x: m_FdrScore) {
+            fout << x.m_fdr  << "\t" << x.m_corr << "\t" << x.m_incorr << "\t" << x.m_score<< endl;
         }
         fout.close();
         cout << "Data exported to file : " << outputfile << endl;
@@ -1778,21 +1783,25 @@ public:
         int tcount = 0, dcount = 0;
         // why?
         m_FdrScore.emplace_back(SFdrScore(0.0, 0, 1, 1.0));
-        m_fdr_counts.emplace_back(0.0, 0.0);
+        //m_fdr_counts.emplace_back(0.0, 0.0);
         while (tcount < tProbs.size() and dcount < dProbs.size()) {
             double score = 1.0;
-            if (tProbs[tcount] >= dProbs[dcount]) {
+            if (tProbs[tcount] > dProbs[dcount]) {
                 score = tProbs[tcount];
                 tcount++;
-            } else {
+            } else if (tProbs[tcount] < dProbs[dcount]) {
                 score = dProbs[dcount];
                 dcount++;
+            } else{
+                score = tProbs[tcount];
+                dcount ++;
+                tcount ++;
             }
 
             //  FDR = D/T x 100%, shall we try pi_0 ?
             //  NO,we are using concatenated search here!
             double FDR = dcount * 1.0 / tcount;
-            m_fdr_counts.emplace_back(FDR, tcount * 1.0);
+            //m_fdr_counts.emplace_back(FDR, tcount * 1.0);
             m_FdrScore.emplace_back(SFdrScore(FDR, tcount, dcount, score));
         }
     }
