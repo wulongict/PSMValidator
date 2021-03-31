@@ -585,36 +585,6 @@ double getAUCfromROC(vector<tuple<double, double>> &roc) {
     return auc;
 }
 
-void plotROCtoPNG(double auc, vector<tuple<double, double>> &roc, const string &roc_png_filename) {
-    stringstream stream;
-    stream << fixed << setprecision(4) << auc;
-    string strAUC = stream.str();
-    {
-        Gnuplot gnuplot;
-        gnuplot << "set terminal png" << endl;
-        gnuplot << "set output '" << roc_png_filename << "'" << endl;
-        gnuplot << "set xlabel 'false positive rate (FPR)'" << endl;
-        gnuplot << "set ylabel 'true positive rate (TPR)'" << endl;
-        gnuplot << "set xrange [0:0.02]" << endl;
-        gnuplot << "set yrange [0.5:1]" << endl;
-        gnuplot << "plot '-' using 1:2 with line lw 2 title \"random forest score AUC=" << strAUC << "\"" << endl;
-
-        gnuplot.send1d(roc);
-    }
-    {
-        Gnuplot gnuplot;
-        gnuplot << "set terminal png" << endl;
-        gnuplot << "set output '" << roc_png_filename + "_rull.png" << "'" << endl;
-        gnuplot << "set xlabel 'false positive rate (FPR)'" << endl;
-        gnuplot << "set ylabel 'true positive rate (TPR)'" << endl;
-//        gnuplot << "set xrange [0:0.02]" << endl;
-//        gnuplot << "set yrange [0.5:1]" << endl;
-        gnuplot << "plot '-' using 1:2 with line lw 2 title \"random forest score AUC=" << strAUC << "\"" << endl;
-
-        gnuplot.send1d(roc);
-    }
-}
-
 
 // Assumption of this function:
 // the first half of the data is positive, the second half is negative
@@ -671,7 +641,7 @@ plotScoreDistribution(vector<double> &postiveScores, vector<double> &negativeSco
 
 void plotImportanceBarChart(const string &importance_png_file, vector<tuple<string, double>> &Importance) {
     Gnuplot gp;
-    gp << "set terminal png noenhanced font arial 18 size 3072,1024 " << endl;
+    gp << "set terminal pngcairo noenhanced font arial 18 size 3072,1024 " << endl;
 //        gp << "set samples 10240" << endl;
     gp << "set output '" << importance_png_file << "'" << endl;
     gp << "set bmargin 15" << endl;
@@ -994,13 +964,44 @@ createFeatureVector(const string &fragmodel, bool ghost, double minIntFC, const 
 
 // The FDR
 // Number of Identified PSM and FDR
+// ACS: 3.25 in
+// ACS: 600dpi
 void plot_FDR_curve(const string &outputfilename, const string &title, vector<tuple<double, double>> &fdr_counts) {
+    int ACS_DPI = 600;
+    int defaultDPI=72;
+    double DPI_fold = ACS_DPI / (double) defaultDPI;
+    double ACS_single_img_width = 3.25; // inch
+    double width = ACS_single_img_width * ACS_DPI;
+    double height = ACS_single_img_width * ACS_DPI;
+    // font size measured in points. 1 point is 1/72 inch.
+    // image of 3.25 inch height, with 12 point size, corresponds to :
+    // font is X, width/72 is the points number. width/600 is the previous points number.
+    int newFontSize = int(12*DPI_fold); //
+    cout << "font size is : " << newFontSize << endl;
     Gnuplot gnuplot;
-    gnuplot << "set terminal pngcairo enhanced font \"Arial 18\" size 6in,6in" << endl;
+    gnuplot << "dpi = 72 ## dpi (variable)\n"
+               "width = 90 ## mm (variable)\n"
+               "height = 90 ## mm (variable)\n"
+               "\n"
+               "in2mm = 25.4 # mm (fixed)\n"
+               "pt2mm = 0.3528 # mm (fixed)\n"
+               "\n"
+               "mm2px = dpi/in2mm\n"
+               "ptscale = pt2mm*mm2px\n"
+               "round(x) = x - floor(x) < 0.5 ? floor(x) : ceil(x)\n"
+               "wpx = round(width * mm2px)\n"
+               "hpx = round(height * mm2px)\n"
+               "#set term pngcairo size 720,720 fontscale scale linewidthscale scale\n"
+               "\n"
+               "set terminal pngcairo size wpx,hpx font 'Vadana,10' fontscale ptscale linewidth ptscale pointscale ptscale "
+               << endl;
+    //gnuplot << "set terminal pngcairo enhanced font \"Arial "<< newFontSize<<"\" size " << width << "," << height <<  endl;
     gnuplot << "set output '" << outputfilename << "'" << endl;
-    gnuplot << "set xlabel 'False discovery rate (FDR)'" << endl;
-    gnuplot << "set ylabel '#(Identified PSM) '" << endl;
+    gnuplot << "set size square " << endl;
+    gnuplot << "set xlabel 'False discovery rate (FDR)' font ',9'" << endl;
+    gnuplot << "set ylabel '#(Identified PSM) ' font ',9'" << endl;
     gnuplot << "set xrange[0:0.1]" << endl;
+    gnuplot << "set tics font ',9'" << endl;
     gnuplot << "plot '-' using 1:2 with line lw 2 title \"" << title << "\"" << endl;
 
     gnuplot.send1d(fdr_counts);
@@ -1143,8 +1144,6 @@ RangerFormat::RangerFormat(const string &posFeature, const string &negFeature, c
     m_positivefile = posFeature;
     m_negativefile = negFeature;
     m_tsvfile = outPNsampleName;
-//    m_MIN_SAMPLE_NUM=1000;// = 1000;
-//    m_MAX_SAMPLE_NUM=trainingSampleSize;//=90000;
 
 }
 
@@ -1453,7 +1452,8 @@ void CROCPlot::plotROCtoPNG(double auc, const string &roc_png_filename, const st
     vector<string> figurefilelist;
     {
         Gnuplot gnuplot;
-        gnuplot << "set terminal png" << endl;
+        gnuplot << "set terminal pngcairo enhanced size 600,600" << endl;
+        gnuplot << "set size square" << endl;
         gnuplot << "set title 'ROC curve (partial)'" << endl;
         gnuplot << "set output '" << roc_png_filename << "'" << endl;
         gnuplot << "set xlabel 'false positive rate (FPR)'" << endl;
@@ -1468,7 +1468,8 @@ void CROCPlot::plotROCtoPNG(double auc, const string &roc_png_filename, const st
     {
         string fullaxis_png = roc_png_filename.substr(0, roc_png_filename.length() - 4) + "_full.png";
         Gnuplot gnuplot;
-        gnuplot << "set terminal png" << endl;
+        gnuplot << "set terminal pngcairo enhanced size 600,600" << endl;
+        gnuplot << "set size square" << endl;
         gnuplot << "set title 'ROC curve (full)'" << endl;
         gnuplot << "set output '" << fullaxis_png << "'" << endl;
         gnuplot << "set xlabel 'false positive rate (FPR)'" << endl;
