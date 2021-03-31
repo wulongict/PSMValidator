@@ -69,7 +69,7 @@ string CFlow::getname() const {
 }
 
 FeatureWorkFlow::FeatureWorkFlow(string inputfile, bool ghost, double minInt, string &fragmodelfile,
-                                 string fragscoretype, string annotationMethod, bool debug, const string& basename,
+                                 string fragscoretype, string annotationMethod, bool debug, const string &basename,
                                  string featurelistfile, bool isLowMassAcc, string binaryPath) : CFlow() {
     m_binaryPath = binaryPath;
     m_isLowMassAcc = isLowMassAcc;
@@ -90,7 +90,7 @@ FeatureWorkFlow::FeatureWorkFlow(string inputfile, bool ghost, double minInt, st
 
     m_debug = debug;
     if (m_annotationMethod == "title") {
-        m_feature_outputname = to_string(m_inputfile,"_", featurenameBase, ".feat");
+        m_feature_outputname = to_string(m_inputfile, "_", featurenameBase, ".feat");
         m_name += " target";
     } else {
         m_feature_outputname = to_string(m_searchresult, "_", featurenameBase, ".feat");
@@ -109,11 +109,11 @@ void FeatureWorkFlow::run() {
         exit(-1);
     }
 
-    bool isTruthKnown=true;
+    bool isTruthKnown = true;
     // Step 1. Read MGF file with title annotation...
     MGFReader mgfReader(m_inputfile, m_isLowMassAcc, isTruthKnown);
 
-    bool verbosity = m_debug? true: false;
+    bool verbosity = m_debug ? true : false;
     vector<Feature *> features = createFeatureVector(m_fragmodelfile, m_useGhostPeaks, m_minInt, m_fragscoretype,
                                                      m_featurelistfile, m_binaryPath);
     // Attention: when you use the model, you need to know the minIntenFC.
@@ -139,11 +139,12 @@ void FeatureWorkFlow::run() {
 
     bool istraining = true;
     if (m_annotationMethod == "title") {
-        mgfReader.annotate_with_title(verbosity, m_debug, scan, debug_peptide,istraining); // problem. annotation with what?
+        mgfReader.annotate_with_title(verbosity, m_debug, scan, debug_peptide,
+                                      istraining); // problem. annotation with what?
         message = "posfile " + m_feature_outputname;
     } else if (m_annotationMethod == "searchresult" && not m_searchresult.empty()) {
-        int rank=CDebugMode::callDebug()->rank;
-        mgfReader.annotation_with_search_result(m_searchresult, rank, m_debug, scan, 0, debug_peptide,istraining);
+        int rank = CDebugMode::callDebug()->rank;
+        mgfReader.annotation_with_search_result(m_searchresult, rank, m_debug, scan, 0, debug_peptide, istraining);
         message = "negafile " + m_feature_outputname;
     } else {
         spdlog::get("A")->info("Invalid annotation method: {}", m_annotationMethod);
@@ -178,11 +179,12 @@ void FeatureWorkFlow::update_with_key_value_pair(string key, string value) {
         m_fragmodelfile = value;
     }
     if (key == "decoysearch") {
-        m_searchresult = value  ;
+        m_searchresult = value;
     }
 }
 
-void FragModel::extractFeatures(bool verbosity, CPeakPairsImporter &positivePeakPairs, CPeakPairsImporter &negativePeakPairs) {
+void FragModel::extractFeatures(bool verbosity, CPeakPairsImporter &positivePeakPairs,
+                                CPeakPairsImporter &negativePeakPairs) {
     bool isTruthKnown = true;
     MGFReader mgfr(m_mgf_file, m_isLowMassAcc, isTruthKnown);
     bool doTrain = true;
@@ -206,7 +208,8 @@ void FragModel::update_with_key_value_pair(string key, string value) {
     }
 }
 
-FragModel::FragModel(const string &mgf_input, bool verbosity, double minIntenFC, bool overwrite, string &fragPatternModel,
+FragModel::FragModel(const string &mgf_input, bool verbosity, double minIntenFC, bool overwrite,
+                     string &fragPatternModel,
                      bool outputfeature, bool useGhostPeak, bool isLowMassAcc, string binaryPath) : CFlow() {
     m_isLowMassAcc = isLowMassAcc;
     m_name = "Train fragmentation model";
@@ -260,7 +263,8 @@ FragModel::~FragModel() = default;
 
 FragPatternScoreFlow::FragPatternScoreFlow(const string &inputfile, bool verbosity, double minIntenFC, bool overwrite,
                                            string outputmodelfile,
-                                           string scoretype, const string& searchresult, bool isLowMassAcc, string binaryPath)
+                                           string scoretype, const string &searchresult, bool isLowMassAcc,
+                                           string binaryPath)
         : CFlow() {
     m_isLowMassAcc = isLowMassAcc;
     m_name = "Calculate fragmentation score";
@@ -303,7 +307,8 @@ void FragPatternScoreFlow::run() {
 
 FragPatternScoreFlow::~FragPatternScoreFlow() = default;
 
-CometSearch::CometSearch(const string &cometbinary, const string &database, const string &paramfile, const string &outputname, const string &specfile)
+CometSearch::CometSearch(const string &cometbinary, const string &database, const string &paramfile,
+                         const string &outputname, const string &specfile)
         : CFlow() {
     m_name = "Comet search";
     m_comet_binary = cometbinary;
@@ -334,13 +339,13 @@ void CometSearch::run() {
         throw CException("Comet outputname should not be empty!");
 
     }
-    string cmdline =  m_comet_binary + " -P" + m_paramfile + " -N" + m_outputname + " -D" + m_database + " " + m_specfile;
+    string cmdline =
+            m_comet_binary + " -P" + m_paramfile + " -N" + m_outputname + " -D" + m_database + " " + m_specfile;
 
     spdlog::get("A")->info("Running: {0}", cmdline);
     int retval = system(cmdline.c_str());
     spdlog::get("A")->info("Comet exit with code: {0}", retval);
-    if(retval != 0)
-    {
+    if (retval != 0) {
         throw CException("Invalid argument");
     }
 
@@ -406,13 +411,16 @@ void CometSearchTD::update_with_key_value_pair(string key, string value) {
         notify(string("decoysearch ") + value);
     }
 }
+
 // todo: rangerbinary changed
-FlowAll::FlowAll(const string& fragscoretype, bool useGhostPeak, bool outputfeature, bool overwrite, double minIntenFC,
+FlowAll::FlowAll(const string &fragscoretype, bool useGhostPeak, bool outputfeature, bool overwrite, double minIntenFC,
                  bool verbosity,
-                 string fragPatternModelFilename, const string& inputfile, string cometbinary, string targetdb, string decoydb,
+                 string fragPatternModelFilename, const string &inputfile, string cometbinary, string targetdb,
+                 string decoydb,
                  string paramfile, bool isTrainingRF, bool isRFProbOut, string writeRFModelTo, string validatorRFmodel,
-                 int mtry, int ntree, const string& featurelistfile, bool isLowMassAcc, int trainingSampleSize, int maxdepth,
-                 const string& rangerbinary, const string& binaryPath) : CFlow() {
+                 int mtry, int ntree, const string &featurelistfile, bool isLowMassAcc, int trainingSampleSize,
+                 int maxdepth,
+                 const string &rangerbinary, const string &binaryPath) : CFlow() {
     if (not File::isExist(inputfile)) {
         spdlog::get("A")->error("Input file does not exist!");
         throw CException("Invalid input file!");
@@ -421,7 +429,7 @@ FlowAll::FlowAll(const string& fragscoretype, bool useGhostPeak, bool outputfeat
     m_inputspec = inputfile; // todo: should be mgf now. in the future, we will support mzXML
     File::CFile filename(m_inputspec);
     string tsearch = filename.path + "/target_" + filename.basename,
-    dsearch = filename.path + "/decoy_" + filename.basename;
+            dsearch = filename.path + "/decoy_" + filename.basename;
 
     // if target search or decoy search result does not exist
     if (not File::isExist(tsearch + ".pep.xml") or not File::isExist(dsearch + ".pep.xml")) {
@@ -429,7 +437,7 @@ FlowAll::FlowAll(const string& fragscoretype, bool useGhostPeak, bool outputfeat
         m_pFlow.push_back(new CometSearchTD(cometbinary, targetdb, decoydb, paramfile, inputfile));
     }
 
-    if (not File::isExist(fragPatternModelFilename,true)) {
+    if (not File::isExist(fragPatternModelFilename, true)) {
 //        spdlog::get("A")->info("Fragmentation model \"{}\" does not exist!", fragPatternModelFilename);
 
         m_pFlow.push_back(new FragModel(inputfile, verbosity, minIntenFC, overwrite, fragPatternModelFilename,
@@ -437,14 +445,13 @@ FlowAll::FlowAll(const string& fragscoretype, bool useGhostPeak, bool outputfeat
     }
     string featurelistnameBase = File::CFile(featurelistfile).basename;
     string psmfeaturefile = to_string(inputfile, "_",
-            featurelistnameBase, ".feat");
-    string decoypsmfeaturefile= to_string(dsearch+".pep.xml",
-            "_", featurelistnameBase, ".feat");
+                                      featurelistnameBase, ".feat");
+    string decoypsmfeaturefile = to_string(dsearch + ".pep.xml",
+                                           "_", featurelistnameBase, ".feat");
 
     // two different feat files generated here.
     bool debug = CDebugMode::callDebug()->getMdebug();
-    if(not File::isExist(psmfeaturefile, true) or overwrite)
-    {
+    if (not File::isExist(psmfeaturefile, true) or overwrite) {
 //        cout << "[Info] PSM feature file \"" << psmfeaturefile << "\" does not exist!" << endl;
         m_pFlow.push_back(new FeatureWorkFlow(inputfile, useGhostPeak, minIntenFC,
                                               fragPatternModelFilename, fragscoretype,
@@ -452,8 +459,7 @@ FlowAll::FlowAll(const string& fragscoretype, bool useGhostPeak, bool outputfeat
                                               featurelistfile, isLowMassAcc, binaryPath));
 
     }
-    if(not File::isExist(decoypsmfeaturefile, true) or overwrite)
-    {
+    if (not File::isExist(decoypsmfeaturefile, true) or overwrite) {
 //        cout << "[Info] PSM feature file \"" << decoypsmfeaturefile << "\" does not exist!" << endl;
         m_pFlow.push_back(new FeatureWorkFlow(inputfile, useGhostPeak, minIntenFC,
                                               fragPatternModelFilename, fragscoretype,
@@ -464,7 +470,8 @@ FlowAll::FlowAll(const string& fragscoretype, bool useGhostPeak, bool outputfeat
 
     // post-processing using: alglib or mlpack.
     // todo: put the last step into python
-    string combinedPNfeature = to_string(inputfile, "_",   featurelistnameBase,"trN",trainingSampleSize, "_PNcombined.feat");
+    string combinedPNfeature = to_string(inputfile, "_", featurelistnameBase, "trN", trainingSampleSize,
+                                         "_PNcombined.feat");
 //            inputfile + "_PNcombined.feat";
 
     if (not File::isExist(combinedPNfeature, true) or overwrite) {
@@ -472,12 +479,14 @@ FlowAll::FlowAll(const string& fragscoretype, bool useGhostPeak, bool outputfeat
 
     }
     if (isTrainingRF) {
-        RFModelConfig rfconfig(combinedPNfeature, isTrainingRF, writeRFModelTo, true, mtry, ntree, maxdepth, rangerbinary, writeRFModelTo + ".conf");
+        RFModelConfig rfconfig(combinedPNfeature, isTrainingRF, writeRFModelTo, true, mtry, ntree, maxdepth,
+                               rangerbinary, writeRFModelTo + ".conf");
         rfconfig.write();
         m_pFlow.push_back(new RangerWraper(rfconfig));
 
     } else {
-        RFModelConfig rfconfig(combinedPNfeature, isTrainingRF, validatorRFmodel, true, mtry, ntree, maxdepth, rangerbinary, validatorRFmodel + ".conf");
+        RFModelConfig rfconfig(combinedPNfeature, isTrainingRF, validatorRFmodel, true, mtry, ntree, maxdepth,
+                               rangerbinary, validatorRFmodel + ".conf");
         rfconfig.write();
         m_pFlow.push_back(new RangerWraper(rfconfig));
 
@@ -518,7 +527,7 @@ void FlowAll::run() {
 }
 
 FlowAll::~FlowAll() {
-    for (auto & i : m_pFlow) {
+    for (auto &i : m_pFlow) {
         if (i != nullptr) {
             delete i;
         }
@@ -560,7 +569,7 @@ void scoreToROC(vector<double> &postiveScores, vector<double> &negativeScores, v
     }
 }
 
-void saveROCtoTXT(const string& roc_data, vector<tuple<double, double>> &roc) {
+void saveROCtoTXT(const string &roc_data, vector<tuple<double, double>> &roc) {
     ofstream fout(roc_data.c_str(), ios::out);
     for (auto x: roc) {
         fout << get<0>(x) << " " << get<1>(x) << endl;
@@ -576,7 +585,7 @@ double getAUCfromROC(vector<tuple<double, double>> &roc) {
     return auc;
 }
 
-void plotROCtoPNG(double auc, vector<tuple<double, double>> &roc, const string& roc_png_filename) {
+void plotROCtoPNG(double auc, vector<tuple<double, double>> &roc, const string &roc_png_filename) {
     stringstream stream;
     stream << fixed << setprecision(4) << auc;
     string strAUC = stream.str();
@@ -612,7 +621,7 @@ void plotROCtoPNG(double auc, vector<tuple<double, double>> &roc, const string& 
 // The assumption can be invalid sometimes...
 void getscore(vector<vector<string>> &data, vector<double> &postiveScores, vector<double> &negativeScores) {
     int num_skip_header_lines = 3;
-    int sample_num = (int)data.size() - num_skip_header_lines;
+    int sample_num = (int) data.size() - num_skip_header_lines;
     cout << "Sample Number: " << sample_num << endl;
     int postive_num = sample_num / 2, negative_num = sample_num / 2;
     if (sample_num % 2 == 1) {
@@ -631,8 +640,9 @@ void getscore(vector<vector<string>> &data, vector<double> &postiveScores, vecto
 }
 
 void
-plotScoreDistribution(vector<double> &postiveScores, vector<double> &negativeScores, const string& scoreDistributionPlotFile,
-                      const string& xlabel) {
+plotScoreDistribution(vector<double> &postiveScores, vector<double> &negativeScores,
+                      const string &scoreDistributionPlotFile,
+                      const string &xlabel) {
 //          "set boxwidth 0.01 absolute\n"
     Gnuplot gp;
     gp << "set terminal pngcairo enhanced font \"Arial,18\" size 540,480 " << endl;
@@ -641,14 +651,14 @@ plotScoreDistribution(vector<double> &postiveScores, vector<double> &negativeSco
           "# Each bar is half the (visual) width of its x-range.\n"
           "set style fill transparent solid 0.5\n"
           "set xlabel '" << xlabel << "'\n"
-          "set ylabel 'Frequency'\n"
-          "set style fill transparent solid 0.5\n"
-          "bin_width = 0.1;\n"
-          "\n"
-          "bin_number(x) = floor(x/bin_width)\n"
-          "set boxwidth 0.9*bin_width\n"
-          "rounded(x) = bin_width * ( bin_number(x) + 0.5 )\n"
-          "\n" << endl;
+                                      "set ylabel 'Frequency'\n"
+                                      "set style fill transparent solid 0.5\n"
+                                      "bin_width = 0.1;\n"
+                                      "\n"
+                                      "bin_number(x) = floor(x/bin_width)\n"
+                                      "set boxwidth 0.9*bin_width\n"
+                                      "rounded(x) = bin_width * ( bin_number(x) + 0.5 )\n"
+                                      "\n" << endl;
 
     gp << "plot '-' using (rounded($1)):(100.0/" << postiveScores.size()
        << ") smooth frequency with boxes title 'positive', '-' using (rounded($1)):(100.0/" << negativeScores.size()
@@ -659,7 +669,7 @@ plotScoreDistribution(vector<double> &postiveScores, vector<double> &negativeSco
 }
 
 
-void plotImportanceBarChart(const string& importance_png_file, vector<tuple<string, double>> &Importance) {
+void plotImportanceBarChart(const string &importance_png_file, vector<tuple<string, double>> &Importance) {
     Gnuplot gp;
     gp << "set terminal png noenhanced font arial 18 size 3072,1024 " << endl;
 //        gp << "set samples 10240" << endl;
@@ -694,7 +704,7 @@ void plotImportanceBarChart(const string& importance_png_file, vector<tuple<stri
     gp.send1d(importancevalue);
 }
 
-void FeatureImportanceProcess(const string& importance_file) {
+void FeatureImportanceProcess(const string &importance_file) {
     vector<vector<string>> data;
     vector<tuple<string, double>> Importance;
 
@@ -745,9 +755,12 @@ RangerWraper::RangerWraper(RFModelConfig &rfconfig) {
 }
 
 void RangerWraper::predict() const {
-    string ranger_commandline = m_ranger_binary_path + " --treetype 1 --ntree " + to_string(m_ntree) +"  --verbose --depvarname class  "
-                                                     " --targetpartitionsize 1 --impmeasure 1 --outprefix " + m_predictionprefix +
-                                " --nthreads " + to_string(m_threadnum) + " --seed 100 --predict " + m_rfModel + " --mtry " + to_string(m_mtry);
+    string ranger_commandline =
+            m_ranger_binary_path + " --treetype 1 --ntree " + to_string(m_ntree) + "  --verbose --depvarname class  "
+                                                                                   " --targetpartitionsize 1 --impmeasure 1 --outprefix " +
+            m_predictionprefix +
+            " --nthreads " + to_string(m_threadnum) + " --seed 100 --predict " + m_rfModel + " --mtry " +
+            to_string(m_mtry);
     if (m_probPrediction) {
         ranger_commandline = ranger_commandline + " --probability ";
     }
@@ -764,20 +777,22 @@ void RangerWraper::predict() const {
 }
 
 void RangerWraper::train() const {
-    string ranger_commandlinex = to_string(m_ranger_binary_path," ",
-            " ", "--treetype", 1, "--ntree", m_ntree,
-            "--maxdepth", m_maxDepth,
-            "--verbose --depvarname class --targetpartitionsize 1 --write",
-            "--outprefix", m_rfModel.substr(0, m_rfModel.length() - 7),
-            "--impmeasure",1,
-            "--nthreads",m_threadnum,
-            "--seed",100,
-            "--mtry", m_mtry);
+    string ranger_commandlinex = to_string(m_ranger_binary_path, " ",
+                                           " ", "--treetype", 1, "--ntree", m_ntree,
+                                           "--maxdepth", m_maxDepth,
+                                           "--verbose --depvarname class --targetpartitionsize 1 --write",
+                                           "--outprefix", m_rfModel.substr(0, m_rfModel.length() - 7),
+                                           "--impmeasure", 1,
+                                           "--nthreads", m_threadnum,
+                                           "--seed", 100,
+                                           "--mtry", m_mtry);
 
     string ranger_commandline = m_ranger_binary_path + " --treetype 1 --ntree " + to_string(m_ntree)
-            +"  --maxdepth "+ to_string(m_maxDepth)+" --verbose --depvarname class --targetpartitionsize 1 --write --outprefix "
-            +  m_rfModel.substr(0, m_rfModel.length() - 7)
-            + " --impmeasure 1  --nthreads " + to_string(m_threadnum)+ " --seed 100 --mtry " + to_string(m_mtry);
+                                + "  --maxdepth " + to_string(m_maxDepth) +
+                                " --verbose --depvarname class --targetpartitionsize 1 --write --outprefix "
+                                + m_rfModel.substr(0, m_rfModel.length() - 7)
+                                + " --impmeasure 1  --nthreads " + to_string(m_threadnum) + " --seed 100 --mtry " +
+                                to_string(m_mtry);
 
     cout << ranger_commandline << endl << ranger_commandlinex << endl;
     if (m_probPrediction) {
@@ -805,7 +820,6 @@ void RangerWraper::update_with_key_value_pair(string key, string value) {
 }
 
 
-
 void load_tsv_file(const string &filename, vector<vector<string>> &data) {
     string line;
     ifstream fin(filename.c_str(), ios::in);
@@ -827,16 +841,16 @@ void load_tsv_file(const string &filename, vector<vector<string>> &data) {
     cout << "[Info] " << data.size() << " lines loaded from " << filename << endl;
 }
 
-string getfragmodelfile(const string& validatorModel, double m_minIntenFC, bool isTraining) {
+string getfragmodelfile(const string &validatorModel, double m_minIntenFC, bool isTraining) {
     File::CFile filename(validatorModel);
-    if(not filename.isFileExist(true) and not isTraining){
+    if (not filename.isFileExist(true) and not isTraining) {
         cout << "RF model file does not exist: " << validatorModel << endl;
         throw CException("Run time Error! File does not exist!");
     }
     string basename = filename.basename;
     int found = basename.find("mtry_");
-    if(found != string::npos){
-        basename = basename.substr(0,found);
+    if (found != string::npos) {
+        basename = basename.substr(0, found);
     }
     cout << "basename change from " << filename.basename << " to " << basename << endl;
     string fragModelFileName = filename.path + "/" + basename + "_" + to_string(m_minIntenFC) + "_frag.model";
@@ -845,8 +859,10 @@ string getfragmodelfile(const string& validatorModel, double m_minIntenFC, bool 
 }
 
 #include <unordered_set>
+
 vector<Feature *>
-createFeatureVector(const string& fragmodel, bool ghost, double minIntFC, const string& fragscoretype, const string& featurelistfile,
+createFeatureVector(const string &fragmodel, bool ghost, double minIntFC, const string &fragscoretype,
+                    const string &featurelistfile,
                     string binaryPath) {
     vector<Feature *> features, tmp;
     spdlog::get("A")->debug("Create Feature Vector param: "
@@ -854,7 +870,7 @@ createFeatureVector(const string& fragmodel, bool ghost, double minIntFC, const 
                             minIntFC);
     vector<string> featurenames = readlines(featurelistfile);
     cout << "list of feature names got " << featurenames.size() << endl;
-    for(const auto& x: featurenames) cout << x << endl;
+    for (const auto &x: featurenames) cout << x << endl;
     cout << endl;
     unordered_set<string> featurenameset(featurenames.begin(), featurenames.end());
 
@@ -896,8 +912,8 @@ createFeatureVector(const string& fragmodel, bool ghost, double minIntFC, const 
         features.push_back(new Num_of_AA(legalAA));
     }
     // Charge status -----------------------------------------
-    vector<int> legalChargeStates={1,2,3,4,5,6,7};
-    for (int legalChargeState : legalChargeStates)  {
+    vector<int> legalChargeStates = {1, 2, 3, 4, 5, 6, 7};
+    for (int legalChargeState : legalChargeStates) {
         features.push_back(new isChargeX(legalChargeState));
     }
 
@@ -962,16 +978,16 @@ createFeatureVector(const string& fragmodel, bool ghost, double minIntFC, const 
 
     cout << "Num of Features used : " << features.size() << endl;
     tmp.swap(features);
-    for(int i = 0; i < tmp.size(); i ++)  {
+    for (int i = 0; i < tmp.size(); i++) {
         bool keepFeature = false;
-        if(featurenameset.count(tmp[i]->m_feature_name))  {
+        if (featurenameset.count(tmp[i]->m_feature_name)) {
             keepFeature = true;
             features.push_back(tmp[i]);
         }
-        cout << "Feature #" << i+1 << ": " << tmp[i]->m_feature_name <<": " << std::boolalpha << keepFeature << endl;
-        if(not keepFeature)   {
+        cout << "Feature #" << i + 1 << ": " << tmp[i]->m_feature_name << ": " << std::boolalpha << keepFeature << endl;
+        if (not keepFeature) {
             delete tmp[i];
-            tmp[i]=nullptr;
+            tmp[i] = nullptr;
         }
     }
     cout << "--------end-----------" << endl;
@@ -980,7 +996,7 @@ createFeatureVector(const string& fragmodel, bool ghost, double minIntFC, const 
 
 // The FDR
 // Number of Identified PSM and FDR
-void plot_FDR_curve(const string& outputfilename, const string& title, vector<tuple<double, double>> &fdr_counts) {
+void plot_FDR_curve(const string &outputfilename, const string &title, vector<tuple<double, double>> &fdr_counts) {
     Gnuplot gnuplot;
     gnuplot << "set terminal pngcairo enhanced font \"Arial 18\" size 6in,6in" << endl;
     gnuplot << "set output '" << outputfilename << "'" << endl;
@@ -993,11 +1009,12 @@ void plot_FDR_curve(const string& outputfilename, const string& title, vector<tu
 }
 
 
-void get_feature_from_spec(PSMInfo *psmInfo, CSpectrum *spec, vector<double> *OneSpecFeature, vector<Feature *> *features,
-                      int idx, string mzMLsourcefile, const bool fixMz, bool highMassAcc, int hitrank=0) {
+void
+get_feature_from_spec(PSMInfo *psmInfo, CSpectrum *spec, vector<double> *OneSpecFeature, vector<Feature *> *features,
+                      int idx, string mzMLsourcefile, const bool fixMz, bool highMassAcc, int hitrank = 0) {
 
     SpectraSTPeakList *specpkl = new SpectraSTPeakList(1.0, 1);
-    string fragType=highMassAcc? "HCD":"CID";
+    string fragType = highMassAcc ? "HCD" : "CID";
 
     specpkl->setFragType(fragType);
     if (!specpkl) {
@@ -1014,7 +1031,7 @@ void get_feature_from_spec(PSMInfo *psmInfo, CSpectrum *spec, vector<double> *On
         specpkl->insert(mz, intensity, "", "");
     }
 
-    if(psmInfo->searchhits.size()<=hitrank){
+    if (psmInfo->searchhits.size() <= hitrank) {
 //        cout << "the " << hitrank << "-th peptide is not found: total candiates: " << psmInfo->searchhits.size() << endl;
         delete specpkl;
         return;
@@ -1023,7 +1040,8 @@ void get_feature_from_spec(PSMInfo *psmInfo, CSpectrum *spec, vector<double> *On
     string plain_peptide = regex_replace(modified_peptide, regex("[[0-9.]*]"), "");
     string newPep = regex_replace(modified_peptide, regex("C"), "C[160]");
 
-    spdlog::get("A")->debug("Modified peptide to be used for annotation: {}", psmInfo->searchhits[0]->m_modified_peptide);
+    spdlog::get("A")->debug("Modified peptide to be used for annotation: {}",
+                            psmInfo->searchhits[0]->m_modified_peptide);
     Peptide *ipep = new Peptide(newPep, psmInfo->charge); // peptide done
     if (!ipep) {
         spdlog::get("A")->error("Get nullptr in feature extraction step ");
@@ -1045,7 +1063,7 @@ void get_feature_from_spec(PSMInfo *psmInfo, CSpectrum *spec, vector<double> *On
     for (int i = 0; i < features->size(); i++) {
         Feature *f = features->at(i);
         if (f == nullptr) {
-            throw CException(("feature pointer is null for i="+to_string(i)).c_str());
+            throw CException(("feature pointer is null for i=" + to_string(i)).c_str());
 
         }
 
@@ -1058,7 +1076,8 @@ void get_feature_from_spec(PSMInfo *psmInfo, CSpectrum *spec, vector<double> *On
 }
 
 
-int RangerFormat::exportTrainingFeaturesToCSV(vector<vector<string>> &feature, const string &label, ofstream &fout, int start_col,
+int RangerFormat::exportTrainingFeaturesToCSV(vector<vector<string>> &feature, const string &label, ofstream &fout,
+                                              int start_col,
                                               int start_row, const int MAX_SAMPLE_NUM) const {
     int seed = 42;
     int len = feature.size() - 1;
@@ -1073,7 +1092,7 @@ int RangerFormat::exportTrainingFeaturesToCSV(vector<vector<string>> &feature, c
             fout << item << ",";
         }
         fout << label << endl;
-        sample_counts ++;
+        sample_counts++;
     }
 
     return sample_counts;
@@ -1086,7 +1105,7 @@ void RangerFormat::run() {
     load_tsv_file(m_positivefile, posdata);
     load_tsv_file(m_negativefile, negdata);
     spdlog::get("A")->info("Training samples loaded! Positive: {}, Negative: {}",
-            posdata.size(), negdata.size());
+                           posdata.size(), negdata.size());
 
     if (posdata.size() > m_MIN_SAMPLE_NUM and negdata.size() > m_MIN_SAMPLE_NUM) {
         ofstream fout(m_tsvfile.c_str(), ios::out);
@@ -1108,21 +1127,22 @@ void RangerFormat::run() {
                                                           m_MAX_SAMPLE_NUM);
             fout.close();
             spdlog::get("A")->info("{} Samples (POS: {}, NEG: {}) exported in ranger's csv format to {}",
-                    pos_out_num + neg_out_num, pos_out_num,neg_out_num, m_tsvfile);
+                                   pos_out_num + neg_out_num, pos_out_num, neg_out_num, m_tsvfile);
             notify(string("rangerfeature ") + m_tsvfile);
         } else {
             spdlog::get("A")->info("Fail to create/open file in ranger's csv format: {0} ", m_tsvfile);
             throw CException("Fail to create csv file for RF training!");
         }
     } else {
-        spdlog::get("A")->info("Minimum number of samples required {}",m_MIN_SAMPLE_NUM);
+        spdlog::get("A")->info("Minimum number of samples required {}", m_MIN_SAMPLE_NUM);
         throw CException("Too few sample to train RF model!");
     }
 }
 
 
-RangerFormat::RangerFormat(const string &posFeature, const string &negFeature, const string &outPNsampleName, int trainingSampleSize):
-m_MIN_SAMPLE_NUM(10),m_MAX_SAMPLE_NUM(trainingSampleSize) {
+RangerFormat::RangerFormat(const string &posFeature, const string &negFeature, const string &outPNsampleName,
+                           int trainingSampleSize) :
+        m_MIN_SAMPLE_NUM(10), m_MAX_SAMPLE_NUM(trainingSampleSize) {
     m_name = "Convert positive/negative feature into csv file";
     m_positivefile = posFeature;
     m_negativefile = negFeature;
@@ -1142,9 +1162,8 @@ void RangerFormat::update_with_key_value_pair(string key, string value) {
 }
 
 
-
-
-ValidatePSM::ValidatePSM(string pepxmlfile, const string& validatorModel, string fragmodelscoretype, double minInt, bool ghost,
+ValidatePSM::ValidatePSM(string pepxmlfile, const string &validatorModel, string fragmodelscoretype, double minInt,
+                         bool ghost,
                          int threadNum, shared_ptr<CTruth> truth, int mtry, int ntree, string featurelistfile,
                          int maxdepth,
                          bool useAlternativeProt, string rangerbinary, string binaryPath) {
@@ -1152,7 +1171,7 @@ ValidatePSM::ValidatePSM(string pepxmlfile, const string& validatorModel, string
     m_useAlternativeProtein = useAlternativeProt;
     m_name = "Feature extraction";
     fixMz = false;
-    m_highMassAcc=true;
+    m_highMassAcc = true;
     m_featurelistfile = featurelistfile;
     m_validatorModelFile = validatorModel;
     m_pepxmlfile = pepxmlfile;
@@ -1168,13 +1187,14 @@ ValidatePSM::ValidatePSM(string pepxmlfile, const string& validatorModel, string
                            maxdepth, rangerbinary, validatorModel + ".conf");
     rfconfig.write();
     m_other_steps.push_back(new RangerWraper(rfconfig));
-    m_other_steps.push_back(new resultAnalysis(m_pepxmlfile, truth, File::CFile(validatorModel).basename,m_useAlternativeProtein));
-    m_threadNum = threadNum <= 0 or threadNum > getProperThreads()? getProperThreads(): threadNum;
+    m_other_steps.push_back(
+            new resultAnalysis(m_pepxmlfile, truth, File::CFile(validatorModel).basename, m_useAlternativeProtein));
+    m_threadNum = threadNum <= 0 or threadNum > getProperThreads() ? getProperThreads() : threadNum;
 }
 
-void ValidatePSM::getProcessed_i(DataFile *df, PeptideProphetParser &ppp,  vector<int> &index) {
+void ValidatePSM::getProcessed_i(DataFile *df, PeptideProphetParser &ppp, vector<int> &index) {
     string debug_peptide;
-    int debug_scan =-1;
+    int debug_scan = -1;
     if (CDebugMode::callDebug()->getMdebug()) {
         cout << "Please type in debug peptide : " << endl;
         cin >> debug_peptide;
@@ -1193,7 +1213,7 @@ void ValidatePSM::getProcessed_i(DataFile *df, PeptideProphetParser &ppp,  vecto
         // MS2
         int scannum = spec->getScanNum();
         PSMInfo psmInfo;
-        bool isfound = ppp.getPSMInfobyScanFileName(df->getSourceFileName(),scannum,psmInfo);
+        bool isfound = ppp.getPSMInfobyScanFileName(df->getSourceFileName(), scannum, psmInfo);
         if (not isfound) {
             skipped_scan_num++;
             //cout << scannum << " not found" << endl;
@@ -1205,24 +1225,19 @@ void ValidatePSM::getProcessed_i(DataFile *df, PeptideProphetParser &ppp,  vecto
             if (peptide != debug_peptide) {
                 continue;
             }
-            if(debug_scan != -1 and scannum!=debug_scan)  {
+            if (debug_scan != -1 and scannum != debug_scan) {
                 continue;
             }
         }
         index.push_back(i);
     }
-    cout << skipped_scan_num <<  " MS2 spectra skipped by search engine "<< endl;
+    cout << skipped_scan_num << " MS2 spectra skipped by search engine " << endl;
     cout << "Remaining MS2: " << index.size() << endl;
 }
 
 void ValidatePSM::run() {
-//    string feature_outfile = m_output_feature_file;
-//    string feature_outfile = m_pepxmlfile + m_basename + ".feat";
     bool alwaysReCreateFeature = true;
     if (not File::isExist(m_output_feature_file) or alwaysReCreateFeature) {
-        // todo: you do not know whether it is Xinteract exported ... PepXML or not...
-
-
         vector<Feature *> features = createFeatureVector(m_fragmodelfile,
                                                          m_ghost, m_minIntFC, m_fragmodelscoretype,
                                                          m_featurelistfile, m_binaryPath);
@@ -1232,7 +1247,7 @@ void ValidatePSM::run() {
         vector<string> header = {"filename", "id", "scan", "modpep", "charge", "protein", "ppprob", "iprob"};
         psmtable.setHeader(header);
         PeptideProphetParser ppp(m_pepxmlfile);
-        for (const auto& eachfile : ppp.m_allSourceFiles) {
+        for (const auto &eachfile : ppp.m_allSourceFiles) {
             DataFile *df = new DataFile(eachfile, 0, -1);
 
             vector<int> index;
@@ -1259,7 +1274,7 @@ void ValidatePSM::run() {
                 }
                 tasks.push_back(t);
             }
-            for (auto & task : tasks) {
+            for (auto &task : tasks) {
                 if (task)
                     task->join();
             }
@@ -1279,7 +1294,8 @@ void ValidatePSM::run() {
 
         exportTestingFeature(features, m_output_feature_file, featuretable);
 
-        string corresponding_psm = m_output_feature_file.replace(m_output_feature_file.length()-strlen(".feat"),strlen(".feat"),".psm");
+        string corresponding_psm = m_output_feature_file.replace(m_output_feature_file.length() - strlen(".feat"),
+                                                                 strlen(".feat"), ".psm");
 
         psmtable.saveAs(corresponding_psm, true, ',');
 
@@ -1296,36 +1312,35 @@ void ValidatePSM::run() {
 
 void
 ValidatePSM::updatePsmTable(PeptideProphetParser &ppp, DataFile *df, const vector<int> &index, CTable &psmtable) const {
-    int decoy2targetNum = 0, decoynum=0, targetnum=0;
+    int decoy2targetNum = 0, decoynum = 0, targetnum = 0;
     unordered_set<string> decoy2target_peptides;
-    bool verbose=false;
+    bool verbose = false;
     for (int idx : index) {
         CSpectrum *spec = df->getSpectrum(idx);
         PSMInfo psmInfo;
-        bool isfound = ppp.getPSMInfobyScanFileName(df->getSourceFileName(),spec->getScanNum(),psmInfo);
+        bool isfound = ppp.getPSMInfobyScanFileName(df->getSourceFileName(), spec->getScanNum(), psmInfo);
         string proteinACNum = psmInfo.searchhits.at(0)->m_protein;
         SearchHit &sh0 = *psmInfo.searchhits[0];
 
-        if(m_useAlternativeProtein and sh0.m_protein!= psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(
-                m_useAlternativeProtein, 0))
-        {
+        if (m_useAlternativeProtein and sh0.m_protein != psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(
+                m_useAlternativeProtein, 0)) {
             proteinACNum = psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(m_useAlternativeProtein, 0);
-            if(verbose){
+            if (verbose) {
 
-                cout << "Protein changed from: "<< sh0.m_protein
-                << " to " << proteinACNum
-                <<" for peptide " << sh0.m_peptide<< endl;
+                cout << "Protein changed from: " << sh0.m_protein
+                     << " to " << proteinACNum
+                     << " for peptide " << sh0.m_peptide << endl;
             }
-            decoy2targetNum ++;
+            decoy2targetNum++;
             decoy2target_peptides.insert(sh0.m_peptide);
         }
-        if(psmInfo.isDecoy(m_useAlternativeProtein, 0)){
+        if (psmInfo.isDecoy(m_useAlternativeProtein, 0)) {
             decoynum++;
-        }else{
+        } else {
             targetnum++;
         }
 //        psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(), // use proteinnACNum now
-        vector<string> tmp={
+        vector<string> tmp = {
                 df->getSourceFileName(),
                 to_string(idx),
                 to_string(spec->m_scanNum),
@@ -1337,10 +1352,10 @@ ValidatePSM::updatePsmTable(PeptideProphetParser &ppp, DataFile *df, const vecto
         };
         psmtable.addRow(tmp);
     }
-    cout << "[Info] " << decoy2targetNum <<" PSMs ("<< decoy2target_peptides.size()
-    << " Peptides) changed from DECOY to TARGET; Decoy: " << decoynum
-    << " Target: " << targetnum << " Total:  "<< index.size()
-    << endl;
+    cout << "[Info] " << decoy2targetNum << " PSMs (" << decoy2target_peptides.size()
+         << " Peptides) changed from DECOY to TARGET; Decoy: " << decoynum
+         << " Target: " << targetnum << " Total:  " << index.size()
+         << endl;
 }
 
 void ValidatePSM::exportTestingFeature(const vector<Feature *> &features, const string &feature_outfile,
@@ -1351,7 +1366,7 @@ void ValidatePSM::exportTestingFeature(const vector<Feature *> &features, const 
     }
     fout << "class" << endl;
 
-    for (const auto & i : featuretable) {
+    for (const auto &i : featuretable) {
         for (double j : i) {
             fout << j << ",";
         }
@@ -1362,7 +1377,8 @@ void ValidatePSM::exportTestingFeature(const vector<Feature *> &features, const 
 }
 
 void
-workOnOneBatch(PeptideProphetParser *ppp, const string& mzMLsourcefile, DataFile *df, vector<int> *index, vector<int> *batches,
+workOnOneBatch(PeptideProphetParser *ppp, const string &mzMLsourcefile, DataFile *df, vector<int> *index,
+               vector<int> *batches,
                int i, vector<Feature *> *features, vector<vector<double>> *featuretable, shared_ptr<Progress> ps,
                bool fixMz, bool highMassAcc) {
     spdlog::get("A")->trace("Running batch {} from {} to {}", i, batches->at(i - 1), batches->at(i));
@@ -1375,74 +1391,74 @@ workOnOneBatch(PeptideProphetParser *ppp, const string& mzMLsourcefile, DataFile
             spdlog::get("A")->info("Error: spec is null idx = {}", idx);
             return;
         }
-        PSMInfo psmInfo(name,spec->getScanNum());
+        PSMInfo psmInfo(name, spec->getScanNum());
         bool isfound = ppp->getPsmInfo(psmInfo);
         get_feature_from_spec(&psmInfo, spec, &(*featuretable)[j], features, idx, mzMLsourcefile, fixMz, highMassAcc);
     }
 }
 
-void plot_ROC_with_score(CTable &psmtable, int column, const string& scoreName, string outprefix, bool onlytarget, HTMLReporter *reporter) {
-    cout << "Plot ROC curve with ground truth, with TARGET_ONLY = "  << onlytarget << endl;
-    if(onlytarget) {
+void plot_ROC_with_score(CTable &psmtable, int column, const string &scoreName, string outprefix, bool onlytarget,
+                         HTMLReporter *reporter) {
+    cout << "Plot ROC curve with ground truth, with TARGET_ONLY = " << onlytarget << endl;
+    if (onlytarget) {
         outprefix += "_onlyT_";
     }
-    vector<double> pos,  neg;
-    for(int i=0; i < psmtable.m_row; i ++)    {
-        if (psmtable.getEntry(i,psmtable.getColByHeader("isdecoy")) == "D" and onlytarget){
+    vector<double> pos, neg;
+    for (int i = 0; i < psmtable.m_row; i++) {
+        if (psmtable.getEntry(i, psmtable.getColByHeader("isdecoy")) == "D" and onlytarget) {
             continue;
         }
 
         double score = atof(psmtable.getEntry(i, column).c_str());
-        if(psmtable.getEntry(i,psmtable.getColByHeader("istruth"))=="1")   {
+        if (psmtable.getEntry(i, psmtable.getColByHeader("istruth")) == "1") {
             pos.push_back(score);
-        } else   {
+        } else {
             neg.push_back(score);
         }
     }
     plotScoreDistribution(pos, neg, outprefix + "_scoreDist.png", scoreName);
 
-    CROCPlot rocplot(pos,neg);
-    rocplot.saveROCtoTXT(outprefix+"_roc.txt");
+    CROCPlot rocplot(pos, neg);
+    rocplot.saveROCtoTXT(outprefix + "_roc.txt");
     double auc = rocplot.getAUC();
-    string outfigure = outprefix+"_roc_plot.png";
-    rocplot.plotROCtoPNG(auc,outfigure, scoreName);
-    if(reporter != nullptr)    {
-        reporter->addImage(outfigure, outfigure,"");
-        string second_out_fig = outfigure.substr(0,outfigure.length()-4)+"_full.png";
-        reporter->addImage(second_out_fig, second_out_fig,"");
+    string outfigure = outprefix + "_roc_plot.png";
+    rocplot.plotROCtoPNG(auc, outfigure, scoreName);
+    if (reporter != nullptr) {
+        reporter->addImage(outfigure, outfigure, "");
+        string second_out_fig = outfigure.substr(0, outfigure.length() - 4) + "_full.png";
+        reporter->addImage(second_out_fig, second_out_fig, "");
     }
-    spdlog::get("A")->info("AUC of score {} is {:.4f}; ",scoreName,  auc);
+    spdlog::get("A")->info("AUC of score {} is {:.4f}; ", scoreName, auc);
 }
 
-shared_ptr<CTruth> CreateTruth(const string& filename, const string& method) {
+shared_ptr<CTruth> CreateTruth(const string &filename, const string &method) {
     cout << "Truthfile " << filename << endl << "method: " << method << endl;
-    if(not File::isExist(filename,true)){
-        cout << "File does not exist!!!"  << filename << endl;
+    if (not File::isExist(filename, true)) {
+        cout << "File does not exist!!!" << filename << endl;
         return nullptr;
-    }
-    else if (method == "scan+pep")    {
+    } else if (method == "scan+pep") {
         return shared_ptr<CTruth>(new CScanPepList(filename));
-    } else if (method == "pepset")    {
+    } else if (method == "pepset") {
         return shared_ptr<CTruth>(new CTruthPepList(filename));
-    } else  {
+    } else {
         spdlog::get("A")->info("Invalid Truth Method: {}", method);
         throw CException(R"(Invalid truth method! Try "scan+pep" or "pepset"!)");
     }
 }
 
 
-void CROCPlot::plotROCtoPNG(double auc, const string& roc_png_filename, const string& scorename) {
+void CROCPlot::plotROCtoPNG(double auc, const string &roc_png_filename, const string &scorename) {
     vector<tuple<double, double, double>> roc_tuple;
-    for(auto &x: m_struct_roc)
-    {
-        roc_tuple.emplace_back(x.fpr, x.tpr,x.score);
+    for (auto &x: m_struct_roc) {
+        roc_tuple.emplace_back(x.fpr, x.tpr, x.score);
     }
 
-    string strAUC = to_string_with_precision(auc,4);
-    vector<string> figurefilelist ;
+    string strAUC = to_string_with_precision(auc, 4);
+    vector<string> figurefilelist;
     {
         Gnuplot gnuplot;
         gnuplot << "set terminal png" << endl;
+        gnuplot << "set title 'ROC curve (partial)'" << endl;
         gnuplot << "set output '" << roc_png_filename << "'" << endl;
         gnuplot << "set xlabel 'false positive rate (FPR)'" << endl;
         gnuplot << "set ylabel 'true positive rate (TPR)'" << endl;
@@ -1454,13 +1470,15 @@ void CROCPlot::plotROCtoPNG(double auc, const string& roc_png_filename, const st
         figurefilelist.push_back(roc_png_filename);
     }
     {
-        string fullaxis_png = roc_png_filename.substr(0, roc_png_filename.length()-4) + "_full.png";
+        string fullaxis_png = roc_png_filename.substr(0, roc_png_filename.length() - 4) + "_full.png";
         Gnuplot gnuplot;
         gnuplot << "set terminal png" << endl;
+        gnuplot << "set title 'ROC curve (full)'" << endl;
         gnuplot << "set output '" << fullaxis_png << "'" << endl;
         gnuplot << "set xlabel 'false positive rate (FPR)'" << endl;
         gnuplot << "set ylabel 'true positive rate (TPR)'" << endl;
-        gnuplot << "plot '-' using 1:2 with line lw 2 title \" "  << scorename<< " score AUC=" << strAUC << "\"" << endl;
+        gnuplot << "plot '-' using 1:2 with line lw 2 title \" " << scorename << " score AUC=" << strAUC << "\""
+                << endl;
 
         gnuplot.send1d(roc_tuple);
         figurefilelist.push_back(fullaxis_png);
@@ -1468,57 +1486,55 @@ void CROCPlot::plotROCtoPNG(double auc, const string& roc_png_filename, const st
 }
 
 CROCPlot::CROCPlot(vector<double> &postiveScores, vector<double> &negativeScores) {
-    int postive_num = postiveScores.size(), negative_num = negativeScores.size();
-    spdlog::get("A")->info("positive: {}; negative: {}", postive_num, negative_num);
+    int positive_num = postiveScores.size(), negative_num = negativeScores.size();
+    spdlog::get("A")->info("positive: {}; negative: {}", positive_num, negative_num);
 
-    sort(postiveScores.begin(), postiveScores.end(), [](const double &x, const double & y ){return x> y;});
-    sort(negativeScores.begin(), negativeScores.end(), [](const double &x, const double & y ){return x> y;});
+    sort(postiveScores.begin(), postiveScores.end(), [](const double &x, const double &y) { return x > y; });
+    sort(negativeScores.begin(), negativeScores.end(), [](const double &x, const double &y) { return x > y; });
 
     int pcount = 0, ncount = 0;
-    double score=1;
+    double score = 1;
 
-    m_struct_roc.emplace_back(SROC(0,0,1,0,0));
-    while (pcount < postive_num and ncount < negative_num) {
+    m_struct_roc.emplace_back(SROC(0, 0, 1, 0, 0));
+    while (pcount < positive_num and ncount < negative_num) {
         if (postiveScores[pcount] > negativeScores[ncount]) {
-            score=postiveScores[pcount];
-            while(pcount < postive_num and postiveScores[pcount]>=score)   pcount++;
-            double TPR = (double)pcount / postive_num, FPR = (double)ncount / negative_num;
+            score = postiveScores[pcount];
+            while (pcount < positive_num and postiveScores[pcount] >= score) pcount++;
+            double TPR = (double) pcount / positive_num, FPR = (double) ncount / negative_num;
             m_struct_roc.emplace_back(SROC(FPR, TPR, score, ncount, pcount));
-        } else if(postiveScores[pcount] < negativeScores[ncount]) {
-            score=negativeScores[ncount];
-            while(ncount < negative_num and negativeScores[ncount]>=score) ncount++;
-            double TPR = (double)pcount / postive_num, FPR = (double)ncount / negative_num;
+        } else if (postiveScores[pcount] < negativeScores[ncount]) {
+            score = negativeScores[ncount];
+            while (ncount < negative_num and negativeScores[ncount] >= score) ncount++;
+            double TPR = (double) pcount / positive_num, FPR = (double) ncount / negative_num;
             m_struct_roc.emplace_back(SROC(FPR, TPR, score, ncount, pcount));
-        } else{
+        } else {
 
-            score=negativeScores[ncount];
-            while(pcount < postive_num and postiveScores[pcount]>=score)   pcount++;
-            while(ncount < negative_num and negativeScores[ncount]>=score) ncount++;
-//            ncount++;
-//            pcount++;
-            double TPR = (double)pcount / postive_num, FPR = (double)ncount / negative_num;
+            score = negativeScores[ncount];
+            while (pcount < positive_num and postiveScores[pcount] >= score) pcount++;
+            while (ncount < negative_num and negativeScores[ncount] >= score) ncount++;
+            double TPR = (double) pcount / positive_num, FPR = (double) ncount / negative_num;
             m_struct_roc.emplace_back(SROC(FPR, TPR, score, ncount, pcount));
         }
     }
-    while (pcount < postive_num) {
-        score=postiveScores[pcount];
+    while (pcount < positive_num) {
+        score = postiveScores[pcount];
         pcount++;
-        double TPR = pcount / postive_num, FPR = 1.0;
+        double TPR = (double) pcount / positive_num, FPR = 1.0;
         m_struct_roc.emplace_back(SROC(FPR, TPR, score, ncount, pcount));
     }
 
     while (ncount < negative_num) {
-        score=negativeScores[ncount];
+        score = negativeScores[ncount];
         ncount++;
-        double TPR = 1.0, FPR = ncount / negative_num;
+        double TPR = 1.0, FPR = (double) ncount / negative_num;
         m_struct_roc.emplace_back(SROC(FPR, TPR, score, ncount, pcount));
     }
 }
 
-void CROCPlot::saveROCtoTXT(const string& roc_data) {
+void CROCPlot::saveROCtoTXT(const string &roc_data) {
     ofstream fout(roc_data.c_str(), ios::out);
 
-    for(auto x: m_struct_roc)   {
+    for (auto x: m_struct_roc) {
         fout << x << endl;
     }
     fout.close();
@@ -1538,10 +1554,10 @@ double CROCPlot::getAUC() {
      * */
     //
 
-    double auc=0;
+    double auc = 0;
     for (int i = 1; i < m_struct_roc.size(); i++) {
-        double dx=m_struct_roc.at(i).fpr - m_struct_roc.at(i-1).fpr;
-        double y_left=m_struct_roc.at(i-1).tpr, y_right=m_struct_roc.at(i).tpr;
+        double dx = m_struct_roc.at(i).fpr - m_struct_roc.at(i - 1).fpr;
+        double y_left = m_struct_roc.at(i - 1).tpr, y_right = m_struct_roc.at(i).tpr;
         auc += (dx) * (y_left + y_right) / 2.0;
     }
 
@@ -1564,23 +1580,23 @@ string CTruth::getTruth(int scan) {
     return "N/A";
 }
 
-CScanPepList::CScanPepList(const string& scanpepListFile) {
-    m_truthfile=scanpepListFile;
-    CTable x(scanpepListFile,'\t',false);
-    for(int i = 0; i < x.m_row; i ++)  {
-        int scan = atoi(x.getEntry(i,0).c_str());
-        string peptide = x.getEntry(i,1);
-        string plainPepStr = regex_replace(peptide.c_str(), regex("[[0-9.]*]"),"");
+CScanPepList::CScanPepList(const string &scanpepListFile) {
+    m_truthfile = scanpepListFile;
+    CTable x(scanpepListFile, '\t', false);
+    for (int i = 0; i < x.m_row; i++) {
+        int scan = atoi(x.getEntry(i, 0).c_str());
+        string peptide = x.getEntry(i, 1);
+        string plainPepStr = regex_replace(peptide.c_str(), regex("[[0-9.]*]"), "");
         m_scanPepList.emplace_back(scan, plainPepStr);
     }
 }
 
 bool CScanPepList::validate(int scan, string modified_pep) {
-    string plainPepStr = regex_replace(modified_pep.c_str(), regex("[[0-9.]*]"),"");
+    string plainPepStr = regex_replace(modified_pep.c_str(), regex("[[0-9.]*]"), "");
     spdlog::get("A")->debug("Validating scan + peptide: {} {} <-- {} ", scan, plainPepStr, modified_pep);
     bool ret = false;
-    for(auto & i : m_scanPepList)    {
-        if (get<0>(i) == scan and get<1>(i)==plainPepStr){
+    for (auto &i : m_scanPepList) {
+        if (get<0>(i) == scan and get<1>(i) == plainPepStr) {
             ret = true;
         }
     }
@@ -1590,8 +1606,8 @@ bool CScanPepList::validate(int scan, string modified_pep) {
 
 string CScanPepList::getTruth(int scan) {
     string answer = "N/A";
-    for(auto & i : m_scanPepList)    {
-        if (get<0>(i) == scan)   {
+    for (auto &i : m_scanPepList) {
+        if (get<0>(i) == scan) {
             answer = get<1>(i);
         }
     }
@@ -1599,16 +1615,16 @@ string CScanPepList::getTruth(int scan) {
 }
 
 
-CTruthPepList::CTruthPepList(const string& pepListFile) {
-    m_truthfile=pepListFile;
+CTruthPepList::CTruthPepList(const string &pepListFile) {
+    m_truthfile = pepListFile;
     ifstream fin(pepListFile.c_str(), ios::in);
     string line;
-    if(fin.is_open()) {
-        while(getline(fin, line))  {
+    if (fin.is_open()) {
+        while (getline(fin, line)) {
             // Error: sometimes there is a extra \r at the end of a line
             // The following code remove \r from the end
             line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
-            m_pepList.push_back(regex_replace(line, regex("L"),"I"));
+            m_pepList.push_back(regex_replace(line, regex("L"), "I"));
         }
     }
     fin.close();
@@ -1621,49 +1637,44 @@ CTruthPepList::CTruthPepList(const string& pepListFile) {
 // allow partial match
 bool CTruthPepList::validate(int scan, string modified_pep) {
     bool ret = false;
-    string plainPepStr = regex_replace(modified_pep.c_str(), regex("[[0-9.]*]"),"");
-    plainPepStr = regex_replace(plainPepStr, regex("L"),"I"); // L to I
+    string plainPepStr = regex_replace(modified_pep.c_str(), regex("[[0-9.]*]"), "");
+    plainPepStr = regex_replace(plainPepStr, regex("L"), "I"); // L to I
 //    if (plainPepStr == "FSPVIGR"){
 //        cout << "plainPepStr \"" << plainPepStr << "\" "
 //        << std::distance(std::find(m_pepList.begin(), m_pepList.end(), plainPepStr),m_pepList.begin())<< endl;
 //
 //    }
 //    spdlog::get("A")->info("Validating peptide: {}", plainPepStr);
-    if (m_pepList.end() != std::find(m_pepList.begin(), m_pepList.end(), plainPepStr))    {
+    if (m_pepList.end() != std::find(m_pepList.begin(), m_pepList.end(), plainPepStr)) {
         ret = true;// ret;
 //        cout << modified_pep << "---> " << plainPepStr << " Status: " << ret << endl;
     }
-    if(not ret){ // false, try partial match
-        for(int i = 0; i < m_pepList.size(); i ++)
-        {
+    if (not ret) { // false, try partial match
+        for (int i = 0; i < m_pepList.size(); i++) {
             int found = m_pepList[i].find(plainPepStr);
-            if(found == string::npos){
+            if (found == string::npos) {
                 // not found
                 continue;
-            }
-            else
-            {
+            } else {
                 ret = true;
-                cout << "Partial match " << plainPepStr << " in "<< i << "-th peptide: " << m_pepList[i] << endl;
+                cout << "Partial match " << plainPepStr << " in " << i << "-th peptide: " << m_pepList[i] << endl;
                 break;
             }
         }
     }
 
     // remove the first nterm aa, try find again
-    if(not ret){ // false, try partial match
+    if (not ret) { // false, try partial match
         string shortplainPepStr = plainPepStr.substr(1);
-        for(int i = 0; i < m_pepList.size(); i ++)
-        {
+        for (int i = 0; i < m_pepList.size(); i++) {
             int found = m_pepList[i].find(shortplainPepStr);
-            if(found == string::npos){
+            if (found == string::npos) {
                 // not found
                 continue;
-            }
-            else
-            {
+            } else {
                 ret = true;
-                cout << "Partial match " << shortplainPepStr << " from " << plainPepStr << " found in "<< i << "-th peptide: " << m_pepList[i] << endl;
+                cout << "Partial match " << shortplainPepStr << " from " << plainPepStr << " found in " << i
+                     << "-th peptide: " << m_pepList[i] << endl;
                 break;
             }
         }
@@ -1672,7 +1683,7 @@ bool CTruthPepList::validate(int scan, string modified_pep) {
     return ret;
 }
 
-HTMLReporter::HTMLReporter(string filename, const string& title) {
+HTMLReporter::HTMLReporter(string filename, const string &title) {
     m_outfilename = filename;
     m_fout.open(m_outfilename.c_str(), ios::out);
     m_fout << "<!DOCTYPE html>\n"
@@ -1692,7 +1703,7 @@ HTMLReporter::~HTMLReporter() {
     spdlog::get("A")->info("HTML report file {} generated!", m_outfilename);
 }
 
-void HTMLReporter::addImage(const string& filename, const string& title, const string& description) {
+void HTMLReporter::addImage(const string &filename, const string &title, const string &description) {
     string outstr = "<figure>\n";
     outstr += "  <img src=\"" + filename + "\" >\n";
     outstr += "  <figcaption>" + title + " </figcaption>\n";
@@ -1708,42 +1719,45 @@ resultAnalysis::resultAnalysis(string pepxmlfile, shared_ptr<CTruth> truth, stri
     m_useAlternativeProt = useAlternativeProt;
 }
 
-struct SFdrScore
-{
+struct SFdrScore {
     double m_fdr;
     int m_corr;
     int m_incorr;
     double m_score;
-    SFdrScore(double fdr, int corr, int incorr, double score)
-    {
-        m_fdr=fdr;
+
+    SFdrScore(double fdr, int corr, int incorr, double score) {
+        m_fdr = fdr;
         m_corr = corr;
         m_incorr = incorr;
         m_score = score;
     }
 };
 
-class CFdrNumCorr{
+class CFdrNumCorr {
     vector<tuple<double, double>> m_fdr_counts;
     vector<SFdrScore> m_FdrScore;
 
 public:
-    CFdrNumCorr(){
+    CFdrNumCorr() {
         ;
     }
-    void plot(const string& title,const string& filename)    {
-        SFdrScore afs(0.01,0,0,1.0);
-        auto y=upper_bound(m_FdrScore.begin(), m_FdrScore.end(),afs, [](const SFdrScore &u, const SFdrScore &v)->bool{return u.m_fdr<v.m_fdr;});
-        spdlog::get("A")->info("{}: FDR: {:.04f}, #PSM: {}, #PSM_Incorr: {}, Probability cut-off: {:.04f}", title,y->m_fdr, y->m_corr, y->m_incorr, y->m_score );
+
+    void plot(const string &title, const string &filename) {
+        SFdrScore afs(0.01, 0, 0, 1.0);
+        auto y = upper_bound(m_FdrScore.begin(), m_FdrScore.end(), afs,
+                             [](const SFdrScore &u, const SFdrScore &v) -> bool { return u.m_fdr < v.m_fdr; });
+        spdlog::get("A")->info("{}: FDR: {:.04f}, #PSM: {}, #PSM_Incorr: {}, Probability cut-off: {:.04f}", title,
+                               y->m_fdr, y->m_corr, y->m_incorr, y->m_score);
         vector<tuple<double, double>> tmpobj;
-        for(auto each: m_FdrScore)  {
-            tmpobj.emplace_back(each.m_fdr,each.m_corr);
+        for (auto each: m_FdrScore) {
+            tmpobj.emplace_back(each.m_fdr, each.m_corr);
         }
-        plot_FDR_curve(filename,title, tmpobj);
+        plot_FDR_curve(filename, title, tmpobj);
     }
 
-    ~CFdrNumCorr()= default;
-    void saveAs(const string& outputfile){
+    ~CFdrNumCorr() = default;
+
+    void saveAs(const string &outputfile) {
         ofstream fout(outputfile.c_str(), ios::out);
         for (auto x: m_fdr_counts) {
             fout << get<0>(x) << "\t" << get<1>(x) << endl;
@@ -1752,9 +1766,9 @@ public:
         cout << "Data exported to file : " << outputfile << endl;
     }
 
-    void export_peptideprophetinfo(PeptideProphetParser &ppp, bool useAlternativeProt=true) {
+    void export_peptideprophetinfo(PeptideProphetParser &ppp, bool useAlternativeProt = true) {
         vector<double> tProbs, dProbs;
-        extract_pep_prob(tProbs, dProbs, ppp, get_peptidePropeht_prob,useAlternativeProt);
+        extract_pep_prob(tProbs, dProbs, ppp, get_peptidePropeht_prob, useAlternativeProt);
 
         get_FDR_CorrectNum(tProbs, dProbs);
     }
@@ -1766,15 +1780,15 @@ public:
 
         int tcount = 0, dcount = 0;
         // why?
-        m_FdrScore.emplace_back(SFdrScore(0.0, 0 , 1, 1.0));
+        m_FdrScore.emplace_back(SFdrScore(0.0, 0, 1, 1.0));
         m_fdr_counts.emplace_back(0.0, 0.0);
         while (tcount < tProbs.size() and dcount < dProbs.size()) {
             double score = 1.0;
             if (tProbs[tcount] >= dProbs[dcount]) {
                 score = tProbs[tcount];
                 tcount++;
-            } else  {
-                score=dProbs[dcount];
+            } else {
+                score = dProbs[dcount];
                 dcount++;
             }
 
@@ -1786,9 +1800,9 @@ public:
         }
     }
 
-    void export_iprophetinfo(PeptideProphetParser &ppp, bool useAlternativeProt=true) {
+    void export_iprophetinfo(PeptideProphetParser &ppp, bool useAlternativeProt = true) {
         vector<double> tProbs, dProbs;
-        extract_pep_prob(tProbs, dProbs, ppp, get_iprophet_prob,useAlternativeProt);
+        extract_pep_prob(tProbs, dProbs, ppp, get_iprophet_prob, useAlternativeProt);
         get_FDR_CorrectNum(tProbs, dProbs);
     }
 
@@ -1805,14 +1819,14 @@ void resultAnalysis::run() {
             "Step 2: collect decoy rf scores and target rf scores\n"
             "Step 3: plot FDR -- CorrectNum figure; and AUC" << endl;
     string nameprefix = m_pepxmlfile + m_basename;
-    HTMLReporter hr(nameprefix+ ".html");
+    HTMLReporter hr(nameprefix + ".html");
 
     string m_psmfile = nameprefix + ".psm";
     string m_predictionfile = nameprefix + ".prediction";
 
     // output to table of everything
     CTable psmtable(m_psmfile, ',', true, 0),
-        predictiontable(m_predictionfile, ' ', false, 3);
+            predictiontable(m_predictionfile, ' ', false, 3);
 
     predictiontable.setHeader({"rf+", "rf-"});
     psmtable.Join(predictiontable);
@@ -1821,66 +1835,71 @@ void resultAnalysis::run() {
     psmtable.appendHeader({"isdecoy", "istruth", "truthpep"});
 
     // Todo: improved later.
-    map<string, int> col2index={{"protein",5},{"rf+",8},{"iProb",7},{"pProb",6},
-                                {"peptide",3},{"scan",2}};
+    map<string, int> col2index = {{"protein", 5},
+                                  {"rf+",     8},
+                                  {"iProb",   7},
+                                  {"pProb",   6},
+                                  {"peptide", 3},
+                                  {"scan",    2}};
 
-    for (int i = 0; i < psmtable.m_row; i ++) {
-        string protein = psmtable.getEntry(i,col2index["protein"]);// to check todo:X
-        double rfscore = atof(psmtable.getEntry(i,col2index["rf+"]).c_str());// key
+    for (int i = 0; i < psmtable.m_row; i++) {
+        string protein = psmtable.getEntry(i, col2index["protein"]);// to check todo:X
+        double rfscore = atof(psmtable.getEntry(i, col2index["rf+"]).c_str());// key
 
         if (string::npos == protein.find("DECOY")) {
             spdlog::get("A")->debug("not a decoy protein {}", protein);
             tProb.push_back(rfscore);
-            psmtable.appendEntry(i,"T");
+            psmtable.appendEntry(i, "T");
         } else {
             dProb.push_back(rfscore);
-            psmtable.appendEntry(i,"D");
+            psmtable.appendEntry(i, "D");
         }
     }
 
-    if(m_truth!= nullptr){
+    if (m_truth != nullptr) {
         spdlog::get("A")->info("using ground truth: {}", m_truth->getTruthFileName());
-        for (int i = 0; i < psmtable.m_row; i ++) {
-            int scan = atoi(psmtable.getEntry(i,col2index["scan"]).c_str());
+        for (int i = 0; i < psmtable.m_row; i++) {
+            int scan = atoi(psmtable.getEntry(i, col2index["scan"]).c_str());
 
-            if (m_truth->validate(scan, psmtable.getEntry(i,col2index["peptide"])))   {
-                psmtable.appendEntry(i,"1");
-            } else{
-                psmtable.appendEntry(i,"0");
+            if (m_truth->validate(scan, psmtable.getEntry(i, col2index["peptide"]))) {
+                psmtable.appendEntry(i, "1");
+            } else {
+                psmtable.appendEntry(i, "0");
             }
             psmtable.appendEntry(i, m_truth->getTruth(scan));
         }
-        plot_ROC_with_score(psmtable, psmtable.getColByHeader("rf+"), "Random Forest", nameprefix+"_rf", false, &hr);
-        plot_ROC_with_score(psmtable, psmtable.getColByHeader("iprob"),"iProphet", nameprefix+"_ip", false, &hr);
-        plot_ROC_with_score(psmtable, psmtable.getColByHeader("ppprob"),"PeptideProphet", nameprefix+"_pp", false, &hr);
-        plot_ROC_with_score(psmtable, psmtable.getColByHeader("rf+"),"Random Forest", nameprefix+"_rf", true, &hr);
-        plot_ROC_with_score(psmtable, psmtable.getColByHeader("iprob"),"iProphet", nameprefix+"_ip", true, &hr);
-        plot_ROC_with_score(psmtable, psmtable.getColByHeader("ppprob"), "PeptideProphet", nameprefix+"_pp", true, &hr);
+        plot_ROC_with_score(psmtable, psmtable.getColByHeader("rf+"), "Random Forest", nameprefix + "_rf", false, &hr);
+        plot_ROC_with_score(psmtable, psmtable.getColByHeader("iprob"), "iProphet", nameprefix + "_ip", false, &hr);
+        plot_ROC_with_score(psmtable, psmtable.getColByHeader("ppprob"), "PeptideProphet", nameprefix + "_pp", false,
+                            &hr);
+        plot_ROC_with_score(psmtable, psmtable.getColByHeader("rf+"), "Random Forest", nameprefix + "_rf", true, &hr);
+        plot_ROC_with_score(psmtable, psmtable.getColByHeader("iprob"), "iProphet", nameprefix + "_ip", true, &hr);
+        plot_ROC_with_score(psmtable, psmtable.getColByHeader("ppprob"), "PeptideProphet", nameprefix + "_pp", true,
+                            &hr);
 
-    }
-    else{
+    } else {
         spdlog::get("A")->info("no ground truth");
     }
 
 
     CFdrNumCorr fdrRF, fdrPep, fdrIpro;
-    fdrRF.get_FDR_CorrectNum(tProb,dProb);
+    fdrRF.get_FDR_CorrectNum(tProb, dProb);
     fdrRF.saveAs(nameprefix + "_FDR_CorrectNum_myProb.txt");
     PeptideProphetParser ppp(m_pepxmlfile);
-    fdrPep.export_peptideprophetinfo(ppp,m_useAlternativeProt);
+    fdrPep.export_peptideprophetinfo(ppp, m_useAlternativeProt);
     fdrPep.saveAs(nameprefix + "_FDR_CorrectNum_pepprob.txt");
-    fdrIpro.export_iprophetinfo(ppp,m_useAlternativeProt);
+    fdrIpro.export_iprophetinfo(ppp, m_useAlternativeProt);
     fdrIpro.saveAs(nameprefix + "_FDR_CorrectNum_iprob.txt");
 
 
     map<string, string> filenames;
-    filenames["RF"]=nameprefix + "_FDR_CorrectNum_myProb.png";
-    filenames["iProb"]=nameprefix + "_FDR_CorrectNum_iprob.png";
-    filenames["pProb"]=nameprefix + "_FDR_CorrectNum_pepprob.png";
+    filenames["RF"] = nameprefix + "_FDR_CorrectNum_myProb.png";
+    filenames["iProb"] = nameprefix + "_FDR_CorrectNum_iprob.png";
+    filenames["pProb"] = nameprefix + "_FDR_CorrectNum_pepprob.png";
 
     fdrRF.plot("RF score", filenames["RF"]);
-    fdrIpro.plot("iProb",filenames["iProb"]);
-    fdrPep.plot("pProb",filenames["pProb"]);
+    fdrIpro.plot("iProb", filenames["iProb"]);
+    fdrPep.plot("pProb", filenames["pProb"]);
 
     hr.addImage(filenames["RF"], "FDR-Corrrect ID Plot for Random Forest score", "");
     hr.addImage(filenames["iProb"], "FDR-Corrrect ID Plot for iProphet score", "");
@@ -1894,15 +1913,16 @@ void resultAnalysis::run() {
 }
 
 //----------extract features ---
-ExtractFeatures::ExtractFeatures(string pepxmlfile, const string& validatorModel, string fragmodelscoretype, double minInt,
+ExtractFeatures::ExtractFeatures(string pepxmlfile, const string &validatorModel, string fragmodelscoretype,
+                                 double minInt,
                                  bool ghost, int threadNum, string featurelistfile, bool useAlternativeProt,
-                                 string binaryPath):m_delimiter_psm_file(',') {
+                                 string binaryPath) : m_delimiter_psm_file(',') {
 
     m_binaryPath = binaryPath;
     m_useAlternativeProtein = useAlternativeProt;
     m_name = "Feature extraction";
     fixMz = false;
-    m_highMassAcc=true;
+    m_highMassAcc = true;
     m_featurelistfile = featurelistfile;
     m_validatorModelFile = validatorModel;
     m_pepxmlfile = pepxmlfile;
@@ -1914,8 +1934,9 @@ ExtractFeatures::ExtractFeatures(string pepxmlfile, const string& validatorModel
 
     m_output_feature_file = m_pepxmlfile + m_basename + ".feat";
 
-    m_threadNum = threadNum <= 0 or threadNum > getProperThreads()? getProperThreads(): threadNum;
+    m_threadNum = threadNum <= 0 or threadNum > getProperThreads() ? getProperThreads() : threadNum;
 }
+
 void ExtractFeatures::getIndexPairs(DataFile *df, PeptideProphetParser &ppp, vector<pair<int, int>> &indexPair) {
 
 //    for(int i = 0; i < ppp.getPSMNum(); i ++){
@@ -1925,9 +1946,9 @@ void ExtractFeatures::getIndexPairs(DataFile *df, PeptideProphetParser &ppp, vec
 //    }
 }
 
-void ExtractFeatures::getProcessed_i(DataFile *df, PeptideProphetParser &ppp,  vector<int> &index) {
+void ExtractFeatures::getProcessed_i(DataFile *df, PeptideProphetParser &ppp, vector<int> &index) {
     string debug_peptide;
-    int debug_scan =-1;
+    int debug_scan = -1;
     if (CDebugMode::callDebug()->getMdebug()) {
         cout << "Please type in debug peptide : " << endl;
         cin >> debug_peptide;
@@ -1946,7 +1967,7 @@ void ExtractFeatures::getProcessed_i(DataFile *df, PeptideProphetParser &ppp,  v
         // MS2
         int scannum = spec->getScanNum();
         PSMInfo psmInfo;
-        bool isfound = ppp.getPSMInfobyScanFileName(df->getSourceFileName(),scannum,psmInfo);
+        bool isfound = ppp.getPSMInfobyScanFileName(df->getSourceFileName(), scannum, psmInfo);
         if (not isfound) {
             skipped_scan_num++;
             //cout << scannum << " not found" << endl;
@@ -1958,25 +1979,25 @@ void ExtractFeatures::getProcessed_i(DataFile *df, PeptideProphetParser &ppp,  v
             if (peptide != debug_peptide) {
                 continue;
             }
-            if(debug_scan != -1 and scannum!=debug_scan)  {
+            if (debug_scan != -1 and scannum != debug_scan) {
                 continue;
             }
         }
         index.push_back(i);
     }
-    cout << skipped_scan_num <<  " MS2 spectra skipped by search engine "<< endl;
+    cout << skipped_scan_num << " MS2 spectra skipped by search engine " << endl;
     cout << "Remaining MS2: " << index.size() << endl;
 }
 
 void ExtractFeatures::run() {
-    string filebasename=m_output_feature_file;
-    int found=m_output_feature_file.find_last_of('.');
-    if(found != string::npos){
+    string filebasename = m_output_feature_file;
+    int found = m_output_feature_file.find_last_of('.');
+    if (found != string::npos) {
         filebasename = m_output_feature_file.substr(0, found);
     }
     cout << "filebasename: " << filebasename << endl;
-    string corresponding_psm = filebasename+".psm";
-    string corresponding_psmtsv = filebasename+".psm.tsv";
+    string corresponding_psm = filebasename + ".psm";
+    string corresponding_psmtsv = filebasename + ".psm.tsv";
     cout << "Export to two files; " << corresponding_psm << "\t" << corresponding_psmtsv << endl;
 
     bool alwaysReCreateFeature = true;
@@ -1991,7 +2012,7 @@ void ExtractFeatures::run() {
         vector<string> header = {"filename", "id", "scan", "modpep", "charge", "protein", "ppprob", "iprob"};
         psmtable.setHeader(header);
         PeptideProphetParser ppp(m_pepxmlfile);
-        for (const auto& eachfile : ppp.m_allSourceFiles) {
+        for (const auto &eachfile : ppp.m_allSourceFiles) {
             DataFile *df = new DataFile(eachfile, 0, -1);
 
             vector<int> index;
@@ -2018,7 +2039,7 @@ void ExtractFeatures::run() {
                 }
                 tasks.push_back(t);
             }
-            for (auto & task : tasks) {
+            for (auto &task : tasks) {
                 if (task)
                     task->join();
             }
@@ -2052,46 +2073,46 @@ ExtractFeatures::printFeatureTable(const vector<Feature *> &features,
 }
 
 void
-ExtractFeatures::updatePsmTable(PeptideProphetParser &ppp, DataFile *df, const vector<int> &index, CTable &psmtable) const {
+ExtractFeatures::updatePsmTable(PeptideProphetParser &ppp, DataFile *df, const vector<int> &index,
+                                CTable &psmtable) const {
     int mixtureSpectraNum = 0;
-    int decoy2targetNum = 0, decoynum=0, targetnum=0;
+    int decoy2targetNum = 0, decoynum = 0, targetnum = 0;
     unordered_set<string> decoy2target_peptides;
-    bool verbose=true;
+    bool verbose = true;
     for (int idx : index) {
         CSpectrum *spec = df->getSpectrum(idx);
         PSMInfo psmInfo;
         vector<PSMInfo> allPsmInfo;
-        bool isfound = ppp.getPSMInfobyScanFileName(df->getSourceFileName(),spec->getScanNum(),psmInfo);
-        bool isfoundAll = ppp.getAllPSMsWithScanFileName(df->getSourceFileName(),spec->getScanNum(),allPsmInfo);
-        if(isfoundAll and allPsmInfo.size()>1){
+        bool isfound = ppp.getPSMInfobyScanFileName(df->getSourceFileName(), spec->getScanNum(), psmInfo);
+        bool isfoundAll = ppp.getAllPSMsWithScanFileName(df->getSourceFileName(), spec->getScanNum(), allPsmInfo);
+        if (isfoundAll and allPsmInfo.size() > 1) {
             cout << "Warning: more than one PSM found for this scan (Mixture spectra)" << endl;
-            for(auto & eachpsm: allPsmInfo){
+            for (auto &eachpsm: allPsmInfo) {
                 eachpsm.print();
             }
-            mixtureSpectraNum ++;
+            mixtureSpectraNum++;
         }
         string proteinACNum = psmInfo.searchhits.at(0)->m_protein;
         SearchHit &sh0 = *psmInfo.searchhits[0];
 
-        if(m_useAlternativeProtein and sh0.m_protein!= psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(
-                m_useAlternativeProtein, 0))
-        {
+        if (m_useAlternativeProtein and sh0.m_protein != psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(
+                m_useAlternativeProtein, 0)) {
             proteinACNum = psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(m_useAlternativeProtein, 0);
-            if(verbose){
-                cout << "Protein changed from: "<< sh0.m_protein
+            if (verbose) {
+                cout << "Protein changed from: " << sh0.m_protein
                      << " to " << proteinACNum
-                     <<" for peptide " << sh0.m_peptide<< endl;
+                     << " for peptide " << sh0.m_peptide << endl;
             }
-            decoy2targetNum ++;
+            decoy2targetNum++;
             decoy2target_peptides.insert(sh0.m_peptide);
         }
-        if(psmInfo.isDecoy(m_useAlternativeProtein, 0)){
+        if (psmInfo.isDecoy(m_useAlternativeProtein, 0)) {
             decoynum++;
-        }else{
+        } else {
             targetnum++;
         }
 //        psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(), // use proteinnACNum now
-        vector<string> tmp={
+        vector<string> tmp = {
                 df->getSourceFileName(),
                 to_string(idx),
                 to_string(spec->m_scanNum),
@@ -2103,22 +2124,22 @@ ExtractFeatures::updatePsmTable(PeptideProphetParser &ppp, DataFile *df, const v
         };
         psmtable.addRow(tmp);
     }
-    cout << "[Info] " << decoy2targetNum <<" PSMs ("<< decoy2target_peptides.size()
+    cout << "[Info] " << decoy2targetNum << " PSMs (" << decoy2target_peptides.size()
          << " Peptides) changed from DECOY to TARGET; Decoy: " << decoynum
-         << " Target: " << targetnum << " Total:  "<< index.size()
+         << " Target: " << targetnum << " Total:  " << index.size()
          << endl;
     cout << "[Info] " << mixtureSpectraNum << " mixture spectra detected" << endl;
 }
 
 void ExtractFeatures::exportTestingFeature(const vector<Feature *> &features, const string &feature_outfile,
-                                       const vector<vector<double>> &featuretable) const {
+                                           const vector<vector<double>> &featuretable) const {
     ofstream fout(feature_outfile.c_str(), ios_base::out);
     for (auto x: features) {
         fout << x->m_feature_name << ",";
     }
     fout << "class" << endl;
 
-    for (const auto & i : featuretable) {
+    for (const auto &i : featuretable) {
         for (double j : i) {
             fout << j << ",";
         }
@@ -2129,17 +2150,17 @@ void ExtractFeatures::exportTestingFeature(const vector<Feature *> &features, co
 }
 
 
-ExtractFeaturesFromPepXML::ExtractFeaturesFromPepXML(string pepxmlfile, const string& validatorModel,
+ExtractFeaturesFromPepXML::ExtractFeaturesFromPepXML(string pepxmlfile, const string &validatorModel,
                                                      string fragmodelscoretype, double minInt,
                                                      bool ghost, int threadNum, string featurelistfile,
                                                      bool useAlternativeProt,
                                                      string binaryPath, int hitrank) {
-    m_hitrank= hitrank;
+    m_hitrank = hitrank;
     m_binaryPath = binaryPath;
     m_useAlternativeProtein = useAlternativeProt;
     m_name = "extract features from pepXML file";
     fixMz = false;
-    m_highMassAcc=true;
+    m_highMassAcc = true;
     m_featurelistfile = featurelistfile;
     m_validatorModelFile = validatorModel;
     m_pepxmlfile = pepxmlfile;
@@ -2151,12 +2172,12 @@ ExtractFeaturesFromPepXML::ExtractFeaturesFromPepXML(string pepxmlfile, const st
 
     m_output_feature_file = m_pepxmlfile + m_basename + ".feat";
 
-    m_threadNum = threadNum <= 0 or threadNum > getProperThreads()? getProperThreads(): threadNum;
+    m_threadNum = threadNum <= 0 or threadNum > getProperThreads() ? getProperThreads() : threadNum;
 
 }
 
-class FeatureExtractionThread: public ICThreadTask{
-    ICPepXMLParser * cpx;
+class FeatureExtractionThread : public ICThreadTask {
+    ICPepXMLParser *cpx;
     int i;
     DataFile *df;
     string eachfile;
@@ -2179,36 +2200,37 @@ public:
         onefeaturetable = OneSpecFeature_;
         m_hitrank = hitrank;
     }
-    void run() override{
+
+    void run() override {
         PSMInfo psminfo;
-        cpx->getPSMInfobyindex(i,psminfo);
+        cpx->getPSMInfobyindex(i, psminfo);
         int scanNum = psminfo.start_scan;
         // search for spec with scanNum
         int idx = df->getIdxByScan(scanNum);
-        CSpectrum * spec = df->getSpectrum(idx);
+        CSpectrum *spec = df->getSpectrum(idx);
 
         get_feature_from_spec(&psminfo, spec, &((*onefeaturetable)[i]), features,
-                              idx, eachfile, fixMz, m_highMassAcc,m_hitrank);
+                              idx, eachfile, fixMz, m_highMassAcc, m_hitrank);
 
     }
 };
 
 void ExtractFeaturesFromPepXML::run() {
-    int found=m_output_feature_file.find_last_of('.');
+    int found = m_output_feature_file.find_last_of('.');
     string filebasename;
-    if(found == string::npos){
+    if (found == string::npos) {
         // not find
         filebasename = m_output_feature_file;
-    }else{
+    } else {
         filebasename = m_output_feature_file.substr(0, found);
     }
     cout << "filebasename: " << filebasename << endl;
-    string corresponding_psm = filebasename+".psm";
-    string corresponding_psmtsv = filebasename+".psm.tsv";
+    string corresponding_psm = filebasename + ".psm";
+    string corresponding_psmtsv = filebasename + ".psm.tsv";
     cout << "Export to two files; " << corresponding_psm << "\t" << corresponding_psmtsv << endl;
 
     bool alwaysReCreateFeature = true;
-    if(File::isExist(m_output_feature_file) and not alwaysReCreateFeature) return;
+    if (File::isExist(m_output_feature_file) and not alwaysReCreateFeature) return;
 
 
     vector<Feature *> features = createFeatureVector(m_fragmodelfile,
@@ -2219,30 +2241,30 @@ void ExtractFeaturesFromPepXML::run() {
     vector<string> header = {"filename", "id", "scan", "modpep", "charge", "protein", "ppprob", "iprob"};
     psmtable.setHeader(header);
 
-    ICPepXMLParser * cpx = createPepXML(m_pepxmlfile);
+    ICPepXMLParser *cpx = createPepXML(m_pepxmlfile);
 
     vector<vector<double>> featuretable(cpx->getPsmNum(), vector<double>(features.size(), 0.0));
 
     vector<string> allSourceFiles = cpx->getAllSoruceFiles();
-    for(const auto& eachfile : allSourceFiles){
+    for (const auto &eachfile : allSourceFiles) {
         DataFile *df = new DataFile(eachfile, 0, -1);
         auto range = cpx->getIndexRange(eachfile);
         int sampleNum = range.second - range.first;
 
-        vector<int> psmIdx(range.second-range.first,0);
-        std::iota(psmIdx.begin(), psmIdx.end(),range.first);
+        vector<int> psmIdx(range.second - range.first, 0);
+        std::iota(psmIdx.begin(), psmIdx.end(), range.first);
 
-        vector<ICThreadTask*> tasks;
+        vector<ICThreadTask *> tasks;
         vector<FeatureExtractionThread> vtask;
         // create task, then run them.
-        for(int i = range.first; i < range.second; i ++){
+        for (int i = range.first; i < range.second; i++) {
             vtask.emplace_back(cpx, i, df, eachfile, m_highMassAcc, fixMz, &features,
                                &featuretable, m_hitrank);
         }
-        for(auto & i : vtask){
+        for (auto &i : vtask) {
             tasks.push_back(&i);
         }
-        CTaskPool::issueTasks(tasks,false, true,m_threadNum,eachfile);
+        CTaskPool::issueTasks(tasks, false, true, m_threadNum, eachfile);
         updatePsmTable(cpx, df, psmIdx, psmtable);
         delete df;
     }
@@ -2266,7 +2288,7 @@ void ExtractFeaturesFromPepXML::exportTestingFeature(const vector<Feature *> &fe
     }
     fout << "class" << endl;
 
-    for (const auto & row_i : featuretable) {
+    for (const auto &row_i : featuretable) {
         for (double feature_j : row_i) {
             fout << feature_j << ",";
         }
@@ -2276,12 +2298,18 @@ void ExtractFeaturesFromPepXML::exportTestingFeature(const vector<Feature *> &fe
     cout << "Feature exported to file " << feature_outfile << endl;
 }
 
-string i_th(int i){
+string i_th(int i) {
     string ret = "th";
     switch (i) {
-        case 1: ret = "st"; break;
-        case 2: ret = "nd";break;
-        case 3: ret = "rd";break;
+        case 1:
+            ret = "st";
+            break;
+        case 2:
+            ret = "nd";
+            break;
+        case 3:
+            ret = "rd";
+            break;
         default:
             ret = "th";
     }
@@ -2291,21 +2319,21 @@ string i_th(int i){
 void ExtractFeaturesFromPepXML::updatePsmTable(ICPepXMLParser *pepxml, DataFile *df, const vector<int> &psmIdx,
                                                CTable &psmtable) const {
     int mixtureSpectraNum = 0;
-    int decoy2targetNum = 0, decoynum=0, targetnum=0;
+    int decoy2targetNum = 0, decoynum = 0, targetnum = 0;
     unordered_set<string> decoy2target_peptides;
-    bool verbose=true;
+    bool verbose = true;
     string name = File::CFile(df->getSourceFileName()).basename;
     //pair<int, int> range;
     int num_search_hit_not_found = 0;
-    for(int j : psmIdx){
+    for (int j : psmIdx) {
         PSMInfo psmInfo;
         pepxml->getPSMInfobyindex(j, psmInfo);
         int scan = psmInfo.start_scan;
-        int idx =df->getIdxByScan(scan);
+        int idx = df->getIdxByScan(scan);
         CSpectrum *spec = df->getSpectrum(idx);
 
 
-        vector<string> tmp={
+        vector<string> tmp = {
                 df->getSourceFileName(),
                 to_string(idx),
                 to_string(spec->m_scanNum),
@@ -2316,45 +2344,45 @@ void ExtractFeaturesFromPepXML::updatePsmTable(ICPepXMLParser *pepxml, DataFile 
                 "?"
         };
 
-        if(psmInfo.searchhits.size()<=m_hitrank){
-            num_search_hit_not_found ++;
+        if (psmInfo.searchhits.size() <= m_hitrank) {
+            num_search_hit_not_found++;
 
-        } else{
+        } else {
             string proteinACNum = psmInfo.searchhits.at(m_hitrank)->m_protein;
             SearchHit &sh0 = *psmInfo.searchhits[m_hitrank];
 
-            if(m_useAlternativeProtein and sh0.m_protein!= psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(
-                    m_useAlternativeProtein, m_hitrank))
-            {
+            if (m_useAlternativeProtein and sh0.m_protein != psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(
+                    m_useAlternativeProtein, m_hitrank)) {
                 proteinACNum = psmInfo.getProtein_UseAlterProteinIfItsNotDecoy(m_useAlternativeProtein, m_hitrank);
-                if(verbose){
-                    cout << "Protein changed from: "<< sh0.m_protein
+                if (verbose) {
+                    cout << "Protein changed from: " << sh0.m_protein
                          << " to " << proteinACNum
-                         <<" for peptide " << sh0.m_peptide<< endl;
+                         << " for peptide " << sh0.m_peptide << endl;
                 }
-                decoy2targetNum ++;
+                decoy2targetNum++;
                 decoy2target_peptides.insert(sh0.m_peptide);
             }
-            if(psmInfo.isDecoy(m_useAlternativeProtein, m_hitrank)){
+            if (psmInfo.isDecoy(m_useAlternativeProtein, m_hitrank)) {
                 decoynum++;
-            }else{
+            } else {
                 targetnum++;
             }
 
-    tmp[3]=sh0.m_modified_peptide;
-            tmp[5]=proteinACNum.substr(0,proteinACNum.find_first_of(' '));
-            tmp[6]=to_string(sh0.m_peptideprophet_prob);
-            tmp[7]=to_string(sh0.m_iprophet_prob);
+            tmp[3] = sh0.m_modified_peptide;
+            tmp[5] = proteinACNum.substr(0, proteinACNum.find_first_of(' '));
+            tmp[6] = to_string(sh0.m_peptideprophet_prob);
+            tmp[7] = to_string(sh0.m_iprophet_prob);
 
         }
         psmtable.addRow(tmp);
     }
-    cout << "[Info] " << decoy2targetNum <<" PSMs ("<< decoy2target_peptides.size()
+    cout << "[Info] " << decoy2targetNum << " PSMs (" << decoy2target_peptides.size()
          << " Peptides) changed from DECOY to TARGET; Decoy: " << decoynum
-         << " Target: " << targetnum << " Total:  "<< psmIdx.size()
+         << " Target: " << targetnum << " Total:  " << psmIdx.size()
          << endl;
     cout << "[Info] " << mixtureSpectraNum << " mixture spectra detected" << endl;
-    cout << "[Info] " << num_search_hit_not_found << " MS2 spectra do not have " <<  m_hitrank << i_th(m_hitrank) << " hit (0-hit is top hit)" << endl;
+    cout << "[Info] " << num_search_hit_not_found << " MS2 spectra do not have " << m_hitrank << i_th(m_hitrank)
+         << " hit (0-hit is top hit)" << endl;
 }
 
 RFModelConfig::RFModelConfig(const string &configFileName) {
@@ -2362,37 +2390,37 @@ RFModelConfig::RFModelConfig(const string &configFileName) {
     string line;
     ifstream fin(configFileName, ios::in);
     map<string, string> key_values;
-    while(std::getline(fin,line)){
+    while (std::getline(fin, line)) {
         cout << line << endl;
         vector<string> tokens;
-        split_string(line,tokens, '=');
+        split_string(line, tokens, '=');
         trim_space_only(tokens[0]);
         trim_space_only(tokens[1]);
         key_values[tokens[0]] = tokens[1];
     }
     m_ranger_binary_path = key_values["ranger_binary_path"];
-    m_tsvfile =  key_values["feature_tsv_file"];
-    m_mtry = stringTo<int>( key_values["mtry"]);
-    m_ntree = stringTo<int>( key_values["ntree"]);
-    m_isTraining = stringTo<bool>( key_values["is_training"]);
-    m_maxDepth = stringTo<int>( key_values["maxDepth"]);
-    m_threadnum = stringTo<int>( key_values["threadnum"]);
-    m_rfModel =  key_values["rf_model_file"];
-    m_probPrediction = stringTo<bool>( key_values["is_prob_pred"]);
+    m_tsvfile = key_values["feature_tsv_file"];
+    m_mtry = stringTo<int>(key_values["mtry"]);
+    m_ntree = stringTo<int>(key_values["ntree"]);
+    m_isTraining = stringTo<bool>(key_values["is_training"]);
+    m_maxDepth = stringTo<int>(key_values["maxDepth"]);
+    m_threadnum = stringTo<int>(key_values["threadnum"]);
+    m_rfModel = key_values["rf_model_file"];
+    m_probPrediction = stringTo<bool>(key_values["is_prob_pred"]);
 
 }
 
 void RFModelConfig::write() {
     ofstream fout(m_exportName, ios::out);
-    fout <<"ranger_binary_path = "<<m_ranger_binary_path << endl;
-    fout <<"mtry = "<<        m_mtry << endl;
-    fout <<"ntree = "<<m_ntree << endl;
-    fout <<"feature_tsv_file = "<<m_tsvfile << endl;
-    fout <<"threadnum = "<<        m_threadnum << endl;
-    fout <<"is_training = "<<        m_isTraining << endl;
-    fout <<"maxDepth = "<<        m_maxDepth << endl;
-    fout <<"is_prob_pred = "<<m_probPrediction << endl;
-    fout <<"rf_model_file = "<<m_rfModel << endl;
+    fout << "ranger_binary_path = " << m_ranger_binary_path << endl;
+    fout << "mtry = " << m_mtry << endl;
+    fout << "ntree = " << m_ntree << endl;
+    fout << "feature_tsv_file = " << m_tsvfile << endl;
+    fout << "threadnum = " << m_threadnum << endl;
+    fout << "is_training = " << m_isTraining << endl;
+    fout << "maxDepth = " << m_maxDepth << endl;
+    fout << "is_prob_pred = " << m_probPrediction << endl;
+    fout << "rf_model_file = " << m_rfModel << endl;
 }
 
 RFModelConfig::RFModelConfig(string featuretsv, bool isTraining, string RFmodelfile, bool probPrediction, int mtry,
@@ -2414,17 +2442,17 @@ RFModelConfig::RFModelConfig(string featuretsv, bool isTraining, string RFmodelf
 RFModelConfig::~RFModelConfig() = default;
 
 void RFModelConfig::print() {
-    cout << "m_tsvfile = " <<  m_tsvfile << endl;
-    cout << "m_isTraining = " <<          m_isTraining << endl;
-    cout << "m_rfModel = " <<  m_rfModel << endl;
-    cout << "m_mtry = " <<          m_mtry << endl;
-    cout << "m_ntree = " <<  m_ntree << endl;
-    cout << "m_maxDepth = " <<          m_maxDepth << endl;
-    cout << "m_probPrediction = " <<  m_probPrediction << endl;
+    cout << "m_tsvfile = " << m_tsvfile << endl;
+    cout << "m_isTraining = " << m_isTraining << endl;
+    cout << "m_rfModel = " << m_rfModel << endl;
+    cout << "m_mtry = " << m_mtry << endl;
+    cout << "m_ntree = " << m_ntree << endl;
+    cout << "m_maxDepth = " << m_maxDepth << endl;
+    cout << "m_probPrediction = " << m_probPrediction << endl;
 
-    cout << "m_ranger_binary_path = " <<  m_ranger_binary_path << endl;
-    cout << "m_threadnum = " <<          m_threadnum << endl;
-    cout << "m_exportName = " <<  m_exportName << endl;
+    cout << "m_ranger_binary_path = " << m_ranger_binary_path << endl;
+    cout << "m_threadnum = " << m_threadnum << endl;
+    cout << "m_exportName = " << m_exportName << endl;
 
 }
 
@@ -2469,4 +2497,4 @@ const string &RFModelConfig::getMExportName() const {
 }
 
 
-CException::CException(const char *msg) :std::runtime_error(msg){}
+CException::CException(const char *msg) : std::runtime_error(msg) {}

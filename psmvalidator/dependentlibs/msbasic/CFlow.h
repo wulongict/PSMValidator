@@ -47,7 +47,7 @@ class CROCPlot {
                 fdr=1;
             }
             else {
-                fdr= fp_num_ / tp_num_;
+                fdr= (double)fp_num_ / tp_num_;
             }
         }
 
