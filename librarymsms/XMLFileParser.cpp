@@ -217,7 +217,7 @@ bool CometPepXMLParser::getPSMInfobyScanCharge(int scan, int charge, PSMInfo &ps
 //
 bool CometPepXMLParser::getPSMInfobyScan(int scan, PSMInfo &psminfo) {
     // WARNING: DO NOT USE THIS FUNCTION
-    cout << "[Warning] DO NOT USE THIS FUNCTION: DEPRECATED" << endl;
+    //cout << "[Warning] DO NOT USE THIS FUNCTION: DEPRECATED" << endl;
     bool found = false;
     int low = 0, high = psm.size();
     while(low < high){

@@ -869,9 +869,9 @@ createFeatureVector(const string &fragmodel, bool ghost, double minIntFC, const 
                             "ghost={}; fragmodelfile={}; scoretype={}, minIntFC={}", ghost, fragmodel, fragscoretype,
                             minIntFC);
     vector<string> featurenames = readlines(featurelistfile);
-    cout << "list of feature names got " << featurenames.size() << endl;
-    for (const auto &x: featurenames) cout << x << endl;
-    cout << endl;
+//    cout << "list of feature names got " << featurenames.size() << endl;
+//    for (const auto &x: featurenames) cout << x << endl;
+//    cout << endl;
     unordered_set<string> featurenameset(featurenames.begin(), featurenames.end());
 
     features.push_back(new Peptide_Length);
@@ -974,8 +974,6 @@ createFeatureVector(const string &fragmodel, bool ghost, double minIntFC, const 
     // Fragmentation pattern score ------------------------------------------------
     features.push_back(new FragmentationPatternScore(ghost, minIntFC, fragmodel, fragscoretype, binaryPath));
 
-//    features.push_back(new ChargeState());
-
     cout << "Num of Features used : " << features.size() << endl;
     tmp.swap(features);
     for (int i = 0; i < tmp.size(); i++) {
@@ -1064,9 +1062,7 @@ get_feature_from_spec(PSMInfo *psmInfo, CSpectrum *spec, vector<double> *OneSpec
         Feature *f = features->at(i);
         if (f == nullptr) {
             throw CException(("feature pointer is null for i=" + to_string(i)).c_str());
-
         }
-
         (*OneSpecFeature)[i] = f->calculate_feature(pPSM);
     }
 
