@@ -16,11 +16,13 @@ class CTable;
 
 class CDBEntry{
     map<string, vector<string>> m_data;
+    bool m_colname_fixed;
 public:
     int size(){
         return m_data.begin()->second.size();
     }
     bool empty(){return m_data.empty() or m_data.begin()->second.empty();}
+    CDBEntry(){m_colname_fixed = false;}
     CDBEntry(const vector<string>& headers);
     void setValue(string header, int record_id, string value){
         if(m_data.count(header)==0 or record_id >= m_data[header].size()){
@@ -106,42 +108,15 @@ static int get_row_callback(void *data, int numCol, char **argv, char **azColNam
 
 
 static int get_row_callback_dbEntry(void *data, int numCol, char **argv, char **azColName){
-    // the columns of a gt table
-    // ID = 0
-    //FILEID = 0
-    //MS2COUNTS = 0
-    //PEPTIDE = UNKNOWN
-    //SCORE = -1.0
-    //SCAN = 11
-    //CTERM = 0.0
-    //NTERM = 0.0
-    //MODIFICATION = UNMODIFIED
-    //PRECURSOR = 462.151
-    //CHARGE = 1
-    //RT = 5.42103
-    //PEPTIDEPROPHETPROB = 0.0
-    //IPROPHETPROB = 0.0
-    //RFSCORE = 0.0
-    //ISDECOY = 0
-    //SIGNIFICANCE = 0
-    //PROTEIN =
-    //CE =
-    //ALTERPEPTIDE = NULL
-    //NEIGHBOR =
-    int i;
     CDBEntry *pdata = static_cast<CDBEntry*>(data);
-//    pdata->assign(numCol,"");
-    for(i=0; i<numCol; i++){
-//        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-        pdata->add(azColName[i],argv[i]?argv[i]:"NULL");
 
-//
-//        (*pdata)[i] = argv[i]?argv[i]:"NULL";
+    for(int i=0; i<numCol; i++){
+        pdata->add(azColName[i],argv[i]?argv[i]:"NULL");
     }
-    //printf("\n");
     return 0;
 }
 
+// vector<vector<string> > * data 
 static int get_multiple_rows_callback(void *data, int numCol, char **argv, char **azColName){
     int i;
     vector<vector<string>> *pdata = (vector<vector<string>>*)data;
@@ -156,20 +131,7 @@ static int get_multiple_rows_callback(void *data, int numCol, char **argv, char 
     return 0;
 }
 
-static int get_multiple_rows_callback_dbEntry(void *data, int numCol, char **argv, char **azColName){
-    int i;
-    CDBEntry *pdata = static_cast<CDBEntry*>(data);
 
-//    pdata->emplace_back(vector<string>(numCol,""));
-//    int row_num = pdata->size()-1;
-    for(i=0; i<numCol; i++){
-        //printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-        pdata->add(azColName[i],argv[i]? argv[i]:"NULL");
-//        (*pdata)[row_num][i] = argv[i]? argv[i]:"NULL";
-    }
-    //printf("\n");
-    return 0;
-}
 
 class CDataBaseManager
 {
@@ -185,6 +147,7 @@ public:
     void getRow_deprecated(vector<string> &result, const string& sql, bool verbose);
     void getRow(CDBEntry &result, const string& sql, bool verbose);
     void getMultipleRows(vector<vector<string>> &result, const string& sql, bool verbose);
+
 
     void execAsTransaction(const string& sql, bool verbose);
 

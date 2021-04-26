@@ -70,10 +70,7 @@ void createmzXMLTable() {
 //         "VALUES (1, 'Paul', 32, 'California', 20000.00 ); " \
 //         "INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) "  \
 //         "VALUES (2, 'Allen', 25, 'Texas', 15000.00 ); "     \
-//         "INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY)" \
-//         "VALUES (3, 'Teddy', 23, 'Norway', 20000.00 );" \
-//         "INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY)" \
-//         "VALUES (4, 'Mark', 25, 'Rich-Mond ', 65000.00 );";
+
 }
 
 
@@ -237,24 +234,18 @@ CDataBaseManager::~CDataBaseManager() {
     }
 }
 
-// new DBentry
 
+// new DBentry
 void CDataBaseManager::getRow(CDBEntry &result, const string& sql, bool verbose) {
     char *zErrMsg = nullptr;
     int rc;
 
-//    string sql = "select * from "+ tablename +" where "+ idname + "=" + to_string(idvalue) + ";";
-
-    /* Execute SQL statement */
-//        rc = sqlite3_exec(m_db, "BEGIN;", nullptr, 0, &zErrMsg);
     rc = sqlite3_exec(m_db, sql.c_str(), get_row_callback_dbEntry, &result, &zErrMsg);
 
     if (rc != SQLITE_OK) {
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
-        sqlite3_free(zErrMsg); // NOT OK, there is Error here!
-        //sqlite3_exec(m_db, "ROLLBACK;", nullptr, 0, &zErrMsg);
+        sqlite3_free(zErrMsg); 
     } else {
-        //sqlite3_exec(m_db, "COMMIT;", nullptr, 0, &zErrMsg);
         if (verbose)
             fprintf(stdout, "sql run successfully\n");
     }
@@ -264,18 +255,12 @@ void CDataBaseManager::getRow_deprecated(vector<string> &result, const string& s
     char *zErrMsg = nullptr;
     int rc;
 
-//    string sql = "select * from "+ tablename +" where "+ idname + "=" + to_string(idvalue) + ";";
-
-    /* Execute SQL statement */
-//        rc = sqlite3_exec(m_db, "BEGIN;", nullptr, 0, &zErrMsg);
     rc = sqlite3_exec(m_db, sql.c_str(), get_row_callback, &result, &zErrMsg);
 
     if (rc != SQLITE_OK) {
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
-        sqlite3_free(zErrMsg); // NOT OK, there is Error here!
-        //sqlite3_exec(m_db, "ROLLBACK;", nullptr, 0, &zErrMsg);
+        sqlite3_free(zErrMsg); 
     } else {
-        //sqlite3_exec(m_db, "COMMIT;", nullptr, 0, &zErrMsg);
         if (verbose)
             fprintf(stdout, "sql run successfully\n");
     }
@@ -288,15 +273,12 @@ void CDataBaseManager::getRow(vector<string> &result, const string& idname, int 
     string sql = "select * from " + tablename + " where " + idname + "=" + to_string(idvalue) + ";";
 
     /* Execute SQL statement */
-//        rc = sqlite3_exec(m_db, "BEGIN;", nullptr, 0, &zErrMsg);
     rc = sqlite3_exec(m_db, sql.c_str(), get_row_callback, &result, &zErrMsg);
 
     if (rc != SQLITE_OK) {
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
         sqlite3_free(zErrMsg);
-        //sqlite3_exec(m_db, "ROLLBACK;", nullptr, 0, &zErrMsg);
     } else {
-        //sqlite3_exec(m_db, "COMMIT;", nullptr, 0, &zErrMsg);
         if(verbose) fprintf(stdout, "sql run successfully\n");
     }
 }
@@ -306,21 +288,16 @@ bool CDataBaseManager::tableExists(const string& tablename, bool verbosity) {
     char *zErrMsg = nullptr;
     int rc;
 
-//    vector<string> result;
-
     CDBEntry dbentry({"type","name"});
     string sql = "select type, name from sqlite_master where type='table' and name='" + tablename + "';";
 
     /* Execute SQL statement */
-//        rc = sqlite3_exec(m_db, "BEGIN;", nullptr, 0, &zErrMsg);
     rc = sqlite3_exec(m_db, sql.c_str(), get_row_callback_dbEntry, &dbentry, &zErrMsg);
 
     if (rc != SQLITE_OK) {
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
         sqlite3_free(zErrMsg);
-        //sqlite3_exec(m_db, "ROLLBACK;", nullptr, 0, &zErrMsg);
     } else {
-        //sqlite3_exec(m_db, "COMMIT;", nullptr, 0, &zErrMsg);
         //fprintf(stdout, "sql run successfully\n");
     }
     if (dbentry.empty()) {
@@ -334,22 +311,18 @@ bool CDataBaseManager::tableExists(const string& tablename, bool verbosity) {
 
 }
 
+
 void CDataBaseManager::getMultipleRows(vector<vector<string>> &result, const string& sql, bool verbose) {
     char *zErrMsg = nullptr;
     int rc;
 
-//    string sql = "select * from "+ tablename +" where "+ idname + "=" + to_string(idvalue) + ";";
-
     /* Execute SQL statement */
-//        rc = sqlite3_exec(m_db, "BEGIN;", nullptr, 0, &zErrMsg);
     rc = sqlite3_exec(m_db, sql.c_str(), get_multiple_rows_callback, &result, &zErrMsg);
 
     if (rc != SQLITE_OK) {
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
         sqlite3_free(zErrMsg);
-        //sqlite3_exec(m_db, "ROLLBACK;", nullptr, 0, &zErrMsg);
     } else {
-        //sqlite3_exec(m_db, "COMMIT;", nullptr, 0, &zErrMsg);
         if (verbose)
             fprintf(stdout, "sql run successfully\n");
     }
@@ -385,15 +358,28 @@ void CDataBaseManager::batchSQL(bool run, vector<string> &manySQLs, const string
     }
 }
 
-CDBEntry::CDBEntry(const vector<string>& headers) {
-    if(headers.empty()) cout << "Error: invalid header. Empty header is not allowed in CDBEntry object" << endl;
+CDBEntry::CDBEntry(const vector<string>& headers):CDBEntry() {
+    if(headers.empty()) {
+        cout << "Error: invalid header. Empty header is not allowed in CDBEntry object" << endl;
+    }    else {
+        m_colname_fixed = true;
+    }
     for(const auto& header: headers){
         m_data[header] = vector<string>();
+        m_data[header].reserve(1024);
     }
 }
 
 void CDBEntry::add(const string& header, const string& value) {
-    if(m_data.find(header)!=m_data.end())    m_data[header].push_back(value);
+    if(m_data.find(header)!=m_data.end())    {
+        m_data[header].push_back(value);
+    } else if ( not m_colname_fixed){
+        m_data[header] = vector<string>();
+        m_data[header].reserve(1024);
+        m_data[header].push_back(value);
+    }
+    
+    
 }
 
 void CDBEntry::print() {
