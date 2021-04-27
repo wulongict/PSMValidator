@@ -337,9 +337,8 @@ CDataBaseManager::CDataBaseManager(const string& databaseFileName) {
 long CDataBaseManager::getTotalRows(string tablename) {
     // never used
     string sql="select count(*) as num_of_rows from " + tablename;
-    vector<string> header = {"number_of_rows"};
-    vector<string> results;
-    CDBEntry dbentry(header);
+
+    CDBEntry dbentry;
     getRow(dbentry, sql, false);
     long row_num = dbentry.getInt("num_of_rows",0);
 

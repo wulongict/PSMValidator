@@ -1,14 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 project(PSMValidator)
 
-
-# after I update my project in to a newer version, I got some problem
-# I find the solution from the following pages:
-# http://stackoverflow.com/questions/6594796/how-do-i-make-cmake-output-into-a-bin-dir
-# I just put everything in one folder, which makes it easy to find a file.
-# Maybe later i will change it in the future
-#set(CMAKE_BUILD_TYPE Debug)
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Release)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Release)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Release)
@@ -17,8 +9,8 @@ set( boost_INSTALL ${CMAKE_BINARY_DIR}/External/boost1.65.1/build )
 set( boost_INCLUDE_DIR ${boost_INSTALL}/include )
 set( boost_LIB_DIR ${boost_INSTALL}/lib )
 set(BOOST_ROOT ${boost_INSTALL})
-# Note it is important that we put system after filesystem !!!
-#find_package(Boost REQUIRED COMPONENTS system filesystem iostreams program_options timer chrono)
+
+
 set(Boost_LIBRARIES
         ${boost_LIB_DIR}/libboost_system.a
         ${boost_LIB_DIR}/libboost_filesystem.a
